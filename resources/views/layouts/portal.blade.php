@@ -23,17 +23,12 @@
             @endif
 
             @if(auth()->user()->role === 'landlord')
-                <a href="{{ route('landlord.tenants.create') }}" class="block p-2 hover:bg-gray-200 rounded">
-    Aggiungi inquilino
-</a>
-
+                <a href="{{ route('landlord.tenants.create') }}" class="block p-2 hover:bg-gray-200 rounded">Aggiungi inquilino</a>
                 <a href="{{ route('landlord.dashboard') }}" class="block p-2 hover:bg-gray-200 rounded">Dashboard</a>
                 <a href="{{ route('properties.index') }}" class="block p-2 hover:bg-gray-200 rounded">Proprietà</a>
                 <a href="{{ route('leases.index') }}" class="block p-2 hover:bg-gray-200 rounded">Contratti</a>
                 <a href="{{ route('messages.index') }}" class="block p-2 hover:bg-gray-200 rounded">Messaggi</a>
-                <a href="{{ route('properties.index') }}" class="block p-2 hover:bg-gray-200 rounded">
-    Proprietà & Unità
-</a>
+                <a href="{{ route('properties.index') }}" class="block p-2 hover:bg-gray-200 rounded">Proprietà & Unità</a>
             @endif
 
         </nav>
