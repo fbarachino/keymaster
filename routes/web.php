@@ -154,4 +154,18 @@ Route::middleware(['auth'])->group(function () {
     // PDF contratto
     Route::get('leases/{lease}/pdf', [LeasePdfController::class, 'downloadPdf'])
         ->name('leases.pdf');
+})
+// ---------------------------------------------------------
+//  FINE AREA AUTENTICATA
+;
+Route::middleware([
+    'web'])->group(function ()
+{
+
+    Route::get('/', function () {
+        return redirect(route('login'));
+    });
+
+
+    Auth::routes(['register' => true]); // Production only (true)
 });

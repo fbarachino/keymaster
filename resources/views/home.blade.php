@@ -1,4 +1,5 @@
-@extends('layouts.portal')
+@extends('adminlte::page')
+
 
 @section('content')
 <div class="container">
