@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Portal\Tenant;
+namespace App\Http\Controllers\Web\Tenant;
 
 use App\Models\Lease;
-use App\Models\Message;
 use App\Models\Payment;
+use App\Models\Message;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -14,18 +14,15 @@ class TenantDashboardController extends Controller
     {
         $tenant = $request->user();
 
-        return [
-            'leases' => Lease::where('tenant_id', $tenant->id)
-                ->with('unit.property')
-                ->get(),
+        $leases = Lease::where('tenant_id', $tenant->id)->with('unit.property')->get();
+        $pending = Payment::whereHas('lease', fn($q) =>
+            $q->where('tenant_id', $tenant->id)
+        )->where('status', 'pending')->count();
 
-            'pending_payments' => Payment::whereHas('lease', fn($q) =>
-                $q->where('tenant_id', $tenant->id)
-            )->where('status', 'pending')->get(),
+        $unread = Message::where('receiver_id', $tenant->id)
+            ->whereNull('read_at')
+            ->count();
 
-            'unread_messages' => Message::where('receiver_id', $tenant->id)
-                ->whereNull('read_at')
-                ->count(),
-        ];
+        return view('tenant.dashboard', compact('leases', 'pending', 'unread'));
     }
 }

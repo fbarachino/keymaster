@@ -59,7 +59,7 @@ class TenantManagementController extends Controller
         // 3) Aggiorna stato unità
         Unit::where('id', $data['unit_id'])->update(['status' => 'occupied']);
 
-        return redirect()->route('landlord.leases.index')
+        return redirect()->route('leases.index')
             ->with('success', 'Inquilino creato e contratto assegnato con successo.');
     }
 }
