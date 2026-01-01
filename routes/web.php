@@ -27,6 +27,10 @@ use App\Http\Controllers\Web\LeasePdfController;
 use App\Http\Middleware\EnsureTenant;;
 use App\Http\Middleware\EnsureLandlord;
 
+
+
+Route::get('/', function () { return view('welcome'); }); // oppure 'landing', se hai una view dedicata })->name('home');
+Auth::routes(['register' => true]); // Production only (true)
 // ---------------------------------------------------------
 //  AREA AUTENTICATA
 // ---------------------------------------------------------
@@ -158,14 +162,4 @@ Route::middleware(['auth'])->group(function () {
 // ---------------------------------------------------------
 //  FINE AREA AUTENTICATA
 ;
-Route::middleware([
-    'web'])->group(function ()
-{
 
-    Route::get('/', function () {
-        return redirect(route('login'));
-    });
-
-
-    Auth::routes(['register' => true]); // Production only (true)
-});
