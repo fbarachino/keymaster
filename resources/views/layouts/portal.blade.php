@@ -17,9 +17,9 @@
 
             @if(auth()->user()->role === 'tenant')
                 <a href="{{ route('tenant.dashboard') }}" class="block p-2 hover:bg-gray-200 rounded">Dashboard</a>
-                <a href="{{ route('tenant.leases.index') }}" class="block p-2 hover:bg-gray-200 rounded">I miei contratti</a>
-                <a href="{{ route('tenant.payments.index') }}" class="block p-2 hover:bg-gray-200 rounded">Pagamenti</a>
-                <a href="{{ route('tenant.messages.index') }}" class="block p-2 hover:bg-gray-200 rounded">Messaggi</a>
+                <a href="{{ route('leases.index') }}" class="block p-2 hover:bg-gray-200 rounded">I miei contratti</a>
+                <a href="{{ route('payments.index') }}" class="block p-2 hover:bg-gray-200 rounded">Pagamenti</a>
+                <a href="{{ route('messages.index') }}" class="block p-2 hover:bg-gray-200 rounded">Messaggi</a>
             @endif
 
             @if(auth()->user()->role === 'landlord')

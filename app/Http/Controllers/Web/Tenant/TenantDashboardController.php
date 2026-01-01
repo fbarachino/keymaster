@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Portal\Tenant;
+namespace App\Http\Controllers\Web\Tenant;
 
 use App\Models\Lease;
 use App\Models\Message;
