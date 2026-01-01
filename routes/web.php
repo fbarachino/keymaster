@@ -24,7 +24,8 @@ use App\Http\Controllers\Web\Landlord\MaintenanceDashboardController;
 // COMMON
 use App\Http\Controllers\Web\MessagesController;
 use App\Http\Controllers\Web\LeasePdfController;
-
+use App\Http\Middleware\EnsureTenant;;
+use App\Http\Middleware\EnsureLandlord;
 
 // ---------------------------------------------------------
 //  AREA AUTENTICATA
@@ -34,7 +35,7 @@ Route::middleware(['auth'])->group(function () {
     // -----------------------------------------------------
     //  TENANT PORTAL
     // -----------------------------------------------------
-    Route::middleware('tenant')->prefix('tenant')->group(function () {
+    Route::middleware(EnsureTenant::class)->prefix('tenant')->group(function () {
 
         // Dashboard
         Route::get('dashboard', [TenantDashboardController::class, 'index'])
@@ -75,7 +76,7 @@ Route::middleware(['auth'])->group(function () {
     // -----------------------------------------------------
     //  LANDLORD PORTAL
     // -----------------------------------------------------
-    Route::middleware('landlord')->prefix('landlord')->group(function () {
+    Route::middleware(EnsureLandlord::class)->prefix('landlord')->group(function () {
 
         // Dashboard
         Route::get('dashboard', [LandlordDashboardController::class, 'index'])
