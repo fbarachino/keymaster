@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Portal\Landlord;
+namespace App\Http\Controllers\Web\Landlord;
 
 use App\Models\Lease;
 use Illuminate\Http\Request;
