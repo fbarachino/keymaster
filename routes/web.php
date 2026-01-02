@@ -26,11 +26,16 @@ use App\Http\Controllers\Web\MessagesController;
 use App\Http\Controllers\Web\LeasePdfController;
 use App\Http\Middleware\EnsureTenant;;
 use App\Http\Middleware\EnsureLandlord;
+use App\Http\Controllers\HomeController;
 
 
 
 Route::get('/', function () { return view('welcome'); }); // oppure 'landing', se hai una view dedicata })->name('home');
 Auth::routes(['register' => true]); // Production only (true)
+Route::get('/home', [HomeController::class,'index'])->name('home'); // Development only (remove in production)
+
+
+
 // ---------------------------------------------------------
 //  AREA AUTENTICATA
 // ---------------------------------------------------------
