@@ -13,9 +13,11 @@ class TenantLeaseController extends Controller
 {
     public function index(Request $request)
     {
-        return Lease::where('tenant_id', $request->user()->id)
+        $leases = Lease::where('tenant_id', $request->user()->id)
             ->with(['unit.property'])
             ->get();
+
+        return view('tenant.leases.index', compact('leases'));
     }
 
     public function show(Request $request, Lease $lease)
