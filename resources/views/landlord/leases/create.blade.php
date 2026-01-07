@@ -3,7 +3,7 @@
 @section('content')
 <h1 class="text-2xl font-bold mb-6">Nuovo contratto</h1>
 
-<form method="POST" action="{{ route('leases.store') }}" class="space-y-4">
+<form method="POST" action="{{ route('landlord.leases.store') }}" class="space-y-4">
     @csrf
 
     <div>

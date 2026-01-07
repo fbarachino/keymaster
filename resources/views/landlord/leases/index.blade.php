@@ -3,7 +3,7 @@
 @section('content')
 <h1 class="text-2xl font-bold mb-6">Contratti di locazione</h1>
 
-<a href="{{ route('leases.create') }}"
+<a href="{{ route('landlord.leases.create') }}"
    class="bg-blue-600 text-white px-4 py-2 rounded">
     Nuovo contratto
 </a>
@@ -29,7 +29,7 @@
             <td class="p-3">{{ $lease->start_date->format('d/m/Y') }}</td>
             <td class="p-3">€ {{ number_format($lease->rent_amount, 2, ',', '.') }}</td>
             <td class="p-3 text-center">
-                <a href="{{ route('leases.edit', $lease) }}" class="text-blue-600">Modifica</a>
+                <a href="{{ route('landlord.leases.edit', $lease) }}" class="text-blue-600">Modifica</a>
             </td>
         </tr>
         @endforeach

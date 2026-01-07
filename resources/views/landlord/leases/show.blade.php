@@ -15,5 +15,5 @@
 
 </div>
 
-<a href="{{ route('leases.index') }}" class="mt-4 inline-block text-blue-600">← Torna ai contratti</a>
+<a href="{{ route('landlord.leases.index') }}" class="mt-4 inline-block text-blue-600">← Torna ai contratti</a>
 @endsection

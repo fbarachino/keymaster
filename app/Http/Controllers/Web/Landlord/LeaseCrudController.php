@@ -76,7 +76,7 @@ class LeaseCrudController extends Controller
 
         $lease->update($data);
 
-        return redirect()->route('leases.index')
+        return redirect()->route('landlord.leases.index')
             ->with('success', 'Contratto aggiornato con successo.');
     }
 
@@ -86,7 +86,7 @@ class LeaseCrudController extends Controller
 
         $lease->delete();
 
-        return redirect()->route('leases.index')
+        return redirect()->route('landlord.leases.index')
             ->with('success', 'Contratto eliminato.');
     }
 }

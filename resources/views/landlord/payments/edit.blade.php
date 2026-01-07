@@ -3,7 +3,7 @@
 @section('content')
 <h1 class="text-2xl font-bold mb-6">Modifica pagamento</h1>
 
-<form method="POST" action="{{ route('payments.update', $payment) }}" class="space-y-4">
+<form method="POST" action="{{ route('landlord.payments.update', $payment) }}" class="space-y-4">
     @csrf
     @method('PUT')
 

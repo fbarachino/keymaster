@@ -44,29 +44,29 @@ Route::middleware(['auth'])->group(function () {
     // -----------------------------------------------------
     //  TENANT PORTAL
     // -----------------------------------------------------
-    Route::middleware(EnsureTenant::class)->prefix('tenant')->group(function () {
+    Route::middleware(EnsureTenant::class)->prefix('tenant')->name('tenant.')->group(function () {
 
         // Dashboard
         Route::get('dashboard', [TenantDashboardController::class, 'index'])
-            ->name('tenant.dashboard');
+            ->name('dashboard');
 
         // Contratti
         Route::get('leases', [TenantLeaseController::class, 'index'])
-            ->name('tenant.leases.index');
+            ->name('leases.index');
 
         Route::get('leases/{lease}', [TenantLeaseController::class, 'show'])
-            ->name('tenant.leases.show');
+            ->name('leases.show');
 
         // Firma digitale contratto
         Route::get('leases/{lease}/sign', [LeaseSignatureController::class, 'showForm'])
-            ->name('tenant.leases.sign.form');
+            ->name('leases.sign.form');
 
         Route::post('leases/{lease}/sign', [LeaseSignatureController::class, 'sign'])
-            ->name('tenant.leases.sign');
+            ->name('leases.sign');
 
         // Pagamenti
         Route::get('payments', [TenantPaymentController::class, 'index'])
-            ->name('tenant.payments.index');
+            ->name('payments.index');
 
         // Messaggi
         Route::resource('messages', TenantMessageController::class)
@@ -74,7 +74,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Documenti unità
         Route::get('documents', [TenantDocumentsController::class, 'index'])
-            ->name('tenant.documents.index');
+            ->name('documents.index');
 
         // Ticket manutenzione
         Route::resource('tickets', TenantTicketController::class)
@@ -85,48 +85,48 @@ Route::middleware(['auth'])->group(function () {
     // -----------------------------------------------------
     //  LANDLORD PORTAL
     // -----------------------------------------------------
-    Route::middleware(EnsureLandlord::class)->prefix('landlord')->group(function () {
+    Route::middleware(EnsureLandlord::class)->prefix('landlord')->name('landlord.')->group(function () {
 
         // Dashboard
         Route::get('dashboard', [LandlordDashboardController::class, 'index'])
-            ->name('landlord.dashboard');
+            ->name('dashboard');
 
         // Proprietà
         Route::resource('properties', PropertyCrudController::class);
 
         // Unità
         Route::get('properties/{property}/units', [UnitCrudController::class, 'index'])
-            ->name('landlord.units.index');
+            ->name('units.index');
 
         Route::get('properties/{property}/units/create', [UnitCrudController::class, 'create'])
-            ->name('landlord.units.create');
+            ->name('units.create');
 
         Route::post('properties/{property}/units', [UnitCrudController::class, 'store'])
-            ->name('landlord.units.store');
+            ->name('units.store');
 
         Route::get('properties/{property}/units/{unit}/edit', [UnitCrudController::class, 'edit'])
-            ->name('landlord.units.edit');
+            ->name('units.edit');
 
         Route::put('properties/{property}/units/{unit}', [UnitCrudController::class, 'update'])
-            ->name('landlord.units.update');
+            ->name('units.update');
 
         Route::delete('properties/{property}/units/{unit}', [UnitCrudController::class, 'destroy'])
-            ->name('landlord.units.destroy');
+            ->name('units.destroy');
 
         // Upload foto unità
         Route::post('properties/{property}/units/{unit}/photos',
             [UnitCrudController::class, 'uploadPhotos'])
-            ->name('landlord.units.photos.upload');
+            ->name('units.photos.upload');
 
         // Inventario unità
         Route::post('properties/{property}/units/{unit}/inventory',
             [UnitCrudController::class, 'addInventory'])
-            ->name('landlord.units.inventory.add');
+            ->name('units.inventory.add');
 
         // Documenti unità
         Route::post('properties/{property}/units/{unit}/documents',
             [UnitCrudController::class, 'uploadDocument'])
-            ->name('landlord.units.documents.upload');
+            ->name('units.documents.upload');
 
         // Contratti
         Route::resource('leases', LeaseCrudController::class)
@@ -141,14 +141,14 @@ Route::middleware(['auth'])->group(function () {
 
         // Creazione inquilino + assegnazione contratto
         Route::get('tenants/create', [TenantManagementController::class, 'create'])
-            ->name('landlord.tenants.create');
+            ->name('tenants.create');
 
         Route::post('tenants', [TenantManagementController::class, 'store'])
-            ->name('landlord.tenants.store');
+            ->name('tenants.store');
 
         // Dashboard manutenzioni
         Route::get('maintenance', [MaintenanceDashboardController::class, 'index'])
-            ->name('landlord.maintenance.dashboard');
+            ->name('maintenance.dashboard');
     });
 
 

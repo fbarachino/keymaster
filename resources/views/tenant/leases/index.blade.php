@@ -15,7 +15,7 @@
 
                 <p class="mt-2">
                     <strong>Inizio:</strong> {{ $lease->start_date->format('d/m/Y') }}<br>
-                    <strong>Fine:</strong> 
+                    <strong>Fine:</strong>
                     {{ $lease->end_date ? $lease->end_date->format('d/m/Y') : 'N/D' }}<br>
                     <strong>Affitto mensile:</strong> € {{ number_format($lease->rent_amount, 2, ',', '.') }}
                 </p>
@@ -26,7 +26,7 @@
                         Dettagli contratto
                     </a>
 
-                    <a href="{{ route('leases.pdf', $lease) }}"
+                    <a href="{{ route('tenant.leases.pdf', $lease) }}"
                        class="text-green-600 font-semibold">
                         Scarica PDF
                     </a>

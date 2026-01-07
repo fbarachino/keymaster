@@ -31,7 +31,7 @@ class PropertyCrudController extends Controller
 
         Property::create($data);
 
-        return redirect()->route('properties.index');
+        return redirect()->route('landlord.properties.index');
     }
 
     public function edit(Property $property)
@@ -52,7 +52,7 @@ class PropertyCrudController extends Controller
 
         $property->update($data);
 
-        return redirect()->route('properties.index');
+        return redirect()->route('landlord.properties.index');
     }
 
     public function destroy(Property $property)
@@ -60,6 +60,6 @@ class PropertyCrudController extends Controller
         abort_if($property->landlord_id !== auth()->id(), 403);
 
         $property->delete();
-        return redirect()->route('properties.index');
+        return redirect()->route('landlord.properties.index');
     }
 }

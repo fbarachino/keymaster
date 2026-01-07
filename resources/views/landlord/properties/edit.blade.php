@@ -3,7 +3,7 @@
 @section('content')
 <h1 class="text-2xl font-bold mb-4">Modifica proprietà</h1>
 
-<form method="POST" action="{{ route('properties.update', $property) }}" class="space-y-4">
+<form method="POST" action="{{ route('landlord.properties.update', $property) }}" class="space-y-4">
     @csrf @method('PUT')
 
     <input type="text" name="name" value="{{ $property->name }}" class="w-full p-2 border rounded">
