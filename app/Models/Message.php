@@ -7,29 +7,32 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Message extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'sender_id',
-        'receiver_id',
-        'lease_id',
-        'content',
+        'tenant_id',
+        'landlord_id',
+        'subject',
+        'message',
+        'sender',
+        'parent_id',
     ];
 
-    /* RELAZIONI */
-
-    public function sender()
+    public function tenant()
     {
-        return $this->belongsTo(User::class, 'sender_id');
+        return $this->belongsTo(User::class, 'tenant_id');
     }
 
-    public function receiver()
+    public function landlord()
     {
-        return $this->belongsTo(User::class, 'receiver_id');
+        return $this->belongsTo(User::class, 'landlord_id');
     }
 
-    public function lease()
+    public function parent()
     {
-        return $this->belongsTo(Lease::class);
+        return $this->belongsTo(Message::class, 'parent_id');
+    }
+
+    public function replies()
+    {
+        return $this->hasMany(Message::class, 'parent_id');
     }
 }
