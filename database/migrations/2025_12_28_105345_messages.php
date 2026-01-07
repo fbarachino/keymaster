@@ -4,20 +4,33 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('sender_id');
-            $table->unsignedBigInteger('receiver_id');
-            $table->unsignedBigInteger('lease_id')->nullable();
-            $table->text('content');
+
+            // Relazioni
+            $table->unsignedBigInteger('tenant_id');
+            $table->unsignedBigInteger('landlord_id');
+
+            // Thread (risposte)
+            $table->unsignedBigInteger('parent_id')->nullable();
+
+            // Contenuto
+            $table->string('subject')->nullable();
+            $table->text('message');
+
+            // Chi ha inviato il messaggio
+            $table->enum('sender', ['tenant', 'landlord']);
+
             $table->timestamps();
 
-            $table->foreign('sender_id')->references('id')->on('users');
-            $table->foreign('receiver_id')->references('id')->on('users');
-            $table->foreign('lease_id')->references('id')->on('leases');
+            // Foreign keys
+            $table->foreign('tenant_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('landlord_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('parent_id')->references('id')->on('messages')->onDelete('cascade');
         });
     }
 

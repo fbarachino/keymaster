@@ -19,33 +19,55 @@ class TenantMessageController extends Controller
         return view('tenant.messages.index', compact('messages'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        $tenant = $request->user();
+
+        // Se il tenant NON ha contratti → deve scegliere il landlord
+        if ($tenant->leases()->count() === 0) {
+            $landlords = User::where('role', 'landlord')->get();
+            return view('tenant.messages.create', compact('landlords'));
+        }
+
+        // Se ha un contratto → nessuna scelta
         return view('tenant.messages.create');
     }
 
+
     public function store(Request $request)
-    {
-        $data = $request->validate([
-            'subject' => 'nullable|string',
-            'message' => 'required|string',
-            'parent_id' => 'nullable|exists:messages,id',
-        ]);
+{
+    $tenant = $request->user();
 
-        $tenant = $request->user();
-
-        Message::create([
-            'tenant_id' => $tenant->id,
-            'landlord_id' => $tenant->landlord_id, // se hai questa relazione
-            'subject' => $data['subject'] ?? null,
-            'message' => $data['message'],
-            'parent_id' => $data['parent_id'] ?? null,
-            'sender' => 'tenant',
-        ]);
-
-        return redirect()->route('tenant.messages.index')
-            ->with('success', 'Messaggio inviato.');
+    // Tenant con contratto → landlord automatico
+    if ($tenant->leases()->count() > 0) {
+        $landlordId = $tenant->leases()->first()->unit->property->landlord_id;
     }
+    // Tenant senza contratto → landlord scelto dal form
+    else {
+        $landlordId = $request->validate([
+            'landlord_id' => 'required|exists:users,id'
+        ])['landlord_id'];
+    }
+
+    $data = $request->validate([
+        'subject' => 'nullable|string',
+        'message' => 'required|string',
+        'parent_id' => 'nullable|exists:messages,id',
+    ]);
+
+    Message::create([
+        'tenant_id' => $tenant->id,
+        'landlord_id' => $landlordId,
+        'subject' => $data['subject'] ?? null,
+        'message' => $data['message'],
+        'parent_id' => $data['parent_id'] ?? null,
+        'sender' => 'tenant',
+    ]);
+
+    return redirect()->route('tenant.messages.index')
+        ->with('success', 'Messaggio inviato.');
+}
+
 
     public function show(Message $message)
     {

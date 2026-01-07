@@ -22,8 +22,8 @@ class LandlordMessageController extends Controller
     public function create()
     {
         $tenants = User::where('role', 'tenant')->get();
-
         return view('landlord.messages.create', compact('tenants'));
+
     }
 
     public function store(Request $request)
@@ -43,6 +43,7 @@ class LandlordMessageController extends Controller
             'parent_id' => $data['parent_id'] ?? null,
             'sender' => 'landlord',
         ]);
+
 
         return redirect()->route('landlord.messages.index')
             ->with('success', 'Messaggio inviato.');

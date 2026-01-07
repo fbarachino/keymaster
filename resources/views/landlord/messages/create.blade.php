@@ -6,11 +6,11 @@
 <form method="POST" action="{{ route('landlord.messages.store') }}" class="space-y-4">
     @csrf
 
-    <select name="tenant_id" class="w-full p-2 border rounded">
-        @foreach($tenants as $tenant)
-            <option value="{{ $tenant->id }}">{{ $tenant->name }}</option>
-        @endforeach
-    </select>
+   <select name="tenant_id">
+    @foreach($tenants as $tenant)
+        <option value="{{ $tenant->id }}">{{ $tenant->name }}</option>
+    @endforeach
+</select>
 
     <input type="text" name="subject" placeholder="Oggetto"
            class="w-full p-2 border rounded">
