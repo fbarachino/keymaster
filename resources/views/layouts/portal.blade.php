@@ -18,6 +18,61 @@
                 <a href="{{ route('landlord.properties.index') }}" class="block p-2 hover:bg-gray-200 rounded">Proprietà & Unità</a>
             </div>
         @endif
+            @if(auth()->user()->role === 'tenant')
+        <li>
+            <a href="{{ route('tenant.tickets.index') }}"
+            class="{{ request()->routeIs('tenant.tickets.*') ? 'font-bold text-blue-600' : '' }}">
+                Ticket di manutenzione
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ route('tenant.messages.index') }}"
+            class="{{ request()->routeIs('tenant.messages.*') ? 'font-bold text-blue-600' : '' }}">
+                Messaggi
+            </a>
+        </li>
+    @endif
+    @if(auth()->user()->role === 'landlord')
+    <li>
+        <a href="{{ route('landlord.tickets.index') }}"
+           class="{{ request()->routeIs('landlord.tickets.*') ? 'font-bold text-blue-600' : '' }}">
+            Ticket di manutenzione
+        </a>
+    </li>
+
+    <li>
+        <a href="{{ route('landlord.maintenance.dashboard') }}"
+           class="{{ request()->routeIs('landlord.maintenance.dashboard') ? 'font-bold text-blue-600' : '' }}">
+            Dashboard manutenzioni
+        </a>
+    </li>
+
+    <li>
+        <a href="{{ route('landlord.messages.index') }}"
+           class="{{ request()->routeIs('landlord.messages.*') ? 'font-bold text-blue-600' : '' }}">
+            Messaggi
+        </a>
+    </li>
+@endif
+@if(auth()->user()->role === 'landlord')
+    <li>
+        <a href="{{ route('landlord.maintenance.dashboard') }}"
+           class="{{ request()->routeIs('landlord.maintenance.dashboard') ? 'font-bold text-blue-600' : '' }}">
+            Dashboard manutenzioni
+        </a>
+    </li>
+@endif
+@if(auth()->user()->role === 'landlord')
+    <li>
+        <a href="{{ route('landlord.tenants.index') }}"
+           class="{{ request()->routeIs('landlord.tenants.*') ? 'font-bold text-blue-600' : '' }}">
+            Inquilini & Contratti
+        </a>
+    </li>
+@endif
+
+
     @endsection
 
     @section('scripts')

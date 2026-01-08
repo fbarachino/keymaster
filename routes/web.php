@@ -8,8 +8,10 @@ use App\Http\Controllers\Web\Tenant\TenantLeaseController;
 use App\Http\Controllers\Web\Tenant\TenantPaymentController;
 use App\Http\Controllers\Web\Tenant\TenantMessageController;
 use App\Http\Controllers\Web\Tenant\TenantDocumentsController;
-use App\Http\Controllers\Web\Tenant\TicketController as TenantTicketController;
+use App\Http\Controllers\Web\Tenant\TicketController;
 use App\Http\Controllers\Web\Tenant\LeaseSignatureController;
+use App\Http\Controllers\Web\Tenant\TenantTicketController;
+
 
 // LANDLORD CONTROLLERS
 use App\Http\Controllers\Web\Landlord\LandlordDashboardController;
@@ -20,6 +22,9 @@ use App\Http\Controllers\Web\Landlord\PaymentCrudController;
 use App\Http\Controllers\Web\Landlord\LandlordMessageController;
 use App\Http\Controllers\Web\Landlord\TenantManagementController;
 use App\Http\Controllers\Web\Landlord\MaintenanceDashboardController;
+use App\Http\Controllers\Web\Landlord\LandlordTicketController;
+use App\Http\Controllers\Web\Landlord\LandlordTicketDashboardController;
+use App\Http\Controllers\Web\Landlord\LandlordTenantController;
 
 // COMMON
 use App\Http\Controllers\Web\MessagesController;
@@ -45,6 +50,12 @@ Route::middleware(['auth'])->group(function () {
     //  TENANT PORTAL
     // -----------------------------------------------------
     Route::middleware(EnsureTenant::class)->prefix('tenant')->name('tenant.')->group(function () {
+
+        // Ticket
+        Route::get('/tickets', [TenantTicketController::class, 'index'])->name('tickets.index');
+        Route::get('/tickets/create', [TenantTicketController::class, 'create'])->name('tickets.create');
+        Route::post('/tickets', [TenantTicketController::class, 'store'])->name('tickets.store');
+        Route::get('/tickets/{ticket}', [TenantTicketController::class, 'show'])->name('tickets.show');
 
         // Dashboard
         Route::get('dashboard', [TenantDashboardController::class, 'index'])
@@ -86,6 +97,15 @@ Route::middleware(['auth'])->group(function () {
     //  LANDLORD PORTAL
     // -----------------------------------------------------
     Route::middleware(EnsureLandlord::class)->prefix('landlord')->name('landlord.')->group(function () {
+
+        // Dashboard manutenzioni
+        Route::get('/maintenance/dashboard', [LandlordTicketDashboardController::class, 'index']) ->name('maintenance.dashboard');
+
+        // Ticket
+        Route::get('/tickets', [LandlordTicketController::class, 'index'])->name('tickets.index');
+        Route::get('/tickets/{ticket}', [LandlordTicketController::class, 'show'])->name('tickets.show');
+        Route::post('/tickets/{ticket}/status', [LandlordTicketController::class, 'updateStatus'])->name('tickets.status');
+        Route::post('/tickets/{ticket}/notes', [LandlordTicketController::class, 'addNote'])->name('tickets.notes');
 
         // Dashboard
         Route::get('dashboard', [LandlordDashboardController::class, 'index'])
@@ -149,9 +169,13 @@ Route::middleware(['auth'])->group(function () {
         // Dashboard manutenzioni
         Route::get('maintenance', [MaintenanceDashboardController::class, 'index'])
             ->name('maintenance.dashboard');
-    });
 
+        // Gestione inquilini
+    Route::get('/tenants', [LandlordTenantController::class, 'index']) ->name('tenants.index');
+    Route::get('/tenants/{tenant}/assign', [LandlordTenantController::class, 'assignForm']) ->name('tenants.assignForm');
+    Route::post('/tenants/{tenant}/assign', [LandlordTenantController::class, 'assignStore']) ->name('tenants.assignStore');
 
+});
     // -----------------------------------------------------
     //  FUNZIONALITÀ COMUNI
     // -----------------------------------------------------
