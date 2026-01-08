@@ -91,8 +91,8 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('tickets', TenantTicketController::class)
             ->only(['index', 'create', 'store', 'show']);
 
-            Route::get('/tenant/leases/{lease}/sign', [\App\Http\Controllers\Web\Tenant\TenantLeaseSignController::class, 'show']) ->name('tenant.leases.sign.show');
-            Route::post('/tenant/leases/{lease}/sign', [\App\Http\Controllers\Web\Tenant\TenantLeaseSignController::class, 'sign']) ->name('tenant.leases.sign.perform');
+            Route::get('/tenant/leases/{lease}/sign', [\App\Http\Controllers\Web\Tenant\TenantLeaseSignController::class, 'show']) ->name('leases.sign.show');
+            Route::post('/tenant/leases/{lease}/sign', [\App\Http\Controllers\Web\Tenant\TenantLeaseSignController::class, 'sign']) ->name('leases.sign.perform');
     });
 
 
@@ -179,7 +179,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tenants', [LandlordTenantController::class, 'index']) ->name('tenants.index');
     Route::get('/tenants/{tenant}/assign', [LandlordTenantController::class, 'assignForm']) ->name('tenants.assignForm');
     Route::post('/tenants/{tenant}/assign', [LandlordTenantController::class, 'assignStore']) ->name('tenants.assignStore');
-        Route::get('/landlord/leases/{lease}/pdf', [\App\Http\Controllers\Web\Landlord\LandlordLeasePdfController::class, 'show'])->name('landlord.leases.pdf');
+    Route::get('/landlord/leases/{lease}/pdf', [\App\Http\Controllers\Web\Landlord\LandlordLeasePdfController::class, 'show'])->name('leases.pdf');
 
 });
     // -----------------------------------------------------

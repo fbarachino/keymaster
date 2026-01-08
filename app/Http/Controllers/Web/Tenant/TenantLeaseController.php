@@ -25,7 +25,7 @@ class TenantLeaseController extends Controller
             ->with('unit.property')
             ->orderByDesc('start_date')
             ->get();
-         return view('tenant.leases.index', compact('leases')); }
+         return view('tenant.leases.index', compact('leases'));
     }
 
     public function show(Request $request, Lease $lease)
