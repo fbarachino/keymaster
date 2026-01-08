@@ -16,6 +16,8 @@ class LandlordLeaseController extends Controller
         $lease->update([
             'signed_by_landlord_at' => now(),
         ]);
+
+        $lease->refresh();
     // INVIO EMAIL AL TENANT
     Mail::to($lease->tenant->email)
         ->send(new \App\Mail\LeaseSignedByLandlord($lease));

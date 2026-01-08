@@ -19,15 +19,18 @@ class TenantLeaseSignController extends Controller
     public function sign(Request $request, Lease $lease)
     {
         abort_if($lease->tenant_id !== auth()->id(), 403);
-
+        $timestamp = now()->format('Y-m-d H:i:s');
         $request->validate([
             'accept' => 'accepted',
         ]);
 
         $lease->update([
-            'signed_by_tenant_at' => now(),
+            'signed_by_tenant_at' => $timestamp,
         ]);
 
+        $lease->refresh();
+
+        //dd($lease);
         // INVIO EMAIL AL LANDLORD
         Mail::to($lease->unit->property->landlord->email)
             ->send(new \App\Mail\LeaseSignedByTenant($lease));

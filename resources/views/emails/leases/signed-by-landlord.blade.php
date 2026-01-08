@@ -11,8 +11,4 @@
 <p>Data firma: {{ $lease->signed_by_landlord_at->format('d/m/Y H:i') }}</p>
 
 <p>Accedi al gestionale per visualizzare il contratto.</p>
-<p>
-    <a href="{{ route('landlord.leases.show', $lease) }}">
-        Visualizza contratto
-    </a>
-</p>
+

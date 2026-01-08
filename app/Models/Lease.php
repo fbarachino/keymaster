@@ -15,6 +15,9 @@ class Lease extends Model
         'rent_amount',
         'deposit_amount',
         'notes',
+        'signed_by_tenant_at',
+        'signed_by_landlord_at',
+        'signature_token',
     ];
 
     protected $casts = [ 'start_date' => 'date', 'end_date' => 'date', 'signed_by_tenant_at' => 'datetime', 'signed_by_landlord_at' => 'datetime', ];
