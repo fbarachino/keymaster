@@ -90,6 +90,9 @@ Route::middleware(['auth'])->group(function () {
         // Ticket manutenzione
         Route::resource('tickets', TenantTicketController::class)
             ->only(['index', 'create', 'store', 'show']);
+
+            Route::get('/tenant/leases/{lease}/sign', [\App\Http\Controllers\Web\Tenant\TenantLeaseSignController::class, 'show']) ->name('tenant.leases.sign.show');
+            Route::post('/tenant/leases/{lease}/sign', [\App\Http\Controllers\Web\Tenant\TenantLeaseSignController::class, 'sign']) ->name('tenant.leases.sign.perform');
     });
 
 
@@ -133,6 +136,8 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('properties/{property}/units/{unit}', [UnitCrudController::class, 'destroy'])
             ->name('units.destroy');
 
+        Route::get('/units/available', [\App\Http\Controllers\Web\Landlord\LandlordUnitController::class, 'available']) ->name('units.available');
+
         // Upload foto unità
         Route::post('properties/{property}/units/{unit}/photos',
             [UnitCrudController::class, 'uploadPhotos'])
@@ -174,6 +179,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tenants', [LandlordTenantController::class, 'index']) ->name('tenants.index');
     Route::get('/tenants/{tenant}/assign', [LandlordTenantController::class, 'assignForm']) ->name('tenants.assignForm');
     Route::post('/tenants/{tenant}/assign', [LandlordTenantController::class, 'assignStore']) ->name('tenants.assignStore');
+        Route::get('/landlord/leases/{lease}/pdf', [\App\Http\Controllers\Web\Landlord\LandlordLeasePdfController::class, 'show'])->name('landlord.leases.pdf');
 
 });
     // -----------------------------------------------------

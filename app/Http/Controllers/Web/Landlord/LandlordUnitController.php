@@ -14,4 +14,17 @@ class LandlordUnitController extends Controller
 
         return $unit->load(['property', 'lease.tenant']);
     }
+
+    public function available(Request $request)
+    {
+        $landlordId = $request->user()->id;
+        $units = Unit::whereHas('property', function ($q) use ($landlordId) {
+            $q->where('landlord_id', $landlordId);
+        })
+            ->whereDoesntHave('leases') // nessun contratto attivo
+            ->with('property')
+            ->get();
+
+        return view('landlord.units.available', compact('units'));
+    }
 }

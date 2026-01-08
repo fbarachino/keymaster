@@ -17,6 +17,8 @@ class Lease extends Model
         'notes',
     ];
 
+    protected $casts = [ 'start_date' => 'date', 'end_date' => 'date', 'signed_by_tenant_at' => 'datetime', 'signed_by_landlord_at' => 'datetime', ];
+
     public function tenant()
     {
         return $this->belongsTo(User::class, 'tenant_id');

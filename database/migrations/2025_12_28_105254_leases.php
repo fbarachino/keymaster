@@ -20,6 +20,9 @@ return new class extends Migration {
         $table->decimal('deposit_amount', 10, 2)->nullable();
 
         $table->text('notes')->nullable();
+        $table->timestamp('signed_by_tenant_at')->nullable();
+        $table->timestamp('signed_by_landlord_at')->nullable();
+        $table->string('signature_token')->nullable()->unique();
 
         $table->timestamps();
 

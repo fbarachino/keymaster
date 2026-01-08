@@ -3,25 +3,30 @@
 @section('content')
 <h1 class="text-2xl font-bold mb-6">Firma contratto</h1>
 
-<canvas id="signature" class="border w-full h-64 bg-white"></canvas>
+<div class="bg-white p-4 shadow rounded space-y-4">
+    <p><strong>Unità:</strong> {{ $lease->unit->property->name }} — {{ $lease->unit->name }}</p>
+    <p><strong>Periodo:</strong> {{ $lease->start_date->format('d/m/Y') }}
+        @if($lease->end_date) - {{ $lease->end_date->format('d/m/Y') }} @endif
+    </p>
+    <p><strong>Canone:</strong> € {{ number_format($lease->rent_amount, 2, ',', '.') }}</p>
 
-<button id="clear" class="mt-2 bg-gray-500 text-white px-4 py-2 rounded">Pulisci</button>
+    <hr>
 
-<form method="POST" action="{{ route('tenant.leases.sign', $lease) }}" class="mt-4">
-    @csrf
-    <input type="hidden" name="signature" id="signature_input">
-    <button class="bg-blue-600 text-white px-4 py-2 rounded">Firma contratto</button>
-</form>
+    <p class="text-sm text-gray-700">
+        Confermando, dichiari di aver letto, compreso e accettato tutte le clausole del contratto.
+    </p>
 
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-<script>
-    const canvas = document.getElementById('signature');
-    const signaturePad = new SignaturePad(canvas);
+    <form method="POST" action="{{ route('tenant.leases.sign.perform', $lease) }}" class="space-y-4">
+        @csrf
 
-    document.querySelector('form').addEventListener('submit', function () {
-        document.getElementById('signature_input').value = signaturePad.toDataURL();
-    });
+        <label class="flex items-center gap-2">
+            <input type="checkbox" name="accept">
+            Confermo di accettare il contratto.
+        </label>
 
-    document.getElementById('clear').onclick = () => signaturePad.clear();
-</script>
+        <button class="bg-green-600 text-white px-4 py-2 rounded">
+            Firma digitalmente
+        </button>
+    </form>
+</div>
 @endsection
