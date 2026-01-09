@@ -26,7 +26,7 @@
                 </a>
                 @if(!$lease->signed_by_tenant_at)
                     <a href="{{ route('tenant.leases.sign.show', $lease) }}"
-                    class="bg-green-600 text-white px-3 py-1 rounded ml-2">
+                    class="button btn-primary rounded">
                         Firma digitalmente
                     </a>
                 @else

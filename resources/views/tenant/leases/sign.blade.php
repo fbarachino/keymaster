@@ -24,7 +24,7 @@
             Confermo di accettare il contratto.
         </label>
 
-        <button class="bg-green-600 text-white px-4 py-2 rounded">
+        <button class="button btn-primary rounded">
             Firma digitalmente
         </button>
     </form>

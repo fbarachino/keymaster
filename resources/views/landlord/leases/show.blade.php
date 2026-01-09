@@ -20,7 +20,7 @@
     @if(!$lease->signed_by_landlord_at)
     <form method="POST" action="{{ route('landlord.leases.sign', $lease) }}" class="inline">
         @csrf
-        <button class="bg-blue-600 text-white px-3 py-1 rounded">
+        <button class="btn-primary rounded">
             Firma come locatore
         </button>
     </form>
