@@ -30,6 +30,8 @@ class Unit extends Model
         return $this->hasOne(Lease::class);
     }
 
+    public function leases() { return $this->hasMany(\App\Models\Lease::class); }
+
     public function photos()
     {
         return $this->hasMany(UnitPhoto::class);

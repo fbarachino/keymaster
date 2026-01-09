@@ -110,6 +110,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/tickets/{ticket}/status', [LandlordTicketController::class, 'updateStatus'])->name('tickets.status');
         Route::post('/tickets/{ticket}/notes', [LandlordTicketController::class, 'addNote'])->name('tickets.notes');
 
+         Route::get('/messages/create', [LandlordMessageController::class, 'create']) ->name('messages.create');
+         Route::post('/messages', [LandlordMessageController::class, 'store']) ->name('messages.store');
+         Route::get('/messages', [LandlordMessageController::class, 'index']) ->name('messages.index');
+         Route::get('/messages/{message}', [LandlordMessageController::class, 'show']) ->name('messages.show');
+
         // Dashboard
         Route::get('dashboard', [LandlordDashboardController::class, 'index'])
             ->name('dashboard');

@@ -9,7 +9,7 @@
 
 <div class="mt-6 space-y-4">
     @foreach($tickets as $ticket)
-        <div class="bg-white p-4 shadow rounded">
+        <x-adminlte-card title="Ticket: TK{{ $ticket->id }} - {{ $ticket->title }}" theme="dark" icon="fas fa-ticket-alt" class="mb-6">
             <h2 class="text-xl font-semibold">{{ $ticket->title }}</h2>
             <p class="text-gray-600">{{ $ticket->unit->property->name }} — {{ $ticket->unit->name }}</p>
 
@@ -20,7 +20,7 @@
             <a href="{{ route('tenant.tickets.show', $ticket) }}" class="text-blue-600 mt-3 inline-block">
                 Apri ticket
             </a>
-        </div>
+        </x-adminlte-card>
     @endforeach
 </div>
 @endsection

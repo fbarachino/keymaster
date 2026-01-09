@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class LandlordMessageController extends Controller
 {
-    public function index(Request $request)
+   public function index(Request $request)
     {
         $messages = Message::where('landlord_id', $request->user()->id)
             ->whereNull('parent_id')
@@ -19,7 +19,7 @@ class LandlordMessageController extends Controller
         return view('landlord.messages.index', compact('messages'));
     }
 
-    public function create()
+    /* public function create(Request $request)
     {
         $tenants = User::where('role', 'tenant')->get();
         return view('landlord.messages.create', compact('tenants'));
@@ -54,5 +54,46 @@ class LandlordMessageController extends Controller
         abort_if($message->landlord_id !== auth()->id(), 403);
 
         return view('landlord.messages.show', compact('message'));
+    }*/
+
+    public function create(Request $request)
+    {
+        $landlord = $request->user();
+
+        // Tutti i tenant che hanno un contratto con questo landlord
+        $tenants = User::where('role', 'tenant')
+            ->whereHas('leases.unit.property', function ($q) use ($landlord) {
+                $q->where('landlord_id', $landlord->id);
+            })
+            ->get();
+
+        // Proprietà del landlord
+        $properties = $landlord->properties()->with('units.leases.tenant')->get();
+
+        return view('landlord.messages.create', compact('tenants', 'properties'));
     }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'subject' => 'nullable|string',
+            'message' => 'required|string',
+            'tenant_ids' => 'required|array',
+            'tenant_ids.*' => 'exists:users,id',
+        ]);
+
+        foreach ($data['tenant_ids'] as $tenantId) {
+            Message::create([
+                'tenant_id' => $tenantId,
+                'landlord_id' => auth()->id(),
+                'subject' => $data['subject'],
+                'message' => $data['message'],
+                'sender' => 'landlord',
+            ]);
+        }
+
+        return redirect()->route('landlord.messages.index')
+            ->with('success', 'Messaggio inviato con successo.');
+    }
+
 }

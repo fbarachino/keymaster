@@ -30,7 +30,12 @@
                 <li><a href="{{ route('landlord.leases.index') }}" class="block p-2 hover:bg-gray-200 rounded">Contratti</a></li>
                 <li><a href="{{ route('landlord.messages.index') }}" class="block p-2 hover:bg-gray-200 rounded">Messaggi</a></li>
                 <li><a href="{{ route('landlord.properties.index') }}" class="block p-2 hover:bg-gray-200 rounded">Proprietà & Unità</a></li>
-
+<li>
+        <a href="{{ route('landlord.messages.create') }}"
+           class="{{ request()->routeIs('landlord.messages.create') ? 'font-bold text-blue-600' : '' }}">
+            Nuovo messaggio
+        </a>
+    </li>
                 <li>
         <a href="{{ route('landlord.tickets.index') }}"
            class="{{ request()->routeIs('landlord.tickets.*') ? 'font-bold text-blue-600' : '' }}">

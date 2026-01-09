@@ -27,10 +27,15 @@ class TenantMessageController extends Controller
         if ($tenant->leases()->count() === 0) {
             $landlords = User::where('role', 'landlord')->get();
             return view('tenant.messages.create', compact('landlords'));
+        } else {
+            $landlords = $tenant->leases()->with('unit.property')->get()
+                ->map(function ($lease) {
+                    return $lease->unit->property->landlord;
+                })->unique('id')    ;
         }
 
         // Se ha un contratto → nessuna scelta
-        return view('tenant.messages.create');
+        return view('tenant.messages.create', compact('landlords'));
     }
 
 
