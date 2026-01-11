@@ -19,11 +19,11 @@
                 @if($lease->deposit_amount)
                     <strong>Deposito:</strong> € {{ number_format($lease->deposit_amount, 2, ',', '.') }}
                 @endif
-                <a href="{{ route('landlord.leases.pdf', $lease) }}"
-                class="text-blue-600 underline ml-2"
-                target="_blank">
-                    Scarica PDF
-                </a>
+                <a href="{{ route('tenant.leases.pdf', $lease) }}"
+   class="text-blue-600 underline ml-2"
+   target="_blank">
+    Scarica PDF
+</a>
                 @if(!$lease->signed_by_tenant_at)
                     <a href="{{ route('tenant.leases.sign.show', $lease) }}"
                     class="button btn-primary rounded">

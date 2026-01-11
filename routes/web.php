@@ -87,6 +87,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('documents', [TenantDocumentsController::class, 'index'])
             ->name('documents.index');
 
+             Route::get('/leases/{lease}/pdf', [\App\Http\Controllers\Web\Tenant\TenantLeasePdfController::class, 'show']) ->name('leases.pdf');
+
         // Ticket manutenzione
         Route::resource('tickets', TenantTicketController::class)
             ->only(['index', 'create', 'store', 'show']);

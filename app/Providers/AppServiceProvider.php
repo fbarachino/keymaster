@@ -21,5 +21,7 @@ class AppServiceProvider extends ServiceProvider
     {
         //
        // \URL::forceScheme('https');
+       // injecting menu based to roles
+
     }
 }

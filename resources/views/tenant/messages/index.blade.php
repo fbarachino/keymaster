@@ -4,10 +4,10 @@
 <h1 class="text-2xl font-bold mb-6">I tuoi messaggi</h1>
 
 <a href="{{ route('tenant.messages.create') }}"
-   class="bg-blue-600 text-white px-4 py-2 rounded">
+   class="btn btn-primary mb-4">
     Nuovo messaggio
 </a>
-
+<x-adminlte-card theme="purple" icon="fas fa-lg fa-envelope" title="Messaggi recenti">
 <div class="mt-6 space-y-4">
     @foreach($messages as $message)
         <div class="bg-white p-4 shadow rounded">
@@ -21,4 +21,5 @@
         </div>
     @endforeach
 </div>
+</x-adminlte-card>
 @endsection

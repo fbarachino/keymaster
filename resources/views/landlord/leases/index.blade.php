@@ -30,6 +30,7 @@
             <td class="p-3">€ {{ number_format($lease->rent_amount, 2, ',', '.') }}</td>
             <td class="p-3 text-center">
                 <a href="{{ route('landlord.leases.edit', $lease) }}" class="text-blue-600">Modifica</a>
+
             </td>
         </tr>
         @endforeach

@@ -13,13 +13,14 @@
             <x-adminlte-info-box title="Messaggi non letti" text="{{ $unread }}" icon="fas fa-lg fa-file" icon-theme="purple"/>
         </div>
         <div class="col-md-3">
-            <x-adminlte-info-box title="Ticket aperti" text="{{ $openTickets }}" icon="fas fa-lg fa-file" icon-theme="purple" url="{{ route('tenant.tickets.index') }}"/>
+            <x-adminlte-info-box title="Ticket aperti" text="{{ $openTickets }}" icon="fas fa-lg fa-ticket-alt" icon-theme="purple" url="{{ route('tenant.tickets.index') }}"/>
         </div>
 
 </div>
 <div class="row">
-    <div class="col-md-6 bg-white shadow">
-    <h2 class="text-xl font-semibold mb-4">Ultime note ai ticket</h2>
+    <div class="col">
+    {{-- <h2 class="text-xl font-semibold mb-4">Ultime note ai ticket</h2> --}}
+    <x-adminlte-card theme="purple" icon="fas fa-lg fa-comments" title="Note recenti sui ticket">
 
     @forelse($ticketNotes as $note)
         <div class="border-b pb-2 mb-2">
@@ -36,10 +37,11 @@
     <a href="{{ route('tenant.tickets.index') }}" class="text-blue-600 underline mt-2 inline-block">
         Vai ai ticket
     </a>
-</div>
-<div class="bg-white col shadow">
-    <h2 class="text-xl font-semibold mb-4">Messaggi dal landlord</h2>
-
+    </x-adminlte-card>
+    </div>
+<div class="col">
+    {{-- <h2 class="text-xl font-semibold mb-4">Messaggi dal landlord</h2> --}}
+    <x-adminlte-card theme="purple" icon="fas fa-lg fa-envelope" title="Messaggi recenti">
     @forelse($messages as $msg)
         <div class="border-b pb-2 mb-2">
             <p class="font-semibold">{{ $msg->subject ?? 'Senza oggetto' }}</p>
@@ -53,6 +55,7 @@
     <a href="{{ route('tenant.messages.index') }}" class="text-blue-600 underline mt-2 inline-block">
         Vai ai messaggi
     </a>
+    </x-adminlte-card>
 </div>
 </div>
 @endsection

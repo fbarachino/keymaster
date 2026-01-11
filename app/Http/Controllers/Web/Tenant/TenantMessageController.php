@@ -41,6 +41,7 @@ class TenantMessageController extends Controller
 
     public function store(Request $request)
 {
+   // dd($request->all());
     $tenant = $request->user();
 
     // Tenant con contratto → landlord automatico
@@ -58,8 +59,9 @@ class TenantMessageController extends Controller
         'subject' => 'nullable|string',
         'message' => 'required|string',
         'parent_id' => 'nullable|exists:messages,id',
+        'tenant_id' => 'nullable|exists:users,id',
     ]);
-
+// dd(($request->all()));
     Message::create([
         'tenant_id' => $tenant->id,
         'landlord_id' => $landlordId,

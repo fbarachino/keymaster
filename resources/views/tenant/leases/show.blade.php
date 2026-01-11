@@ -15,6 +15,12 @@
         <p><strong>Firma inquilino:</strong></p>
         <img src="{{ asset('storage/' . $lease->signature_path) }}" width="200">
     @endif
+
+    <a href="{{ route('tenant.leases.pdf', $lease) }}"
+   class="bg-gray-700 text-white px-3 py-1 rounded"
+   target="_blank">
+    Scarica PDF
+</a>
 </div>
 
 <a href="{{ route('tenant.leases.index') }}" class="text-blue-600 mt-4 inline-block">

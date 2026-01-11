@@ -14,13 +14,14 @@
 
 <form method="POST" action="{{ route('landlord.messages.store') }}" class="space-y-4">
     @csrf
-    <input type="hidden" name="tenant_id" value="{{ $message->tenant_id }}">
+    <input type="hidden" name="tenant_ids[]" value="{{ $message->tenant_id }}">
     <input type="hidden" name="parent_id" value="{{ $message->id }}">
+    <input type="hidden" name="subject" value="Re: {{ $message->subject }}">
 
     <textarea name="message" placeholder="Scrivi una risposta..."
-              class="w-full p-2 border rounded h-32"></textarea>
+              class="form-control"></textarea>
 
-    <button class="bg-blue-600 text-white px-4 py-2 rounded">
+    <button class="btn btn-primary">
         Rispondi
     </button>
 </form>

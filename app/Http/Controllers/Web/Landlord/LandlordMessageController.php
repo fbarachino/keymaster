@@ -47,14 +47,14 @@ class LandlordMessageController extends Controller
 
         return redirect()->route('landlord.messages.index')
             ->with('success', 'Messaggio inviato.');
-    }
+    }*/
 
     public function show(Message $message)
     {
         abort_if($message->landlord_id !== auth()->id(), 403);
-
+        // dd($message);
         return view('landlord.messages.show', compact('message'));
-    }*/
+    }
 
     public function create(Request $request)
     {
@@ -75,6 +75,7 @@ class LandlordMessageController extends Controller
 
     public function store(Request $request)
     {
+//dd($request->all());
         $data = $request->validate([
             'subject' => 'nullable|string',
             'message' => 'required|string',
