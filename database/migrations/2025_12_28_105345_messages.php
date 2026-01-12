@@ -14,9 +14,9 @@ return new class extends Migration
             // Relazioni
             $table->unsignedBigInteger('tenant_id');
             $table->unsignedBigInteger('landlord_id');
-
+            $table->unsignedBigInteger('thread_id')->nullable()->after('id');
             // Thread (risposte)
-            $table->unsignedBigInteger('parent_id')->nullable();
+            //$table->unsignedBigInteger('parent_id')->nullable();
 
             // Contenuto
             $table->string('subject')->nullable();
@@ -24,13 +24,13 @@ return new class extends Migration
 
             // Chi ha inviato il messaggio
             $table->enum('sender', ['tenant', 'landlord']);
-
+            $table->foreign('tenant_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('landlord_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
 
             // Foreign keys
-            $table->foreign('tenant_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('landlord_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('parent_id')->references('id')->on('messages')->onDelete('cascade');
+
+            //$table->foreign('parent_id')->references('id')->on('messages')->onDelete('cascade');
         });
     }
 

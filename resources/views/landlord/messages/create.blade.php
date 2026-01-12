@@ -10,7 +10,7 @@
     <div class="col mr-4 mb-4">
     <h2 class="text-lg font-semibold">Destinatari</h2>
 
-    <select name="tenant_ids[]" multiple class="form-control">
+    <select name="tenant_ids" multiple class="form-control">
         @foreach($tenants as $tenant)
             <option value="{{ $tenant->id }}">
                 {{ $tenant->name }} ({{ $tenant->email }})

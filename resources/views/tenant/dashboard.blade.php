@@ -42,9 +42,10 @@
 <div class="col">
     {{-- <h2 class="text-xl font-semibold mb-4">Messaggi dal landlord</h2> --}}
     <x-adminlte-card theme="purple" icon="fas fa-lg fa-envelope" title="Messaggi recenti">
-    @forelse($messages as $msg)
+    @forelse($threads as $msg)
+
         <div class="border-b pb-2 mb-2">
-            <p class="font-semibold">{{ $msg->subject ?? 'Senza oggetto' }}</p>
+            <p class="font-semibold"><strong>{{ $msg->subject ?? 'Senza oggetto' }}</strong></p>
             <p class="text-gray-700">{{ Str::limit($msg->message, 80) }}</p>
             <p class="text-sm text-gray-500">{{ $msg->created_at->format('d/m/Y H:i') }}</p>
         </div>

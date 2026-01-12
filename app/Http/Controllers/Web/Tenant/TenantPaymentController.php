@@ -8,17 +8,20 @@ use App\Http\Controllers\Controller;
 
 class TenantPaymentController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        return Payment::whereHas('lease', fn($q) =>
-            $q->where('tenant_id', $request->user()->id)
-        )->get();
+        $payments = Payment::where('tenant_id', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('tenant.payments.index', compact('payments'));
     }
 
-    public function show(Request $request, Payment $payment)
+    public function show(Payment $payment)
     {
-        abort_if($payment->lease->tenant_id !== $request->user()->id, 403);
+        abort_if($payment->tenant_id !== auth()->id(), 403);
 
-        return $payment->load('lease.unit.property');
+        return view('tenant.payments.show', compact('payment'));
     }
+
 }

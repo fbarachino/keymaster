@@ -14,6 +14,7 @@ class Message extends Model
         'message',
         'sender',
         'parent_id',
+        'thread_id',
     ];
 
     public function tenant()
@@ -26,7 +27,7 @@ class Message extends Model
         return $this->belongsTo(User::class, 'landlord_id');
     }
 
-    public function parent()
+    /*public function parent()
     {
         return $this->belongsTo(Message::class, 'parent_id');
     }
@@ -34,5 +35,11 @@ class Message extends Model
     public function replies()
     {
         return $this->hasMany(Message::class, 'parent_id');
+    }*/
+
+    public function thread()
+    {
+        return $this->belongsTo(Thread::class);
     }
+
 }

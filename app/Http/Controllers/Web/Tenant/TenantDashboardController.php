@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use App\Models\TicketNote;
+use App\Models\Thread;
 
 class TenantDashboardController extends Controller
 {
@@ -32,9 +33,9 @@ class TenantDashboardController extends Controller
              $q->where('tenant_id', $tenant->id);
              }) ->where('is_internal', false) ->latest() ->take(5) ->get();
         // Messaggi ricevuti dal landlord
-        $messages = Message::where('tenant_id', $tenant->id) ->where('sender', 'landlord') ->latest() ->take(5) ->get();
-
-        return view('tenant.dashboard', compact( 'openTickets', 'ticketNotes', 'messages', 'leases', 'pending', 'unread'));
+        //$messages = Message::where('tenant_id', $tenant->id) ->where('sender', 'landlord') ->latest() ->take(5) ->get();
+        $threads = Thread::where('tenant_id', auth()->id()) ->latest() ->take(5) ->get();
+        return view('tenant.dashboard', compact( 'openTickets', 'ticketNotes', 'threads', 'leases', 'pending', 'unread'));
 
         // return view('tenant.dashboard', compact('leases', 'pending', 'unread'));
     }

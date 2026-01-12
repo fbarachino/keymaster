@@ -57,6 +57,15 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/tickets', [TenantTicketController::class, 'store'])->name('tickets.store');
         Route::get('/tickets/{ticket}', [TenantTicketController::class, 'show'])->name('tickets.show');
 
+        // Messaggi
+        Route::resource('messages', TenantMessageController::class)
+            ->only(['index', 'create', 'store',]);
+
+        Route::get('/messages/{thread}', [TenantMessageController::class, 'show']) ->name('messages.show');
+        Route::get('/messages/create', [TenantMessageController::class, 'create'])->name('messages.create');
+        Route::post('/messages/{thread}/reply', [TenantMessageController::class, 'reply'])->name('messages.reply');
+
+
         // Dashboard
         Route::get('dashboard', [TenantDashboardController::class, 'index'])
             ->name('dashboard');
@@ -78,10 +87,8 @@ Route::middleware(['auth'])->group(function () {
         // Pagamenti
         Route::get('payments', [TenantPaymentController::class, 'index'])
             ->name('payments.index');
+        Route::get('/payments/{payment}', [TenantPaymentController::class, 'show']) ->name('payments.show');
 
-        // Messaggi
-        Route::resource('messages', TenantMessageController::class)
-            ->only(['index', 'create', 'store', 'show']);
 
         // Documenti unità
         Route::get('documents', [TenantDocumentsController::class, 'index'])
@@ -112,10 +119,18 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/tickets/{ticket}/status', [LandlordTicketController::class, 'updateStatus'])->name('tickets.status');
         Route::post('/tickets/{ticket}/notes', [LandlordTicketController::class, 'addNote'])->name('tickets.notes');
 
-         Route::get('/messages/create', [LandlordMessageController::class, 'create']) ->name('messages.create');
+         /*Route::get('/messages/create', [LandlordMessageController::class, 'create']) ->name('messages.create');
          Route::post('/messages', [LandlordMessageController::class, 'store']) ->name('messages.store');
          Route::get('/messages', [LandlordMessageController::class, 'index']) ->name('messages.index');
-         Route::get('/messages/{message}', [LandlordMessageController::class, 'show']) ->name('messages.show');
+         Route::get('/messages/{message}', [LandlordMessageController::class, 'show']) ->name('messages.show');*/
+
+                 // Messaggi
+        Route::resource('messages', LandlordMessageController::class)
+            ->only(['index']);
+        Route::get('/messages/create', [LandlordMessageController::class, 'create'])->name('messages.create');
+        Route::post('/messages', [LandlordMessageController::class, 'store'])->name('messages.store');
+        Route::get('/messages/{thread}', [LandlordMessageController::class, 'show'])->name('messages.show');
+        Route::post('/messages/{thread}/reply', [LandlordMessageController::class, 'reply'])->name('messages.reply');
 
         // Dashboard
         Route::get('dashboard', [LandlordDashboardController::class, 'index'])
@@ -167,9 +182,7 @@ Route::middleware(['auth'])->group(function () {
         // Pagamenti
         Route::resource('payments', PaymentCrudController::class);
 
-        // Messaggi
-        Route::resource('messages', LandlordMessageController::class)
-            ->only(['index', 'create', 'store', 'show']);
+
 
         // Creazione inquilino + assegnazione contratto
         Route::get('tenants/create', [TenantManagementController::class, 'create'])

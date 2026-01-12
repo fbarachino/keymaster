@@ -4,22 +4,24 @@ namespace App\Http\Controllers\Web\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Message;
+use App\Models\Thread;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TenantMessageController extends Controller
 {
-    public function index(Request $request)
-    {
-        $messages = Message::where('tenant_id', $request->user()->id)
-            ->whereNull('parent_id')
-            ->latest()
-            ->get();
+public function index(Request $request)
+{
+    $threads = Thread::where('tenant_id', $request->user()->id)
+        ->latest()
+        ->get();
 
-        return view('tenant.messages.index', compact('messages'));
-    }
+    return view('tenant.messages.index', compact('threads'));
+}
 
-    public function create(Request $request)
+
+    /*public function create(Request $request)
     {
         $tenant = $request->user();
 
@@ -36,10 +38,45 @@ class TenantMessageController extends Controller
 
         // Se ha un contratto → nessuna scelta
         return view('tenant.messages.create', compact('landlords'));
+    }*/
+ /*       public function create()
+{
+    $tenant = Auth::user();
+
+    // Se il tenant ha un contratto → usa il suo landlord
+    $lease = $tenant->leases()->with('unit.property.landlord')->first();
+
+    if ($lease) {
+        $landlord = $lease->unit->property->landlord;
+    } else {
+        // Landlord predefinito (il primo landlord del sistema)
+        /*$landlord = User::where('role', 'landlord')->first();*/
+        /*$landlords = User::where('role', 'landlord')->get();
+            //return view('tenant.messages.create', compact('landlords'));
     }
 
+    return view('tenant.messages.create', compact('landlord'));
+} */
 
-    public function store(Request $request)
+public function create()
+{
+    $tenant = auth()->user();
+
+    // Se il tenant ha un contratto → usa il suo landlord
+    $lease = $tenant->leases()->with('unit.property.landlord')->first();
+
+    if ($lease) {
+        $landlords = $lease->unit->property->landlord;
+    } else {
+        // Landlord predefinito
+        $landlords = User::where('role', 'landlord')->first();
+    }
+
+    return view('tenant.messages.create', compact('landlords'));
+}
+
+
+   /* public function store(Request $request)
 {
    // dd($request->all());
     $tenant = $request->user();
@@ -73,13 +110,73 @@ class TenantMessageController extends Controller
 
     return redirect()->route('tenant.messages.index')
         ->with('success', 'Messaggio inviato.');
+}*/
+public function store(Request $request)
+{
+    $data = $request->validate([
+        'subject' => 'nullable|string',
+        'message' => 'required|string',
+    ]);
+
+    $tenant = auth()->user();
+
+    // Se il tenant ha un contratto → usa il suo landlord
+    $lease = $tenant->leases()->with('unit.property.landlord')->first();
+
+    if ($lease) {
+        $landlord = $lease->unit->property->landlord;
+    } else {
+        // Landlord predefinito
+        $landlord = User::where('role', 'landlord')->first();
+    }
+
+    // Crea il thread
+    $thread = Thread::create([
+        'tenant_id' => $tenant->id,
+        'landlord_id' => $landlord->id,
+        'subject' => $data['subject'],
+    ]);
+    $thread->refresh();
+    // Primo messaggio
+    Message::create([
+        'thread_id' => $thread->id,
+        'tenant_id' => $tenant->id,
+        'landlord_id' => $landlord->id,
+        'sender' => 'tenant',
+        'message' => $data['message'],
+    ]);
+
+    return redirect()->route('tenant.messages.show', $thread);
 }
 
 
-    public function show(Message $message)
-    {
-        abort_if($message->tenant_id !== auth()->id(), 403);
 
-        return view('tenant.messages.show', compact('message'));
+    public function show(Thread $thread)
+    {
+        abort_if($thread->tenant_id !== auth()->id(), 403);
+
+        $messages = $thread->messages()->orderBy('created_at')->get();
+
+        return view('tenant.messages.show', compact('thread', 'messages'));
     }
+
+    public function reply(Request $request, Thread $thread)
+{
+    abort_if($thread->tenant_id !== auth()->id(), 403);
+
+    $request->validate([
+        'message' => 'required|string',
+    ]);
+
+    Message::create([
+        'thread_id' => $thread->id,
+        'tenant_id' => auth()->id(),
+        'landlord_id' => $thread->landlord_id,
+        'sender' => 'tenant',
+        'message' => $request->message,
+    ]);
+
+    return back();
+}
+
 }
