@@ -1,42 +1,31 @@
 @extends('layouts.portal')
 
 @section('content')
-<h1 class="text-2xl font-bold mb-6">Pagamenti</h1>
+<h1 class="text-2xl font-bold mb-6">Pagamenti ricevuti</h1>
 
 <a href="{{ route('landlord.payments.create') }}"
-   class="bg-blue-600 text-white px-4 py-2 rounded">
-    Nuovo pagamento
+   class="bg-blue-600 text-white px-4 py-2 rounded mb-4 inline-block">
+    Registra nuovo pagamento
 </a>
 
-<table class="w-full mt-6 bg-white shadow rounded">
-    <thead>
-        <tr class="border-b bg-gray-100">
-            <th class="p-3 text-left">Inquilino</th>
-            <th class="p-3 text-left">Unità</th>
-            <th class="p-3 text-left">Scadenza</th>
-            <th class="p-3 text-left">Importo</th>
-            <th class="p-3 text-left">Stato</th>
-            <th class="p-3 text-center">Azioni</th>
-        </tr>
-    </thead>
-
-    <tbody>
+@if($payments->isEmpty())
+    <p class="text-gray-600">Nessun pagamento registrato.</p>
+@else
+    <div class="space-y-4">
         @foreach($payments as $payment)
-        <tr class="border-b">
-            <td class="p-3">{{ $payment->lease->tenant->name }}</td>
-            <td class="p-3">{{ $payment->lease->unit->name }}</td>
-            <td class="p-3">{{ $payment->due_date->format('d/m/Y') }}</td>
-            <td class="p-3">€ {{ number_format($payment->amount, 2, ',', '.') }}</td>
-            <td class="p-3">{{ ucfirst($payment->status) }}</td>
-            <td class="p-3 text-center">
-                <a href="{{ route('landlord.payments.edit', $payment) }}" class="text-blue-600">Modifica</a>
-                <form action="{{ route('landlord.payments.destroy', $payment) }}" method="POST" class="inline">
-                    @csrf @method('DELETE')
-                    <button class="text-red-600 ml-2">Elimina</button>
-                </form>
-            </td>
-        </tr>
+            <div class="p-4 bg-white shadow rounded">
+                <p class="font-semibold">
+                    € {{ number_format($payment->amount, 2, ',', '.') }}
+                </p>
+                <p class="text-sm text-gray-600">
+                    Tenant: {{ $payment->lease->tenant->name }}
+                </p>
+                <p class="text-sm text-gray-600">
+                    Data: {{ $payment->created_at->format('d/m/Y') }}
+                </p>
+
+            </div>
         @endforeach
-    </tbody>
-</table>
+    </div>
+@endif
 @endsection

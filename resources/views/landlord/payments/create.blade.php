@@ -1,30 +1,18 @@
 @extends('layouts.portal')
 
 @section('content')
-<h1 class="text-2xl font-bold mb-6">Nuovo pagamento</h1>
+<h1 class="text-2xl font-bold mb-6">Registra un pagamento</h1>
 
 <form method="POST" action="{{ route('landlord.payments.store') }}" class="space-y-4">
     @csrf
 
     <div>
-        <label class="block font-semibold mb-1">Contratto</label>
-        <select name="lease_id" class="w-full p-2 border rounded">
-            @foreach($leases as $lease)
-                <option value="{{ $lease->id }}">
-                    {{ $lease->tenant->name }} — {{ $lease->unit->property->name }} / {{ $lease->unit->name }}
-                </option>
+        <label class="block font-semibold mb-1">Tenant</label>
+        <select name="tenant_id" class="w-full p-2 border rounded">
+            @foreach($tenants as $tenant)
+                <option value="{{ $tenant->id }}">{{ $tenant->name }}</option>
             @endforeach
         </select>
-    </div>
-
-    <div>
-        <label class="block font-semibold mb-1">Data scadenza</label>
-        <input type="date" name="due_date" class="w-full p-2 border rounded">
-    </div>
-
-    <div>
-        <label class="block font-semibold mb-1">Data pagamento</label>
-        <input type="date" name="paid_date" class="w-full p-2 border rounded">
     </div>
 
     <div>
@@ -33,14 +21,21 @@
     </div>
 
     <div>
-        <label class="block font-semibold mb-1">Stato</label>
-        <select name="status" class="w-full p-2 border rounded">
-            <option value="pending">In sospeso</option>
-            <option value="paid">Pagato</option>
-            <option value="overdue">In ritardo</option>
-        </select>
+        <label class="block font-semibold mb-1">Riferimento (opzionale)</label>
+        <input type="text" name="reference" class="w-full p-2 border rounded">
+    </div>
+    <div>
+        <label class="block font-semibold mb-1">Data scadenza</label>
+        <input type="date" name="due_date" class="w-full p-2 border rounded" required>
     </div>
 
-    <button class="bg-blue-600 text-white px-4 py-2 rounded">Crea pagamento</button>
+    <div>
+        <label class="block font-semibold mb-1">Note (opzionale)</label>
+        <textarea name="notes" class="w-full p-2 border rounded h-24"></textarea>
+    </div>
+
+    <button class="bg-blue-600 text-white px-4 py-2 rounded">
+        Salva pagamento
+    </button>
 </form>
 @endsection

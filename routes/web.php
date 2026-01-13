@@ -25,6 +25,7 @@ use App\Http\Controllers\Web\Landlord\MaintenanceDashboardController;
 use App\Http\Controllers\Web\Landlord\LandlordTicketController;
 use App\Http\Controllers\Web\Landlord\LandlordTicketDashboardController;
 use App\Http\Controllers\Web\Landlord\LandlordTenantController;
+use App\Http\Controllers\Web\Landlord\LandlordPaymentController;
 
 // COMMON
 use App\Http\Controllers\Web\MessagesController;
@@ -180,8 +181,10 @@ Route::middleware(['auth'])->group(function () {
             ->except(['show']);
 
         // Pagamenti
-        Route::resource('payments', PaymentCrudController::class);
-
+        // Route::resource('payments', PaymentCrudController::class);
+        Route::get('/payments', [LandlordPaymentController::class, 'index']) ->name('payments.index');
+        Route::get('/payments/create', [LandlordPaymentController::class, 'create']) ->name('payments.create');
+        Route::post('/payments', [LandlordPaymentController::class, 'store']) ->name('payments.store');
 
 
         // Creazione inquilino + assegnazione contratto
