@@ -3,7 +3,7 @@
 @section('content')
 <h1 class="text-2xl font-bold mb-6">I tuoi ticket</h1>
 
-<a href="{{ route('tenant.tickets.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded">
+<a href="{{ route('tenant.tickets.create') }}" class="btn btn-primary">
     Nuovo ticket
 </a>
 
