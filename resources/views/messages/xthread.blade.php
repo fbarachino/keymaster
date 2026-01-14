@@ -10,25 +10,36 @@
 
 <div class="card card-primary card-outline direct-chat direct-chat-primary">
 
+    {{-- Header --}}
     <div class="card-header">
         <h3 class="card-title">
-            Conversazione con {{ $thread->tenant->name }}
+            Conversazione con
+            @if($role === 'tenant')
+                {{ $thread->landlord->name }}
+            @else
+                {{ $thread->tenant->name }}
+            @endif
         </h3>
     </div>
 
+    {{-- Corpo chat --}}
     <div class="card-body">
 
         <div class="direct-chat-messages">
 
-            @foreach($messages as $msg)
+            @foreach($thread->messages as $msg)
 
-                {{-- Messaggio del tenant --}}
-                @if($msg->sender === 'tenant')
+                {{-- Messaggio dell'altro utente --}}
+                @if($msg->sender !== $role)
                     <div class="direct-chat-msg">
 
                         <div class="direct-chat-infos clearfix">
                             <span class="direct-chat-name float-left">
-                                {{ $thread->tenant->name }}
+                                @if($msg->sender === 'tenant')
+                                    {{ $thread->tenant->name }}
+                                @else
+                                    {{ $thread->landlord->name }}
+                                @endif
                             </span>
                             <span class="direct-chat-timestamp float-right">
                                 {{ $msg->created_at->format('d/m/Y H:i') }}
@@ -41,7 +52,7 @@
 
                     </div>
 
-                {{-- Messaggio del landlord --}}
+                {{-- Messaggio dell'utente corrente --}}
                 @else
                     <div class="direct-chat-msg right">
 
@@ -65,9 +76,10 @@
 
     </div>
 
+    {{-- Footer: form risposta --}}
     <div class="card-footer">
 
-        <form method="POST" action="{{ route('landlord.messages.reply', $thread) }}">
+        <form method="POST" action="{{ route($role.'.messages.reply', $thread) }}">
             @csrf
 
             <div class="input-group">
@@ -90,7 +102,8 @@
 
 </div>
 
-<a href="{{ route('landlord.messages.index') }}" class="btn btn-secondary mt-3">
+{{-- Pulsante torna indietro --}}
+<a href="{{ route($role.'.messages.index') }}" class="btn btn-secondary mt-3">
     <i class="fas fa-arrow-left"></i> Torna ai messaggi
 </a>
 

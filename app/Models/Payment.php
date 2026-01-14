@@ -17,6 +17,7 @@ class Payment extends Model
         'status',
         'reference',
         'notes',
+         'type',
     ];
 
     protected $casts = [

@@ -1,35 +1,92 @@
-@extends('layouts.portal')
+@extends('adminlte::page')
+
+@section('title', 'Dettaglio Pagamento')
+
+@section('content_header')
+    <h1>Dettaglio Pagamento</h1>
+@stop
 
 @section('content')
-<h1 class="text-2xl font-bold mb-6">Dettaglio pagamento</h1>
 
-<div class="p-6 bg-white shadow rounded space-y-4">
+<div class="card">
+    <div class="card-body">
 
-    <p><strong>Importo:</strong>
-        € {{ number_format($payment->amount, 2, ',', '.') }}
-    </p>
+        {{-- Tipo pagamento --}}
+        <div class="mb-3">
+            <strong>Tipo:</strong>
+            @php
+                $colors = [
+                    'rent' => 'badge-primary',
+                    'deposit' => 'badge-warning',
+                    'expense' => 'badge-info',
+                    'other' => 'badge-secondary',
+                ];
+            @endphp
 
-    <p><strong>Data pagamento:</strong>
-        {{ $payment->created_at->format('d/m/Y H:i') }}
-    </p>
+            <span class="badge {{ $colors[$payment->type] ?? 'badge-secondary' }}">
+                {{ ucfirst($payment->type) }}
+            </span>
+        </div>
 
-    <p><strong>Stato:</strong>
-        <span class="{{ $payment->status === 'paid' ? 'text-green-600' : 'text-red-600' }}">
-            {{ ucfirst($payment->status) }}
-        </span>
-    </p>
+        {{-- Importo --}}
+        <div class="mb-3">
+            <strong>Importo:</strong>
+            € {{ number_format($payment->amount, 2) }}
+        </div>
 
-    @if($payment->reference)
-        <p><strong>Riferimento transazione:</strong> {{ $payment->reference }}</p>
-    @endif
+        {{-- Scadenza --}}
+        <div class="mb-3">
+            <strong>Data scadenza:</strong>
+            {{ $payment->due_date }}
+        </div>
 
-    @if($payment->notes)
-        <p><strong>Note:</strong> {{ $payment->notes }}</p>
-    @endif
+        {{-- Stato --}}
+        <div class="mb-3">
+            <strong>Stato:</strong>
+            @if($payment->status === 'paid')
+                <span class="badge badge-success">Pagato</span>
+            @else
+                <span class="badge badge-danger">Non pagato</span>
+            @endif
+        </div>
 
-    <a href="{{ route('tenant.payments.index') }}"
-       class="text-blue-600 underline block mt-4">
-        Torna ai pagamenti
-    </a>
+        {{-- Data pagamento --}}
+        @if($payment->paid_date)
+            <div class="mb-3">
+                <strong>Data pagamento:</strong>
+                {{ $payment->paid_date }}
+            </div>
+        @endif
+
+        {{-- Riferimento --}}
+        <div class="mb-3">
+            <strong>Riferimento:</strong>
+            {{ $payment->reference ?? '-' }}
+        </div>
+
+        {{-- Note --}}
+        <div class="mb-3">
+            <strong>Note:</strong>
+            {{ $payment->notes ?? '-' }}
+        </div>
+
+        {{-- Ricevuta --}}
+        @if($payment->status === 'paid')
+            <div class="mt-4">
+                <a href="{{ route('tenant.payments.receipt', $payment) }}"
+                   class="btn btn-primary">
+                    <i class="fas fa-file-pdf"></i> Scarica ricevuta
+                </a>
+            </div>
+        @endif
+
+    </div>
+
+    <div class="card-footer">
+        <a href="{{ route('tenant.payments.index') }}" class="btn btn-secondary">
+            Torna ai pagamenti
+        </a>
+    </div>
 </div>
-@endsection
+
+@stop

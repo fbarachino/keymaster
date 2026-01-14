@@ -11,4 +11,6 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::job(new GenerateMonthlyPayments)->monthly();
+Schedule::command('reports:yearly-settlement')->yearlyOn(1, 0, 0);
 // Schedule::job(new SendOverduePaymentNotifications)->daily();
+Schedule::command('reports:monthly-expenses')->monthly();

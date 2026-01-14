@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web\Tenant;
 
 use App\Models\Payment;
+use PDF;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -32,5 +33,15 @@ class TenantPaymentController extends Controller
         return view('tenant.payments.show', compact('payment'));
     }
 
+    public function receipt(Payment $payment)
+    {
+        abort_if($payment->lease->tenant_id !== auth()->id(), 403);
+
+        $payment->load('lease.tenant', 'lease.unit.property');
+
+        $pdf = PDF::loadView('pdf.receipt', compact('payment'));
+
+        return $pdf->download('ricevuta_' . $payment->id . '.pdf');
+    }
 
 }

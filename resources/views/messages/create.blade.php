@@ -1,27 +1,62 @@
-@extends('layouts.portal')
+@extends('adminlte::page')
+
+@section('title', 'Nuovo messaggio')
+
+@section('content_header')
+    <h1>Nuovo messaggio</h1>
+@stop
 
 @section('content')
-<h1 class="text-2xl font-bold mb-6">Nuovo messaggio</h1>
 
-<form method="POST" action="{{ route('messages.store') }}" class="space-y-4">
-    @csrf
+<x-adminlte-card theme="purple" icon="fas fa-lg fa-envelope" title="Invia un nuovo messaggio">
 
-    <div>
-        <label class="block font-semibold mb-1">Destinatario</label>
-        <select name="receiver_id" class="w-full p-2 border rounded">
-            @foreach($users as $user)
-                @if($user->id !== auth()->id())
-                    <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->role }})</option>
-                @endif
-            @endforeach
-        </select>
-    </div>
+    <form method="POST" action="{{ route('landlord.messages.store') }}">
+        @csrf
 
-    <div>
-        <label class="block font-semibold mb-1">Messaggio</label>
-        <textarea name="content" class="w-full p-2 border rounded" rows="5"></textarea>
-    </div>
+        {{-- Destinatario --}}
+        <div class="form-group">
+            <label for="tenant_id">Destinatario</label>
+            <select name="tenant_id" id="tenant_id" class="form-control" required>
+                @foreach($tenants as $tenant)
+                    <option value="{{ $tenant->id }}">
+                        {{ $tenant->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-    <button class="bg-blue-600 text-white px-4 py-2 rounded">Invia</button>
-</form>
-@endsection
+        {{-- Oggetto --}}
+        <div class="form-group">
+            <label for="subject">Oggetto</label>
+            <input type="text"
+                   name="subject"
+                   id="subject"
+                   class="form-control"
+                   placeholder="Oggetto del messaggio"
+                   required>
+        </div>
+
+        {{-- Messaggio --}}
+        <div class="form-group">
+            <label for="message">Messaggio</label>
+            <textarea name="message"
+                      id="message"
+                      class="form-control"
+                      rows="5"
+                      placeholder="Scrivi il tuo messaggio..."
+                      required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-paper-plane"></i> Invia
+        </button>
+
+        <a href="{{ route('landlord.messages.index') }}" class="btn btn-secondary ml-2">
+            Annulla
+        </a>
+
+    </form>
+
+</x-adminlte-card>
+
+@stop
