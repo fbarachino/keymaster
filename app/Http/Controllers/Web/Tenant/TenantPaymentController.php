@@ -6,6 +6,7 @@ use App\Models\Payment;
 use PDF;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class TenantPaymentController extends Controller
 {
