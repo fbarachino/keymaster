@@ -1,20 +1,19 @@
-@extends('adminlte::page')
+@extends('layouts.portal')
 
-@section('title', 'Registra Pagamento')
+@section('title', 'Nuova Spesa')
 
 @section('content_header')
-    <h1>Registra un nuovo pagamento</h1>
+    <h1>Registra una nuova spesa</h1>
 @stop
 
 @section('content')
 
-<form action="{{ route('landlord.payments.store') }}" method="POST">
+<form action="{{ route('landlord.expenses.store') }}" method="POST">
     @csrf
 
     <div class="card">
         <div class="card-body">
 
-            {{-- Selezione contratto --}}
             <div class="form-group">
                 <label>Contratto</label>
                 <select name="lease_id" class="form-control" required>
@@ -27,36 +26,30 @@
                 </select>
             </div>
 
-            {{-- Tipo pagamento --}}
             <div class="form-group">
-                <label>Tipo di pagamento</label>
-                <select name="type" class="form-control" required>
-                    <option value="rent">Affitto</option>
-                    <option value="deposit">Cauzione</option>
-                    <option value="expense">Spesa imputata</option>
-                    <option value="other">Altro</option>
-                </select>
+                <label>Tipo di spesa</label>
+                <input type="text" name="type" class="form-control" required>
             </div>
 
-            {{-- Importo --}}
             <div class="form-group">
                 <label>Importo</label>
                 <input type="number" step="0.01" name="amount" class="form-control" required>
             </div>
 
-            {{-- Data scadenza --}}
             <div class="form-group">
-                <label>Data scadenza</label>
-                <input type="date" name="due_date" class="form-control" required>
+                <label>Imputazione</label>
+                <select name="charged_to" class="form-control" required>
+                    <option value="tenant">Tenant</option>
+                    <option value="landlord">Landlord</option>
+                    <option value="both">50 / 50</option>
+                </select>
             </div>
 
-            {{-- Riferimento --}}
             <div class="form-group">
-                <label>Riferimento</label>
-                <input type="text" name="reference" class="form-control" placeholder="Es: Affitto Gennaio, Cauzione, Spesa condominiale...">
+                <label>Data</label>
+                <input type="date" name="date" class="form-control" required>
             </div>
 
-            {{-- Note --}}
             <div class="form-group">
                 <label>Note</label>
                 <textarea name="notes" class="form-control"></textarea>
@@ -66,7 +59,7 @@
 
         <div class="card-footer">
             <button class="btn btn-success">Salva</button>
-            <a href="{{ route('landlord.payments.index') }}" class="btn btn-secondary">Annulla</a>
+            <a href="{{ route('landlord.expenses.index') }}" class="btn btn-secondary">Annulla</a>
         </div>
     </div>
 

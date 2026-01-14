@@ -75,6 +75,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('leases', [TenantLeaseController::class, 'index'])
             ->name('leases.index');
 
+            // Report annuale conguaglio spese
+            Route::get('yearly-reports', [\App\Http\Controllers\Web\Tenant\YearlyReportController::class, 'index']) ->name('yearly-reports.index');
+            Route::get('yearly-reports/{report}/download', [\App\Http\Controllers\Web\Tenant\YearlyReportController::class, 'download']) ->name('yearly-reports.download');
+
         Route::get('leases/{lease}', [TenantLeaseController::class, 'show'])
             ->name('leases.show');
 
@@ -89,7 +93,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('payments', [TenantPaymentController::class, 'index'])
             ->name('payments.index');
         Route::get('/payments/{payment}', [TenantPaymentController::class, 'show']) ->name('payments.show');
-
+        Route::get('payments/{payment}/receipt', [TenantPaymentController::class, 'receipt'] )->name('payments.receipt');
 
         // Documenti unità
         Route::get('documents', [TenantDocumentsController::class, 'index'])
@@ -185,6 +189,17 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/payments', [LandlordPaymentController::class, 'index']) ->name('payments.index');
         Route::get('/payments/create', [LandlordPaymentController::class, 'create']) ->name('payments.create');
         Route::post('/payments', [LandlordPaymentController::class, 'store']) ->name('payments.store');
+        Route::get('/landlord/payments/{payment}/receipt', [LandlordPaymentController::class, 'receipt'])->name('payments.receipt');
+        Route::patch('payments/{payment}/mark-paid', [LandlordPaymentController::class, 'markPaid'] )->name('payments.markPaid');
+         Route::get('payments/{payment}/edit', [LandlordPaymentController::class, 'edit']) ->name('payments.edit');
+        Route::put('payments/{payment}', [LandlordPaymentController::class, 'update']) ->name('payments.update');
+        Route::delete('payments/{payment}', [LandlordPaymentController::class, 'destroy']) ->name('payments.destroy');
+
+        // Gestione spese
+
+        Route::resource('expenses', \App\Http\Controllers\Web\Landlord\LandlordExpenseController::class);
+        Route::get('yearly-reports', [\App\Http\Controllers\Web\Landlord\YearlyReportController::class, 'index']) ->name('yearly-reports.index');
+        Route::get('yearly-reports/{report}/download', [\App\Http\Controllers\Web\Landlord\YearlyReportController::class, 'download']) ->name('yearly-reports.download');
 
 
         // Creazione inquilino + assegnazione contratto

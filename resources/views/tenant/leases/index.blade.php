@@ -1,52 +1,85 @@
-@extends('layouts.portal')
+@extends('adminlte::page')
+
+@section('title', 'Contratti attivi')
+
+@section('content_header')
+    <h1>Contratti attivi</h1>
+@stop
 
 @section('content')
-<h1 class="text-2xl font-bold mb-6">Contratti attivi</h1>
 
-<div class="space-y-4">
+<div class="row">
+
     @forelse($leases as $lease)
-        <div class="bg-white p-4 shadow rounded">
-            <h2 class="text-lg font-semibold">
-                {{ $lease->unit->property->name }} — {{ $lease->unit->name }}
-            </h2>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
 
-            <p class="text-gray-600">
-                <strong>Inizio:</strong> {{ $lease->start_date?->format('d/m/Y') }}<br>
-                @if($lease->end_date)
-                    <strong>Fine:</strong> {{ $lease->end_date->format('d/m/Y') }}<br>
-                @endif
-                <strong>Canone:</strong> € {{ number_format($lease->rent_amount, 2, ',', '.') }}<br>
-                @if($lease->deposit_amount)
-                    <strong>Deposito:</strong> € {{ number_format($lease->deposit_amount, 2, ',', '.') }}
-                @endif
-                <a href="{{ route('tenant.leases.pdf', $lease) }}"
-   class="text-blue-600 underline ml-2"
-   target="_blank">
-    Scarica PDF
-</a>
-                @if(!$lease->signed_by_tenant_at)
-                    <a href="{{ route('tenant.leases.sign.show', $lease) }}"
-                    class="button btn-primary rounded">
-                        Firma digitalmente
+                <div class="card-header">
+                    <h3 class="card-title">
+                        {{ $lease->unit->property->name }} — {{ $lease->unit->name }}
+                    </h3>
+
+                    <div class="card-tools">
+                        {{-- Stato firma --}}
+                        @if($lease->signed_by_tenant_at)
+                            <span class="badge badge-success">Firmato</span>
+                        @else
+                            <span class="badge badge-warning">In attesa firma</span>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+                    <p>
+                        <strong>Inizio:</strong> {{ $lease->start_date?->format('d/m/Y') }}<br>
+
+                        @if($lease->end_date)
+                            <strong>Fine:</strong> {{ $lease->end_date->format('d/m/Y') }}<br>
+                        @endif
+
+                        <strong>Canone:</strong>
+                        € {{ number_format($lease->rent_amount, 2, ',', '.') }}<br>
+
+                        @if($lease->deposit_amount)
+                            <strong>Deposito:</strong>
+                            € {{ number_format($lease->deposit_amount, 2, ',', '.') }}<br>
+                        @endif
+                    </p>
+
+                    {{-- Firma digitale --}}
+                    @if(!$lease->signed_by_tenant_at)
+                        <a href="{{ route('tenant.leases.sign.show', $lease) }}"
+                           class="btn btn-primary btn-sm">
+                            <i class="fas fa-pen"></i> Firma digitalmente
+                        </a>
+                    @else
+                        <p class="mt-2 text-success font-weight-bold">
+                            Firmato il {{ $lease->signed_by_tenant_at->format('d/m/Y') }}
+                        </p>
+                    @endif
+
+                </div>
+
+                <div class="card-footer">
+                    <a href="{{ route('tenant.leases.pdf', $lease) }}"
+                       class="btn btn-outline-secondary btn-sm"
+                       target="_blank">
+                        <i class="fas fa-file-pdf"></i> Scarica PDF
                     </a>
-                @else
-                    <span class="text-green-700 font-semibold ml-2">
-                        Firmato il {{ $lease->signed_by_tenant_at->format('d/m/Y') }}
-                    </span>
-                @endif
-                @if($lease->signed_by_tenant_at)
-                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-sm">
-                        Firmato
-                    </span>
-                @else
-                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-sm">
-                        In attesa firma
-                    </span>
-                @endif
-            </p>
+                </div>
+
+            </div>
         </div>
+
     @empty
-        <p>Nessun contratto attivo al momento.</p>
+        <div class="col-12">
+            <div class="alert alert-info">
+                Nessun contratto attivo al momento.
+            </div>
+        </div>
     @endforelse
+
 </div>
-@endsection
+
+@stop

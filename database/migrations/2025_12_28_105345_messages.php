@@ -14,7 +14,7 @@ return new class extends Migration
             // Relazioni
             $table->unsignedBigInteger('tenant_id');
             $table->unsignedBigInteger('landlord_id');
-            $table->unsignedBigInteger('thread_id')->nullable()->after('id');
+            $table->unsignedBigInteger('thread_id')->nullable();
             // Thread (risposte)
             //$table->unsignedBigInteger('parent_id')->nullable();
 

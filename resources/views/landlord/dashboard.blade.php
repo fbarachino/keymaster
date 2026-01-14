@@ -19,6 +19,16 @@
     </div>
 </div>
 
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Spese mensili</h3>
+    </div>
+    <div class="card-body">
+        <canvas id="expensesChart"></canvas>
+    </div>
+</div>
+
+
 @endsection
 
 @section('js')
@@ -36,4 +46,22 @@
         }
     });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('expensesChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($monthlyExpenses->keys()) !!},
+            datasets: [{
+                label: 'Spese (€)',
+                data: {!! json_encode($monthlyExpenses->values()) !!},
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            }]
+        }
+    });
+</script>
+
 @endsection

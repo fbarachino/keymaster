@@ -32,5 +32,17 @@ class Lease extends Model
         return $this->belongsTo(Unit::class);
     }
 
-    public function payments() { return $this->hasMany(Payment::class); }
+    public function payments() {
+         return $this->hasMany(Payment::class);
+    }
+
+    public function yearlyReports()
+    {
+        return $this->hasMany(YearlyReport::class);
+    }
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
+
 }

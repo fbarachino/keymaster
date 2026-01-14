@@ -36,6 +36,8 @@ class AppServiceProvider extends ServiceProvider
                 ['text' => 'Dashboard manutenzioni', 'route' => 'landlord.maintenance.dashboard','icon' => 'far fa-fw fa-tachometer-alt'],
                 ['text' => 'Messaggi', 'route' => 'landlord.messages.index','icon' => 'far fa-fw fa-envelope'],
                 ['text' => 'Nuovo messaggio', 'route' => 'landlord.messages.create','icon' => 'far fa-fw fa-edit'],
+                [ 'text' => 'Spese', 'url' => 'landlord/expenses', 'icon' => 'fas fa-receipt'], // se usi Gate o middleware ]
+                [ 'text' => 'Conguagli annuali', 'url' => 'landlord/yearly-reports', 'icon' => 'fas fa-file-invoice-dollar', ],
             ];
 
             if ($user->role === 'landlord') {
@@ -52,6 +54,7 @@ class AppServiceProvider extends ServiceProvider
                 ['text' => 'I miei ticket di manutenzione', 'route' => 'tenant.tickets.index','icon' => 'far fa-fw fa-tools'],
                 ['text' => 'Messaggi', 'route' => 'tenant.messages.index','icon' => 'far fa-fw fa-envelope'],
                 ['text' => 'Nuovo messaggio', 'route' => 'tenant.messages.create','icon' => 'far fa-fw fa-edit'],
+                [ 'text' => 'Conguagli annuali', 'url' => 'tenant/yearly-reports', 'icon' => 'fas fa-file-invoice-dollar', ],
             ];
 
             if ($user->role === 'tenant') {

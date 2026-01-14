@@ -1,47 +1,86 @@
-@extends('layouts.portal')
+@extends('adminlte::page')
+
+@section('title', 'Modifica Pagamento')
+
+@section('content_header')
+    <h1>Modifica Pagamento</h1>
+@stop
 
 @section('content')
-<h1 class="text-2xl font-bold mb-6">Modifica pagamento</h1>
 
-<form method="POST" action="{{ route('landlord.payments.update', $payment) }}" class="space-y-4">
+<form action="{{ route('landlord.payments.update', $payment) }}" method="POST">
     @csrf
     @method('PUT')
 
-    <div>
-        <label class="block font-semibold mb-1">Contratto</label>
-        <select name="lease_id" class="w-full p-2 border rounded">
-            @foreach($leases as $lease)
-                <option value="{{ $lease->id }}" @selected($payment->lease_id == $lease->id)>
-                    {{ $lease->tenant->name }} — {{ $lease->unit->property->name }} / {{ $lease->unit->name }}
-                </option>
-            @endforeach
-        </select>
+    <div class="card">
+        <div class="card-body">
+
+            {{-- Selezione contratto --}}
+            <div class="form-group">
+                <label>Contratto</label>
+                <select name="lease_id" class="form-control" required>
+                    @foreach($leases as $lease)
+                        <option value="{{ $lease->id }}"
+                            @selected($lease->id == $payment->lease_id)>
+                            #{{ $lease->id }} - {{ $lease->tenant->name }} ({{ $lease->unit->property->name }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Tipo pagamento --}}
+            <div class="form-group">
+                <label>Tipo di pagamento</label>
+                <select name="type" class="form-control" required>
+                    <option value="rent" @selected($payment->type === 'rent')>Affitto</option>
+                    <option value="deposit" @selected($payment->type === 'deposit')>Cauzione</option>
+                    <option value="expense" @selected($payment->type === 'expense')>Spesa imputata</option>
+                    <option value="other" @selected($payment->type === 'other')>Altro</option>
+                </select>
+            </div>
+
+            {{-- Importo --}}
+            <div class="form-group">
+                <label>Importo</label>
+                <input type="number" step="0.01" name="amount" class="form-control"
+                       value="{{ $payment->amount }}" required>
+            </div>
+
+            {{-- Data scadenza --}}
+            <div class="form-group">
+                <label>Data scadenza</label>
+                <input type="date" name="due_date" class="form-control"
+                       value="{{ $payment->due_date }}" required>
+            </div>
+
+            {{-- Data pagamento (se già pagato) --}}
+            <div class="form-group">
+                <label>Data pagamento</label>
+                <input type="date" name="paid_date" class="form-control"
+                       value="{{ $payment->paid_date }}">
+            </div>
+
+            {{-- Riferimento --}}
+            <div class="form-group">
+                <label>Riferimento</label>
+                <input type="text" name="reference" class="form-control"
+                       value="{{ $payment->reference }}">
+            </div>
+
+            {{-- Note --}}
+            <div class="form-group">
+                <label>Note</label>
+                <textarea name="notes" class="form-control">{{ $payment->notes }}</textarea>
+            </div>
+
+        </div>
+
+        <div class="card-footer">
+            <button class="btn btn-success">Aggiorna</button>
+            <a href="{{ route('landlord.payments.index') }}" class="btn btn-secondary">Annulla</a>
+        </div>
     </div>
 
-    <div>
-        <label class="block font-semibold mb-1">Data scadenza</label>
-        <input type="date" name="due_date" value="{{ $payment->due_date->format('Y-m-d') }}" class="w-full p-2 border rounded">
-    </div>
-
-    <div>
-        <label class="block font-semibold mb-1">Data pagamento</label>
-        <input type="date" name="paid_date" value="{{ optional($payment->paid_date)->format('Y-m-d') }}" class="w-full p-2 border rounded">
-    </div>
-
-    <div>
-        <label class="block font-semibold mb-1">Importo (€)</label>
-        <input type="number" step="0.01" name="amount" value="{{ $payment->amount }}" class="w-full p-2 border rounded">
-    </div>
-
-    <div>
-        <label class="block font-semibold mb-1">Stato</label>
-        <select name="status" class="w-full p-2 border rounded">
-            <option value="pending" @selected($payment->status === 'pending')>In sospeso</option>
-            <option value="paid" @selected($payment->status === 'paid')>Pagato</option>
-            <option value="overdue" @selected($payment->status === 'overdue')>In ritardo</option>
-        </select>
-    </div>
-
-    <button class="bg-blue-600 text-white px-4 py-2 rounded">Aggiorna pagamento</button>
 </form>
-@endsection
+
+@stop

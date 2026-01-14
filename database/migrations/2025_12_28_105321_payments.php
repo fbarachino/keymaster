@@ -13,9 +13,11 @@ return new class extends Migration {
             $table->date('due_date');
             $table->date('paid_date')->nullable();
             $table->decimal('amount', 10, 2);
+            $table->enum('type', ['rent', 'deposit', 'expense', 'other'])->default('rent');
             $table->string('status')->default('pending'); // pending | paid | overdue
             $table->timestamps();
-
+            $table->string('notes')->nullable();
+            $table->string('reference')->nullable();
             $table->foreign('lease_id')->references('id')->on('leases');
         });
     }

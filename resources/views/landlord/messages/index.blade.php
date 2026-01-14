@@ -1,18 +1,59 @@
-@extends('layouts.portal')
+@extends('adminlte::page')
+
+@section('title', 'Messaggi')
+
+@section('content_header')
+    <h1>Messaggi</h1>
+@stop
 
 @section('content')
-<h1 class="text-2xl font-bold mb-6">Messaggi dagli inquilini</h1>
 
-<div class="space-y-4">
-    @foreach($threads as $thread)
-    <a href="{{ route('landlord.messages.show', $thread) }}">
-        <div class="p-4 bg-white shadow rounded mb-3">
-            <p class="font-semibold">{{ $thread->subject ?? 'Conversazione' }}</p>
-            <p class="text-sm text-gray-600">
-                Tenant: {{ $thread->tenant->name }}
-            </p>
-        </div>
+<div class="mb-3">
+    <a href="{{ route('landlord.messages.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Nuovo messaggio
     </a>
-@endforeach
 </div>
-@endsection
+
+<div class="row">
+
+    @forelse($threads as $thread)
+        <div class="col-md-6">
+            <a href="{{ route('landlord.messages.show', $thread) }}" class="text-dark">
+                <div class="card shadow-sm">
+
+                    <div class="card-body">
+
+                        <h5 class="card-title font-weight-bold">
+                            {{ $thread->subject ?? 'Conversazione' }}
+                        </h5>
+
+                        <p class="text-muted mb-1">
+                            <i class="fas fa-user"></i>
+                            Inquilino: <strong>{{ $thread->tenant->name }}</strong>
+                        </p>
+
+                        @if($thread->lastMessage)
+                            <p class="text-muted small">
+                                <i class="fas fa-comment"></i>
+                                Ultimo messaggio:
+                                {{ Str::limit($thread->lastMessage->message, 60) }}
+                            </p>
+                        @endif
+
+                    </div>
+
+                </div>
+            </a>
+        </div>
+
+    @empty
+        <div class="col-12">
+            <div class="alert alert-info">
+                Nessuna conversazione presente.
+            </div>
+        </div>
+    @endforelse
+
+</div>
+
+@stop
