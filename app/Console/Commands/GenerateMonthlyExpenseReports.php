@@ -36,10 +36,14 @@ class GenerateMonthlyExpenseReports extends Command
             // Genera PDF
             $pdf = PDF::loadView('pdf.monthly_expense_report', [
                 'lease' => $lease,
+                'tenant' => $lease->tenant,
                 'expenses' => $expenses,
                 'totalTenant' => $totalTenant,
                 'totalLandlord' => $totalLandlord,
+                'monthyear' => now()->format('F/Y'),
+               // 'total_due' => $total_due,
                 'month' => now()->format('F Y'),
+                'year' => now()->year,
             ]);
 
             $pdfContent = $pdf->output();

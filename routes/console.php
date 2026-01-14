@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 use App\Jobs\GenerateMonthlyPayments;
 // use App\Jobs\SendOverduePaymentNotifications;
+use App\Console\Commands\GenerateMonthlyExpenseReports;
+use App\Console\Commands\GenerateYearlySettlement;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
