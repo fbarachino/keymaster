@@ -5,7 +5,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Models\User;
 use App\Models\Lease;
+use App\Notifications\PaymentRegistered;
 use Illuminate\Http\Request;
+use PDF;
 
 class LandlordPaymentController extends Controller
 {
@@ -21,11 +23,10 @@ class LandlordPaymentController extends Controller
     public function index()
     {
         $payments = Payment::whereHas('lease.unit.property', function ($q) {
-            $q->where('landlord_id', auth()->id());
-        })
-        ->orderBy('due_date', 'desc')
-        ->get();
-
+    $q->where('landlord_id', auth()->id());
+})
+->orderBy('due_date', 'desc')
+->get();
         return view('landlord.payments.index', compact('payments'));
     }
 
@@ -69,27 +70,49 @@ public function store(Request $request)
         'amount' => 'required|numeric|min:0.01',
         'reference' => 'nullable|string',
         'notes' => 'nullable|string',
-        'due_date' => 'required|date', // <--- OBBLIGATORIO
+        'due_date' => 'required|date',
     ]);
 
     // Recupera il lease del tenant
-    $lease = Lease::where('tenant_id', $data['tenant_id'])
+    /*$lease = Lease::where('tenant_id', $data['tenant_id'])
         ->where('landlord_id', auth()->id())
-        ->firstOrFail();
+        ->firstOrFail();*/
+        $lease = Lease::where('tenant_id', $data['tenant_id'])
+    ->whereHas('unit.property', function ($q) {
+        $q->where('landlord_id', auth()->id());
+    })
+    ->firstOrFail();
+
 
     Payment::create([
-        'tenant_id' => $data['tenant_id'],
-        'landlord_id' => auth()->id(),
         'lease_id' => $lease->id,
         'amount' => $data['amount'],
         'reference' => $data['reference'] ?? null,
         'notes' => $data['notes'] ?? null,
         'status' => 'paid',
-        'due_date' => $data['due_date'], // <--- FIX DEFINITIVO
+        'due_date' => $data['due_date'],
+        'paid_date' => now(), // opzionale
     ]);
+
+    $tenant = $lease->tenant;
+    $tenant->notify(new PaymentRegistered($payment));
+
 
     return redirect()->route('landlord.payments.index')
         ->with('success', 'Pagamento registrato con successo.');
 }
+
+
+
+public function receipt(Payment $payment)
+{
+    $payment->load('lease.tenant', 'lease.unit.property');
+
+    $pdf = PDF::loadView('pdf.receipt', compact('payment'));
+
+    return $pdf->download('ricevuta_' . $payment->id . '.pdf');
+}
+
+
 
 }

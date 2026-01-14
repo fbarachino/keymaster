@@ -185,6 +185,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/payments', [LandlordPaymentController::class, 'index']) ->name('payments.index');
         Route::get('/payments/create', [LandlordPaymentController::class, 'create']) ->name('payments.create');
         Route::post('/payments', [LandlordPaymentController::class, 'store']) ->name('payments.store');
+        Route::get('/landlord/payments/{payment}/receipt', [LandlordPaymentController::class, 'receipt'])->name('landlord.payments.receipt');
 
 
         // Creazione inquilino + assegnazione contratto

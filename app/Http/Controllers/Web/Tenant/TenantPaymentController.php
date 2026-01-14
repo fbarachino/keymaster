@@ -25,7 +25,9 @@ class TenantPaymentController extends Controller
 
     public function show(Payment $payment)
     {
+        //abort_if($payment->lease->tenant_id !== auth()->id(), 403);
         abort_if($payment->lease->tenant_id !== auth()->id(), 403);
+
 
         return view('tenant.payments.show', compact('payment'));
     }

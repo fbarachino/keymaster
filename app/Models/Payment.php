@@ -15,6 +15,8 @@ class Payment extends Model
         'paid_date',
         'amount',
         'status',
+        'reference',
+        'notes',
     ];
 
     protected $casts = [
@@ -24,8 +26,5 @@ class Payment extends Model
 
     /* RELAZIONI */
 
-    public function lease()
-    {
-        return $this->belongsTo(Lease::class);
-    }
+    public function lease() { return $this->belongsTo(Lease::class); }
 }

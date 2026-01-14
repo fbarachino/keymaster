@@ -15,7 +15,8 @@ return new class extends Migration {
             $table->decimal('amount', 10, 2);
             $table->string('status')->default('pending'); // pending | paid | overdue
             $table->timestamps();
-
+            $table->string('notes')->nullable();
+            $table->string('reference')->nullable();
             $table->foreign('lease_id')->references('id')->on('leases');
         });
     }
