@@ -181,7 +181,7 @@ Route::middleware(['auth'])->group(function () {
             ->name('units.documents.upload');
 
         // Contratti
-        Route::resource('leases', LeaseCrudController::class)
+        Route::resource('/leases', LeaseCrudController::class)
             ->except(['show']);
 
         // Pagamenti

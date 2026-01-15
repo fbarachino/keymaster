@@ -45,4 +45,32 @@ class Lease extends Model
         return $this->hasMany(Expense::class);
     }
 
+    public function currentBalance()
+    {
+        $totalExpenses = $this->expenses()->sum('tenant_share');
+
+        $totalPayments = $this->payments()
+            ->where('status', 'paid')
+            ->whereNotIn('type', ['deposit'])
+            ->sum('amount');
+
+        return $totalExpenses - $totalPayments;
+    }
+
+    public function balanceDetails()
+    {
+        $totalExpenses = $this->expenses()->sum('tenant_share');
+
+        $totalPayments = $this->payments()
+            ->where('status', 'paid')
+            ->whereNotIn('type', ['deposit'])
+            ->sum('amount');
+
+        return [
+            'total_expenses' => $totalExpenses,
+            'total_payments' => $totalPayments,
+            'balance' => $totalExpenses - $totalPayments,
+        ];
+    }
+
 }
