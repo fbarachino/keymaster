@@ -1,103 +1,4 @@
-{{-- @extends('layouts.portal')
-
-@section('content')
-<h1 class="text-2xl font-bold mb-6">Contratti di locazione</h1>
-
-<a href="{{ route('landlord.leases.create') }}"
-   class="bg-blue-600 text-white px-4 py-2 rounded">
-    Nuovo contratto
-</a>
-
-<table class="w-full mt-6 bg-white shadow rounded">
-    <thead>
-        <tr class="border-b bg-gray-100">
-            <th class="p-3 text-left">Unità</th>
-            <th class="p-3 text-left">Proprietà</th>
-            <th class="p-3 text-left">Inquilino</th>
-            <th class="p-3 text-left">Inizio</th>
-            <th class="p-3 text-left">Affitto</th>
-            <th class="p-3 text-center">Azioni</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach($leases as $lease)
-        <tr class="border-b">
-            <td class="p-3">{{ $lease->unit->name }}</td>
-            <td class="p-3">{{ $lease->unit->property->name }}</td>
-            <td class="p-3">{{ $lease->tenant->name }}</td>
-            <td class="p-3">{{ $lease->start_date->format('d/m/Y') }}</td>
-            <td class="p-3">€ {{ number_format($lease->rent_amount, 2, ',', '.') }}</td>
-            <td class="p-3 text-center">
-                <a href="{{ route('landlord.leases.edit', $lease) }}" class="text-blue-600">Modifica</a>
-
-            </td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
-@endsection
- --}}
-{{--  @extends('layouts.portal')
-
-@section('content')
-<h1 class="text-2xl font-bold mb-6">Contratti di locazione</h1>
-
-<a href="{{ route('landlord.leases.create') }}"
-   class="bg-blue-600 text-white px-4 py-2 rounded">
-    Nuovo contratto
-</a>
-
-<table class="w-full mt-6 bg-white shadow rounded">
-    <thead>
-        <tr class="border-b bg-gray-100">
-            <th class="p-3 text-left">Unità</th>
-            <th class="p-3 text-left">Proprietà</th>
-            <th class="p-3 text-left">Inquilino</th>
-            <th class="p-3 text-left">Inizio</th>
-            <th class="p-3 text-left">Affitto</th>
-            <th class="p-3 text-left">Saldo</th>
-            <th class="p-3 text-center">Azioni</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach($leases as $lease)
-        @php
-            $balance = $lease->currentBalance();
-        @endphp
-
-        <tr class="border-b">
-            <td class="p-3">{{ $lease->unit->name }}</td>
-            <td class="p-3">{{ $lease->unit->property->name }}</td>
-            <td class="p-3">{{ $lease->tenant->name }}</td>
-            <td class="p-3">{{ $lease->start_date->format('d/m/Y') }}</td>
-            <td class="p-3">€ {{ number_format($lease->rent_amount, 2, ',', '.') }}</td>
-
-            <td class="p-3">
-                @if($balance > 0)
-                    <span class="text-red-600 font-semibold">
-                        Debito: € {{ number_format($balance, 2, ',', '.') }}
-                    </span>
-                @elseif($balance < 0)
-                    <span class="text-green-600 font-semibold">
-                        Credito: € {{ number_format(abs($balance), 2, ',', '.') }}
-                    </span>
-                @else
-                    <span class="text-gray-600">Saldo pari</span>
-                @endif
-            </td>
-
-            <td class="p-3 text-center">
-                <a href="{{ route('landlord.leases.edit', $lease) }}" class="text-blue-600">Modifica</a>
-            </td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
-@endsection
- --}}
- @extends('adminlte::page')
+@extends('adminlte::page')
 
 @section('title', 'Contratti di locazione')
 
@@ -156,6 +57,12 @@
                     <td class="text-center">
                         <a href="{{ route('landlord.leases.edit', $lease) }}" class="btn btn-sm btn-info">
                             <i class="fas fa-edit"></i> Modifica
+                        </a>
+{{--                         <a href="{{ route('landlord.leases.show', $lease) }}" class="btn btn-sm btn-secondary">
+                            <i class="fas fa-eye"></i> Dettagli
+                        </a> --}}
+                        <a href="{{ route('landlord.leases.pdf', $lease) }}" class="btn btn-sm btn-dark" target="_blank">
+                            <i class="fas fa-file-pdf"></i> PDF
                         </a>
                     </td>
                 </tr>

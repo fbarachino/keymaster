@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+{{-- @extends('layouts.portal')
 
 @section('content')
 <h1 class="text-2xl font-bold mb-6">
@@ -95,3 +95,223 @@
 </ul>
 
 @endsection
+ --}}
+ @extends('adminlte::page')
+
+@section('title', 'Modifica unità')
+
+@section('content_header')
+    <h1>Modifica unità {{ $unit->name }}</h1>
+@stop
+
+@section('content')
+
+{{-- ===========================
+    SEZIONE: MODIFICA UNITÀ
+=========================== --}}
+<div class="card card-dark mb-4">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-building"></i> Dati unità
+        </h3>
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST" action="{{ route('landlord.units.update', [$property, $unit]) }}">
+            @csrf
+            @method('PUT')
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold">Nome unità</label>
+                    <input type="text" name="name" value="{{ $unit->name }}" class="form-control">
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <label class="font-weight-bold">Piano</label>
+                    <input type="number" name="floor" value="{{ $unit->floor }}" class="form-control">
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <label class="font-weight-bold">Dimensione (m²)</label>
+                    <input type="number" name="size" value="{{ $unit->size }}" class="form-control">
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold">Affitto mensile (€)</label>
+                    <input type="number" step="0.01" name="monthly_rent"
+                           value="{{ $unit->monthly_rent }}" class="form-control">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold">Stato</label>
+                    <select name="status" class="form-control">
+                        <option value="available" @selected($unit->status === 'available')>Disponibile</option>
+                        <option value="occupied" @selected($unit->status === 'occupied')>Occupata</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <button class="btn btn-primary">
+                <i class="fas fa-save"></i> Aggiorna unità
+            </button>
+
+        </form>
+
+    </div>
+</div>
+
+
+
+{{-- ===========================
+    SEZIONE: FOTO UNITÀ
+=========================== --}}
+<div class="card mb-4">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-images"></i> Foto unità</h3>
+    </div>
+
+    <div class="card-body">
+
+        <form action="{{ route('landlord.units.photos.upload', [$property, $unit]) }}"
+              method="POST" enctype="multipart/form-data">
+            @csrf
+
+            <div class="mb-3">
+                <label class="font-weight-bold">Carica nuove foto</label>
+                <input type="file" name="photos[]" multiple class="form-control">
+            </div>
+
+            <button class="btn btn-primary">
+                <i class="fas fa-upload"></i> Carica foto
+            </button>
+        </form>
+
+        <div class="row mt-4">
+            @foreach($unit->photos as $photo)
+                <div class="col-md-3 mb-3">
+                    <img src="{{ asset('storage/' . $photo->path) }}"
+                         class="img-fluid rounded shadow">
+                </div>
+            @endforeach
+        </div>
+
+    </div>
+</div>
+
+
+
+{{-- ===========================
+    SEZIONE: INVENTARIO
+=========================== --}}
+<div class="card mb-4">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-boxes"></i> Inventario</h3>
+    </div>
+
+    <div class="card-body">
+
+        <form action="{{ route('landlord.units.inventory.add', [$property, $unit]) }}" method="POST">
+            @csrf
+
+            <div class="mb-3">
+                <label class="font-weight-bold">Oggetto</label>
+                <input type="text" name="item" class="form-control" placeholder="Nome oggetto">
+            </div>
+
+            <div class="mb-3">
+                <label class="font-weight-bold">Condizione</label>
+                <select name="condition" class="form-control">
+                    <option value="good">Buono</option>
+                    <option value="worn">Usurato</option>
+                    <option value="damaged">Danneggiato</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="font-weight-bold">Note</label>
+                <textarea name="notes" class="form-control" rows="3"></textarea>
+            </div>
+
+            <button class="btn btn-primary">
+                <i class="fas fa-plus"></i> Aggiungi
+            </button>
+        </form>
+
+        <ul class="list-group mt-4">
+            @foreach($unit->inventory as $item)
+                <li class="list-group-item">
+                    <strong>{{ $item->item }}</strong> — {{ $item->condition }}
+                    <p class="text-muted mb-0">{{ $item->notes }}</p>
+                </li>
+            @endforeach
+        </ul>
+
+    </div>
+</div>
+
+
+
+{{-- ===========================
+    SEZIONE: QR CODE
+=========================== --}}
+<div class="card mb-4">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-qrcode"></i> QR Code</h3>
+    </div>
+
+    <div class="card-body text-center">
+        <img src="data:image/png;base64,{{ $qr }}" class="img-fluid shadow rounded">
+    </div>
+</div>
+
+
+
+{{-- ===========================
+    SEZIONE: DOCUMENTI
+=========================== --}}
+<div class="card mb-4">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-file-alt"></i> Documenti</h3>
+    </div>
+
+    <div class="card-body">
+
+        <form action="{{ route('landlord.units.documents.upload', [$property, $unit]) }}"
+              method="POST" enctype="multipart/form-data">
+            @csrf
+
+            <div class="mb-3">
+                <label class="font-weight-bold">Nome documento</label>
+                <input type="text" name="name" class="form-control" placeholder="Nome documento">
+            </div>
+
+            <div class="mb-3">
+                <label class="font-weight-bold">Carica file</label>
+                <input type="file" name="document" class="form-control">
+            </div>
+
+            <button class="btn btn-primary">
+                <i class="fas fa-upload"></i> Carica documento
+            </button>
+        </form>
+
+        <ul class="list-group mt-4">
+            @foreach($unit->documents as $doc)
+                <li class="list-group-item">
+                    <a href="{{ asset('storage/' . $doc->path) }}" target="_blank">
+                        <i class="fas fa-file"></i> {{ $doc->name }}
+                    </a>
+                </li>
+            @endforeach
+        </ul>
+
+    </div>
+</div>
+
+@stop
