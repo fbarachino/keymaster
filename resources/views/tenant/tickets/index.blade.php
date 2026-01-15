@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+{{-- @extends('layouts.portal')
 
 @section('content')
 <h1 class="text-2xl font-bold mb-6">I tuoi ticket</h1>
@@ -24,3 +24,60 @@
     @endforeach
 </div>
 @endsection
+ --}}
+ @extends('adminlte::page')
+
+@section('title', 'I tuoi ticket')
+
+@section('content_header')
+    <h1>I tuoi ticket</h1>
+@stop
+
+@section('content')
+
+<a href="{{ route('tenant.tickets.create') }}" class="btn btn-primary mb-3">
+    <i class="fas fa-plus"></i> Nuovo ticket
+</a>
+
+<div class="row">
+    @foreach($tickets as $ticket)
+        <div class="col-md-6">
+            <x-adminlte-card
+                title="Ticket: TK{{ $ticket->id }} - {{ $ticket->title }}"
+                theme="dark"
+                icon="fas fa-ticket-alt"
+                class="mb-4"
+            >
+
+                <h4 class="font-weight-bold mb-1">{{ $ticket->title }}</h4>
+
+                <p class="text-muted mb-2">
+                    {{ $ticket->unit->property->name }} — {{ $ticket->unit->name }}
+                </p>
+
+                {{-- Badge stato --}}
+                @php
+                    $statusColors = [
+                        'open' => 'warning',
+                        'in_progress' => 'info',
+                        'closed' => 'success',
+                    ];
+                    $color = $statusColors[$ticket->status] ?? 'secondary';
+                @endphp
+
+                <span class="badge badge-{{ $color }}">
+                    Stato: {{ ucfirst($ticket->status) }}
+                </span>
+
+                <div class="mt-3">
+                    <a href="{{ route('tenant.tickets.show', $ticket) }}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-folder-open"></i> Apri ticket
+                    </a>
+                </div>
+
+            </x-adminlte-card>
+        </div>
+    @endforeach
+</div>
+
+@stop
