@@ -22,7 +22,7 @@
                     <th>Inquilino</th>
                     <th>Inizio</th>
                     <th>Affitto</th>
-                    <th>Saldo</th>
+                    <th>Saldo Spese</th>
                     <th class="text-center">Azioni</th>
                 </tr>
             </thead>
