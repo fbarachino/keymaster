@@ -1,13 +1,15 @@
 <?php
 namespace App\Http\Controllers\Web\Landlord;
 
-use App\Http\Controllers\Controller;
-use App\Models\Payment;
+use PDF;
 use App\Models\User;
 use App\Models\Lease;
-use App\Notifications\PaymentRegistered;
+use App\Models\Payment;
 use Illuminate\Http\Request;
-use PDF;
+use App\Jobs\ProcessPaymentJob;
+use App\Http\Controllers\Controller;
+use App\Notifications\PaymentRegistered;
+
 
 class LandlordPaymentController extends Controller
 {
@@ -130,10 +132,12 @@ public function store(Request $request)
     ]);
 
     // Notifica al tenant
-    $lease->tenant->notify(new PaymentRegistered($payment));
+    //$lease->tenant->notify(new PaymentRegistered($payment));
+    ProcessPaymentJob::dispatch($payment);
+    //return back()->with('success', 'Pagamento registrato. PDF e notifica in elaborazione.');
 
     return redirect()->route('landlord.payments.index')
-        ->with('success', 'Pagamento registrato con successo.');
+        ->with('success', 'Pagamento registrato. PDF e notifica in elaborazione.');
 }
 
 public function edit(Payment $payment)
