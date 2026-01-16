@@ -9,6 +9,7 @@ use App\Models\YearlyReport;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\YearlySettlementReport;
+use App\Notifications\YearlySettlementGenerated;
 
 class GenerateYearlySettlement extends Command
 {
@@ -78,6 +79,30 @@ class GenerateYearlySettlement extends Command
             // Invia email
             $lease->tenant->notify(new YearlySettlementReport($lease, $pdfContent, $year));
             $lease->unit->property->landlord->notify(new YearlySettlementReport($lease, $pdfContent, $year));
+
+            $this->info("Conguaglio annuale generato per il lease ID {$lease->id} per l'anno {$year}.");
+
+            if ($balance < 0) {
+
+                $amountDue = abs($balance);
+
+                // Scadenza: mese successivo
+                $dueDate = now()->addMonth()->startOfMonth()->addDays(27); // 28 del mese prossimo
+                //$payment_date = now()->subYear()->endOfYear();
+                Payment::create([
+                    'lease_id'   => $lease->id,
+                    'amount'     => $amountDue,
+                    'due_date'   => $dueDate,
+                    'reference'  => 'Conguaglio spese ' . $year,
+                    'notes'      => 'Conguaglio spese anno ' . $year,
+                    'status'     => 'pending',
+                    'type'       => 'expense-settlement',
+                ]);
+
+                // (Opzionale) notifica al tenant
+                $lease->tenant->notify(new YearlySettlementGenerated($amountDue, $year, $dueDate));
+            }
+
         }
 
         return Command::SUCCESS;
