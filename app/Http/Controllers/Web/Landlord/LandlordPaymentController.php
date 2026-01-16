@@ -134,8 +134,8 @@ public function store(Request $request)
     ]);
 
     // Notifica al tenant
-    //$lease->tenant->notify(new PaymentRegistered($payment));
-    ProcessPaymentJob::dispatch($payment);
+    $lease->tenant->notify(new PaymentRegistered($payment));
+    // ProcessPaymentJob::dispatch($payment);
     //return back()->with('success', 'Pagamento registrato. PDF e notifica in elaborazione.');
 
     return redirect()->route('landlord.payments.index')
@@ -232,6 +232,7 @@ public function markPaid(Payment $payment)
         $payment->lease->unit->property->landlord_id !== auth()->id(),
         403
     );
+    ProcessPaymentJob::dispatch($payment);
 
     $payment->update([
         'status' => 'paid',
