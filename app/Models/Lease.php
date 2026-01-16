@@ -51,7 +51,7 @@ class Lease extends Model
 
         $totalPayments = $this->payments()
             ->where('status', 'paid')
-            ->whereNotIn('type', ['deposit'])
+            ->whereNotIn('type', ['deposit','rent'])
             ->sum('amount');
 
         return $totalExpenses - $totalPayments;
@@ -63,7 +63,7 @@ class Lease extends Model
 
         $totalPayments = $this->payments()
             ->where('status', 'paid')
-            ->whereNotIn('type', ['deposit'])
+            ->whereNotIn('type', ['deposit','rent'])
             ->sum('amount');
 
         return [
