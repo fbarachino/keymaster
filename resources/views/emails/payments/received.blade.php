@@ -13,13 +13,21 @@ Thanks,<br>
  --}}
 @component('mail::message')
 # Pagamento ricevuto
+@php
+    $tenant = $payment->lease->tenant ?? null;
+@endphp
 
-Ciao {{ $payment->tenant->name }},
+@if($tenant)
+    Ciao {{ $tenant->name }},
+@else
+    Ciao,
+@endif
+
 
 Abbiamo registrato il tuo pagamento di **€ {{ number_format($payment->amount, 2, ',', '.') }}**.
 
 @component('mail::panel')
-Unità: {{ $payment->unit->name }}
+Unità: {{ $payment->lease->unit->name }}
 Data: {{ $payment->created_at->format('d/m/Y') }}
 @endcomponent
 

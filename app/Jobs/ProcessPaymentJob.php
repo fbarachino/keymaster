@@ -27,10 +27,18 @@ class ProcessPaymentJob implements ShouldQueue
         $this->payment = $payment;
     }
 
-    public function handle()
+   /*  public function handle()
     {
+        // Ricarica le relazioni necessarie
+        $this->payment->load('lease.tenant');
+        // Se manca il tenant, logga e interrompi
+        if (!$this->payment->lease || !$this->payment->lease->tenant) {
+            \Log::error("Payment {$this->payment->id} non ha un tenant associato tramite lease.");
+             return;
+             }
+
         // 1) Genera PDF
-        $pdf = PDF::loadView('pdf.payment', [
+        $pdf = PDF::loadView('pdf.receipt', [
             'payment' => $this->payment
         ]);
 
@@ -45,5 +53,38 @@ class ProcessPaymentJob implements ShouldQueue
         // 3) Invia mail
         Mail::to($this->payment->tenant->email)
             ->send(new PaymentReceivedMail($this->payment));
+    } */
+
+    public function handle()
+{
+    // Ricarica le relazioni necessarie
+    $this->payment->load('lease.tenant');
+
+    // Se manca il tenant, logga e interrompi
+    if (!$this->payment->lease || !$this->payment->lease->tenant) {
+        \Log::error("Payment {$this->payment->id} non ha un tenant associato tramite lease.");
+        return;
     }
+
+
+
+    $tenantEmail = $this->payment->lease->tenant->email;
+
+    // 1) Genera PDF
+    $pdf = PDF::loadView('pdf.payment', [
+        'payment' => $this->payment
+    ]);
+
+    $path = 'payments/' . $this->payment->id . '.pdf';
+    Storage::put($path, $pdf->output());
+
+    $this->payment->update([
+        'pdf_path' => $path
+    ]);
+
+    // 2) Invia mail
+    Mail::to($tenantEmail)
+        ->send(new PaymentReceivedMail($this->payment));
+}
+
 }

@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Web\Landlord;
 
+use Log;
 use PDF;
 use App\Models\User;
 use App\Models\Lease;
@@ -8,6 +9,7 @@ use App\Models\Payment;
 use Illuminate\Http\Request;
 use App\Jobs\ProcessPaymentJob;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use App\Notifications\PaymentRegistered;
 
 
@@ -187,6 +189,30 @@ public function update(Request $request, Payment $payment)
 
     return redirect()->route('landlord.payments.index')
         ->with('success', 'Pagamento aggiornato con successo.');
+}
+
+public function destroy(Lease $lease, Payment $payment)
+{
+    // Sicurezza: il pagamento deve appartenere al lease
+   /* if ($payment->lease_id !== $lease->id) {
+        abort(403, 'Pagamento non appartenente a questo contratto.');
+    }*/
+
+    // Se esiste un PDF associato, lo eliminiamo
+    if ($payment->pdf_path && Storage::exists($payment->pdf_path)) {
+        Storage::delete($payment->pdf_path);
+    }
+
+    // Elimina il pagamento
+    $payment->delete();
+
+    // Log utile
+    Log::info("Pagamento {$payment->id} eliminato dal landlord.", [
+        'lease_id' => $lease->id ?? null,
+        'user_id' => auth()->id(),
+    ]);
+
+    return back()->with('success', 'Pagamento eliminato correttamente.');
 }
 
 
