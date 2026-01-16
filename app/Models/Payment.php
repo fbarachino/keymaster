@@ -28,4 +28,7 @@ class Payment extends Model
     /* RELAZIONI */
 
     public function lease() { return $this->belongsTo(Lease::class); }
+
+
+
 }
