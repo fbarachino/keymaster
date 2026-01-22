@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notification;
 class PaymentRegistered extends Notification implements ShouldQueue
 {
     use Queueable;
+    public $payment;
 
     public function __construct($payment)
 {
