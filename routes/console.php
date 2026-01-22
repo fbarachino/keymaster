@@ -18,3 +18,5 @@ Schedule::command('reports:yearly-settlement')->yearlyOn(31, 1, '23:59'); // sch
 
 // Schedule::job(new SendOverduePaymentNotifications)->daily();
 Schedule::command('reports:monthly-expenses')->monthly();
+
+Schedule::command('payments:generate-monthly') ->monthlyOn(1, '00:10'); // scheduling il primo di ogni mese alle 00:10

@@ -38,7 +38,9 @@ class LeaseCrudController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'nullable|date',
             'rent_amount' => 'required|numeric',
+            'advance_expenses' => 'nullable|numeric',
             'deposit_amount' => 'nullable|numeric',
+
         ]);
 
         Lease::create($data);
@@ -61,7 +63,7 @@ class LeaseCrudController extends Controller
         return view('landlord.leases.edit', compact('lease', 'units', 'tenants'));
     }
 
-    public function update(Request $request, Lease $lease)
+    /* public function update(Request $request, Lease $lease)
     {
         abort_if($lease->unit->property->landlord_id !== auth()->id(), 403);
 
@@ -79,6 +81,34 @@ class LeaseCrudController extends Controller
         return redirect()->route('landlord.leases.index')
             ->with('success', 'Contratto aggiornato con successo.');
     }
+ */
+
+    public function update(Request $request, Lease $lease)
+{
+    $validated = $request->validate([
+        'unit_id'          => 'required|exists:units,id',
+        'tenant_id'        => 'required|exists:users,id',
+        'start_date'       => 'required|date',
+        'end_date'         => 'nullable|date|after_or_equal:start_date',
+        'rent_amount'      => 'required|numeric|min:0',
+        'advance_expenses' => 'nullable|numeric|min:0',
+        'deposit_amount'   => 'nullable|numeric|min:0',
+    ]);
+
+    $lease->update([
+        'unit_id'          => $validated['unit_id'],
+        'tenant_id'        => $validated['tenant_id'],
+        'start_date'       => $validated['start_date'],
+        'end_date'         => $validated['end_date'] ?? null,
+        'rent_amount'      => $validated['rent_amount'],
+        'advance_expenses' => $validated['advance_expenses'] ?? 0,
+        'deposit_amount'   => $validated['deposit_amount'] ?? 0,
+    ]);
+
+    return redirect()
+        ->route('landlord.leases.index')
+        ->with('success', 'Contratto aggiornato correttamente.');
+}
 
     public function destroy(Lease $lease)
     {

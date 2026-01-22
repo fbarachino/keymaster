@@ -18,7 +18,7 @@ return new class extends Migration {
 
         $table->decimal('rent_amount', 10, 2);
         $table->decimal('deposit_amount', 10, 2)->nullable();
-
+        $table->decimal('advance_expenses', 10, 2)->default(0);
         $table->text('notes')->nullable();
         $table->timestamp('signed_by_tenant_at')->nullable();
         $table->timestamp('signed_by_landlord_at')->nullable();

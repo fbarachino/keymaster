@@ -18,6 +18,7 @@ class Lease extends Model
         'signed_by_tenant_at',
         'signed_by_landlord_at',
         'signature_token',
+        'advance_expenses',
     ];
 
     protected $casts = [ 'start_date' => 'date', 'end_date' => 'date', 'signed_by_tenant_at' => 'datetime', 'signed_by_landlord_at' => 'datetime', ];
