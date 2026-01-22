@@ -15,7 +15,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if (config('app.env') === 'production') {
 	URL::forceScheme('https');
+        }
         $this->app['events']->listen(BuildingMenu::class, function (BuildingMenu $event) {
 
             // Se l'utente non è autenticato, esci subito

@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 use App\Models\Lease;
 use App\Models\Payment;
 use Illuminate\Console\Command;
+use App\Notifications\PaymentRegistered;
 
 class GenerateMonthlyPayments extends Command
 {
@@ -32,7 +33,7 @@ class GenerateMonthlyPayments extends Command
 
             // AFFITTO
             if ($lease->rent_amount > 0) {
-                Payment::create([
+                $payment_rent =Payment::create([
                     'lease_id'  => $lease->id,
                     'amount'    => $lease->rent_amount,
                     'due_date'  => $dueDate,
@@ -40,11 +41,13 @@ class GenerateMonthlyPayments extends Command
                     'status'    => 'pending',
                     'type'      => 'rent',
                 ]);
+                $lease->tenant->notify(new PaymentRegistered($payment_rent));
             }
+
 
             // ANTICIPO SPESE
             if ($lease->advance_expenses > 0) {
-                Payment::create([
+                $payment_ae =Payment::create([
                     'lease_id'  => $lease->id,
                     'amount'    => $lease->advance_expenses,
                     'due_date'  => $dueDate,
@@ -52,6 +55,7 @@ class GenerateMonthlyPayments extends Command
                     'status'    => 'pending',
                     'type'      => 'advance-expenses',
                 ]);
+                $lease->tenant->notify(new PaymentRegistered($payment_ae));
             }
         }
 
