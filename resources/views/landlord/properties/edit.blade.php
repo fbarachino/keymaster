@@ -23,6 +23,69 @@
 @stop
 
 @section('content')
+{{-- <div class="row">
+
+    <div class="col-md-4">
+        <x-adminlte-info-box
+            title="Valore di acquisto"
+            text="€ {{ number_format($property->purchase_price, 2, ',', '.') }}"
+            icon="fas fa-home"
+            theme="info"/>
+    </div>
+
+    <div class="col-md-4">
+        <x-adminlte-info-box
+            title="Rendita lorda"
+            text="{{ number_format($property->grossYield(), 2, ',', '.') }}%"
+            icon="fas fa-chart-line"
+            theme="success"/>
+    </div>
+
+    <div class="col-md-4">
+        <x-adminlte-info-box
+            title="Rendita netta"
+            text="{{ number_format($property->netYield(), 2, ',', '.') }}%"
+            icon="fas fa-chart-pie"
+            theme="warning"/>
+    </div>
+
+</div>
+ --}}
+ <div class="row">
+
+    <div class="col-md-3">
+        <x-adminlte-info-box
+            title="Valore di acquisto"
+            text="€ {{ number_format($property->purchase_price, 2, ',', '.') }}"
+            icon="fas fa-home"
+            theme="info"/>
+    </div>
+
+    <div class="col-md-3">
+        <x-adminlte-info-box
+            title="Rendita lorda"
+            text="{{ number_format($property->grossYield(), 2, ',', '.') }}%"
+            icon="fas fa-chart-line"
+            theme="success"/>
+    </div>
+
+    <div class="col-md-3">
+        <x-adminlte-info-box
+            title="Costi annuali landlord"
+            text="€ {{ number_format($property->annualLandlordCosts(), 2, ',', '.') }}"
+            icon="fas fa-wallet"
+            theme="warning"/>
+    </div>
+
+    <div class="col-md-3">
+        <x-adminlte-info-box
+            title="Rendita netta"
+            text="{{ number_format($property->netYield(), 2, ',', '.') }}%"
+            icon="fas fa-chart-pie"
+            theme="danger"/>
+    </div>
+
+</div>
 
 <div class="card card-dark">
     <div class="card-header">
@@ -62,6 +125,13 @@
                           rows="4"
                           placeholder="Descrizione della proprietà">{{ $property->description }}</textarea>
             </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label font-weight-bold">Valore di acquisto (€)</label>
+                <input type="number" step="0.01" name="purchase_price" class="form-control"
+                    value="{{ $property->purchase_price }}">
+            </div>
+
 
             <button class="btn btn-primary">
                 <i class="fas fa-save"></i> Aggiorna

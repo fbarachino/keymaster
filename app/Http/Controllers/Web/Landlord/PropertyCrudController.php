@@ -26,6 +26,7 @@ class PropertyCrudController extends Controller
             'address' => 'required',
             'description' => 'nullable',
         ]);
+        $data['purchase_price'] = $request->purchase_price;
 
         $data['landlord_id'] = $request->user()->id;
 
@@ -49,6 +50,7 @@ class PropertyCrudController extends Controller
             'address' => 'required',
             'description' => 'nullable',
         ]);
+        $data['purchase_price'] = $request->purchase_price;
 
         $property->update($data);
 

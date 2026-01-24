@@ -47,5 +47,16 @@ class Unit extends Model
         return $this->hasMany(UnitDocument::class);
     }
 
+    public function activeLease()
+    {
+        return $this->leases()
+            ->where('start_date', '<=', now())
+            ->where(function ($q) {
+                $q->whereNull('end_date')
+                ->orWhere('end_date', '>=', now());
+            })
+            ->first();
+    }
+
 
 }

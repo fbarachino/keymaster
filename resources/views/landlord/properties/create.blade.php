@@ -51,6 +51,12 @@
                 <textarea name="description" class="form-control" rows="4" placeholder="Descrizione della proprietà"></textarea>
             </div>
 
+            <div class="col-md-6 mb-3">
+                <label class="form-label font-weight-bold">Valore di acquisto (€)</label>
+                <input type="number" step="0.01" name="purchase_price" class="form-control">
+            </div>
+
+
             <button class="btn btn-primary">
                 <i class="fas fa-save"></i> Salva
             </button>
