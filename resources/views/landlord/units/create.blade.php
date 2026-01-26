@@ -34,7 +34,7 @@
 @stop
 
 @section('content')
-
+@if ($errors->any()) <x-adminlte-alert theme="danger" title="Errore nella compilazione"> <ul class="mb-0"> @foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach </ul> </x-adminlte-alert> @endif
 <div class="card card-dark">
     <div class="card-header">
         <h3 class="card-title">
@@ -87,6 +87,31 @@
                     <option value="occupied">Occupata</option>
                 </select>
             </div>
+            <h4>Dati unità</h4>
+
+<div class="row">
+
+
+    <div class="col-md-3 mb-3">
+        <label>Interno</label>
+        <input type="text" name="interior" class="form-control">>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <label>Vani</label>
+        <input type="number" name="rooms" class="form-control">
+    </div>
+
+
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label>Pertinenza</label>
+        <input type="text" name="accessory" class="form-control">
+    </div>
+</div>
+
 
             <button class="btn btn-primary">
                 <i class="fas fa-save"></i> Crea unità

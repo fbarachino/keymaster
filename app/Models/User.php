@@ -13,7 +13,15 @@ class User extends Authenticatable
 
     // app/Models/User.php
 
-protected $fillable = [ 'name', 'email', 'password', 'language', 'notification_preference', 'telegram_chat_id', ];
+protected $fillable = [ 'name', 'email', 'password', 'language', 'notification_preference', 'telegram_chat_id',
+// dati personali
+'first_name', 'last_name', 'birth_date', 'birth_place', 'fiscal_code', 'nationality',
+// residenza
+'address', 'zip', 'city', 'province', 'country',
+// documento
+'document_type', 'document_number', 'document_issue_date', 'document_expiry_date', 'document_issuer',
+// contatti
+'phone', ];
 
 
     protected $hidden = [

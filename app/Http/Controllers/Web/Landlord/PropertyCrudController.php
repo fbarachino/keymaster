@@ -45,11 +45,24 @@ class PropertyCrudController extends Controller
     {
         abort_if($property->landlord_id !== auth()->id(), 403);
 
-        $data = $request->validate([
+        /* $data = $request->validate([
             'name' => 'required',
             'address' => 'required',
             'description' => 'nullable',
-        ]);
+        ]); */
+        $data = $request->validate([
+    'name'        => 'required|string|max:255',
+    'description' => 'nullable|string',
+    'address'     => 'required|string|max:255',
+
+    // nuovi campi
+    'size'        => 'nullable|numeric|min:0',
+    'floor'       => 'nullable|string|max:50',
+    'interior'    => 'nullable|string|max:50',
+    'rooms'       => 'nullable|integer|min:0',
+    'accessory'   => 'nullable|string|max:255',
+]);
+
         $data['purchase_price'] = $request->purchase_price;
 
         $property->update($data);

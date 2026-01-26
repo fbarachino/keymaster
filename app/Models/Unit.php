@@ -16,7 +16,10 @@ class Unit extends Model
         'size',
         'monthly_rent',
         'status',
+        'interior', 'rooms', 'accessory',
     ];
+
+
 
     /* RELAZIONI */
 

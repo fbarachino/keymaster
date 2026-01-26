@@ -9,13 +9,20 @@ class Property extends Model
 {
     use HasFactory;
 
+
     protected $fillable = [
+           'name',
         'landlord_id',
-        'name',
         'address',
         'description',
-        'purchase_price',
-    ];
+    'purchase_price',
+
+    'address', 'zip', 'city', 'province', 'country',
+
+    'cadastral_sheet', 'cadastral_particle', 'cadastral_sub',
+    'cadastral_category', 'cadastral_class', 'cadastral_rent',
+];
+
 
     /* RELAZIONI */
 
