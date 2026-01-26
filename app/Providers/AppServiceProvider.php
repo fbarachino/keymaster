@@ -40,6 +40,7 @@ class AppServiceProvider extends ServiceProvider
                 ['text' => 'Nuovo messaggio', 'route' => 'landlord.messages.create','icon' => 'far fa-fw fa-edit'],
                 [ 'text' => 'Spese', 'url' => 'landlord/expenses', 'icon' => 'fas fa-receipt'], // se usi Gate o middleware ]
                 [ 'text' => 'Conguagli annuali', 'url' => 'landlord/yearly-reports', 'icon' => 'fas fa-file-invoice-dollar', ],
+                [ 'text' => 'Profilo', 'url' => 'profile', 'icon' => 'fas fa-user-cog', 'topnav_user' => true,], // <— questa è la chiave importante
             ];
 
             if ($user->role === 'landlord') {
@@ -57,7 +58,8 @@ class AppServiceProvider extends ServiceProvider
                 ['text' => 'Messaggi', 'route' => 'tenant.messages.index','icon' => 'far fa-fw fa-envelope'],
                 ['text' => 'Nuovo messaggio', 'route' => 'tenant.messages.create','icon' => 'far fa-fw fa-edit'],
                 [ 'text' => 'Conguagli annuali', 'url' => 'tenant/yearly-reports', 'icon' => 'fas fa-file-invoice-dollar', ],
-            ];
+                [ 'text' => 'Profilo', 'url' => 'profile', 'icon' => 'fas fa-user-cog', 'topnav_user' => true, ],
+            ]; // <— questa è la chiave importante
 
             if ($user->role === 'tenant') {
                 foreach ($itemsTenant as $item) {

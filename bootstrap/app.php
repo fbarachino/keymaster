@@ -14,8 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         //
         /*$middleware->append(\App\Http\Middleware\EnsureTenant::class);
         $middleware->append(\App\Http\Middleware\EnsureLandlord::class);*/
+         $middleware->append(\App\Http\Middleware\SetUserLocale::class);
     })
-    
+
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

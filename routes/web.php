@@ -12,6 +12,7 @@ use App\Http\Controllers\Web\Tenant\TicketController;
 use App\Http\Controllers\Web\Tenant\LeaseSignatureController;
 use App\Http\Controllers\Web\Tenant\TenantTicketController;
 
+use App\Http\Controllers\UserProfileController;
 
 // LANDLORD CONTROLLERS
 use App\Http\Controllers\Web\Landlord\LandlordDashboardController;
@@ -231,8 +232,13 @@ Route::middleware(['auth'])->group(function () {
     // PDF contratto
     Route::get('leases/{lease}/pdf', [LeasePdfController::class, 'downloadPdf'])
         ->name('leases.pdf');
+
+    Route::get('/profile', [UserProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
 })
 // ---------------------------------------------------------
 //  FINE AREA AUTENTICATA
 ;
+
+
 
