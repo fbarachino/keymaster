@@ -28,6 +28,12 @@ class Lease extends Model
         return $this->belongsTo(User::class, 'tenant_id');
     }
 
+    public function tenants()
+{
+    return $this->belongsToMany(User::class, 'lease_tenant', 'lease_id', 'tenant_id');
+}
+
+
     public function unit()
     {
         return $this->belongsTo(Unit::class);

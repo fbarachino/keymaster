@@ -40,10 +40,12 @@ class LeaseCrudController extends Controller
             'rent_amount' => 'required|numeric',
             'advance_expenses' => 'nullable|numeric',
             'deposit_amount' => 'nullable|numeric',
-
+            'tenants' => 'required|array|min:1',
+            'tenants.*' => 'exists:users,id',
         ]);
 
-        Lease::create($data);
+        $lease = Lease::create($data);
+        $lease->tenants()->sync($request->tenants);
 
         return redirect()->route('landlord.leases.index')
             ->with('success', 'Contratto creato con successo.');
@@ -61,6 +63,9 @@ class LeaseCrudController extends Controller
         $tenants = User::where('role', 'tenant')->get();
 
         return view('landlord.leases.edit', compact('lease', 'units', 'tenants'));
+        //$tenants = User::where('role', 'tenant')->get();
+//return view('leases.edit', compact('lease', 'tenants'));
+
     }
 
     /* public function update(Request $request, Lease $lease)
@@ -93,9 +98,11 @@ class LeaseCrudController extends Controller
         'rent_amount'      => 'required|numeric|min:0',
         'advance_expenses' => 'nullable|numeric|min:0',
         'deposit_amount'   => 'nullable|numeric|min:0',
+        'tenants' => 'required|array|min:1',
+        'tenants.*' => 'exists:users,id',
     ]);
 
-    $lease->update([
+    /*$lease->update([
         'unit_id'          => $validated['unit_id'],
         'tenant_id'        => $validated['tenant_id'],
         'start_date'       => $validated['start_date'],
@@ -103,7 +110,11 @@ class LeaseCrudController extends Controller
         'rent_amount'      => $validated['rent_amount'],
         'advance_expenses' => $validated['advance_expenses'] ?? 0,
         'deposit_amount'   => $validated['deposit_amount'] ?? 0,
-    ]);
+    ]);*/
+$lease->update($validated);
+
+// aggiorna i tenants
+$lease->tenants()->sync($request->tenants);
 
     return redirect()
         ->route('landlord.leases.index')

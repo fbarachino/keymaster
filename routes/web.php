@@ -235,6 +235,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/profile', [UserProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
+
+    Route::get('/leases/{lease}/contract-3-2', [ContractController::class, 'contract3plus2']) ->name('leases.contract.3plus2');
 })
 // ---------------------------------------------------------
 //  FINE AREA AUTENTICATA

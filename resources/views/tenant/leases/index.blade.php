@@ -67,7 +67,11 @@
                        target="_blank">
                         <i class="fas fa-file-pdf"></i> Scarica PDF
                     </a>
+                    <a href="{{ route('leases.contract.3plus2', $lease) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-file-pdf"></i> Contratto 3+2 (PDF)
+                    </a>
                 </div>
+
 
             </div>
         </div>

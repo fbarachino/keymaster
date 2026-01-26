@@ -38,10 +38,15 @@ protected $fillable = [ 'name', 'email', 'password', 'language', 'notification_p
     }
 
     // Contratti come inquilino
-    public function leases()
+ /*   public function leases()
     {
         return $this->hasMany(Lease::class, 'tenant_id');
-    }
+    }*/
+    public function leases()
+{
+    return $this->belongsToMany(Lease::class, 'lease_tenant', 'tenant_id', 'lease_id');
+}
+
 
     // Messaggi inviati
     public function messagesSent()

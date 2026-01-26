@@ -95,13 +95,17 @@
                     </select>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label class="form-label font-weight-bold">Inquilino</label>
-                    <select name="tenant_id" class="form-control">
+                <div class="col-md-12 mb-3">
+                    <label class="font-weight-bold">Conduttori</label>
+                    <select name="tenants[]" class="form-control" multiple>
                         @foreach($tenants as $tenant)
-                            <option value="{{ $tenant->id }}">{{ $tenant->name }}</option>
+                            <option value="{{ $tenant->id }}"
+                                {{ isset($lease) && $lease->tenants->contains($tenant->id) ? 'selected' : '' }}>
+                                {{ $tenant->first_name }} {{ $tenant->last_name }} ({{ $tenant->email }})
+                            </option>
                         @endforeach
                     </select>
+                    <small class="text-muted">Seleziona uno o più conduttori</small>
                 </div>
             </div>
 
