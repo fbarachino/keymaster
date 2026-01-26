@@ -220,6 +220,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/tenants/{tenant}/assign', [LandlordTenantController::class, 'assignStore']) ->name('tenants.assignStore');
     Route::get('/landlord/leases/{lease}/pdf', [\App\Http\Controllers\Web\Landlord\LandlordLeasePdfController::class, 'show'])->name('leases.pdf');
 
+     Route::get('/landlord/tenants', [LandlordTenantController::class, 'index'])->name('.tenants.index');
+     Route::get('/landlord/tenants/create', [LandlordTenantController::class, 'create'])->name('tenants.create');
+     Route::post('/landlord/tenants', [LandlordTenantController::class, 'store'])->name('tenants.store');
+
 });
     // -----------------------------------------------------
     //  FUNZIONALITÀ COMUNI

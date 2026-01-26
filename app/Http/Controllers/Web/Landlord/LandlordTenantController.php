@@ -63,4 +63,79 @@ class LandlordTenantController extends Controller
             ->route('landlord.tenants.index')
             ->with('success', 'Contratto assegnato con successo.');
     }
+
+   /*  public function index()
+    {
+        $tenants = User::where('role', 'tenant')->get();
+        return view('landlord.tenants.index', compact('tenants'));
+    }
+ */
+    public function create(Request $request)
+    {
+        $landlordId = $request->user()->id;
+
+        // Lease appartenenti al landlord
+        $leases = Lease::whereHas('unit.property', function ($q) use ($landlordId) {
+            $q->where('landlord_id', $landlordId);
+        })->get();
+
+        return view('landlord.tenants.create', compact('leases'));
+    }
+
+/*     public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email|unique:users,email',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'lease_id' => 'nullable|exists:leases,id',
+        ]);
+
+        // crea il tenant
+        $tenant = User::create([
+            'email' => $validated['email'],
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'password' => bcrypt(str()->random(12)),
+            'role' => 'tenant',
+        ]);
+
+        // collega alla lease se selezionata
+        if ($request->lease_id) {
+            $lease = Lease::find($request->lease_id);
+            $lease->tenants()->syncWithoutDetaching([$tenant->id]);
+        }
+
+        return redirect()->route('landlord.tenants.index')
+            ->with('success', 'Tenant creato correttamente.');
+    } */
+
+            public function store(Request $request)
+{
+    $validated = $request->validate([
+        'email'      => 'required|email|unique:users,email',
+        'first_name' => 'required|string|max:255',
+        'last_name'  => 'required|string|max:255',
+        'lease_id'   => 'nullable|exists:leases,id',
+    ]);
+
+    // crea il tenant
+    $tenant = User::create([
+        'email'      => $validated['email'],
+        'first_name' => $validated['first_name'],
+        'last_name'  => $validated['last_name'],
+        'password'   => bcrypt(str()->random(12)),
+        'role'       => 'tenant',
+    ]);
+
+    // collega alla lease se selezionata
+    if ($request->lease_id) {
+        $lease = Lease::find($request->lease_id);
+        $lease->tenants()->syncWithoutDetaching([$tenant->id]);
+    }
+
+    return redirect()->route('landlord.tenants.index')
+        ->with('success', 'Tenant creato correttamente.');
+}
+
 }

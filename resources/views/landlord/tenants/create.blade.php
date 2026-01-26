@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+{{-- @extends('layouts.portal')
 
 @section('content')
 <h1 class="text-2xl font-bold mb-6">Aggiungi nuovo inquilino e assegna contratto</h1>
@@ -53,3 +53,70 @@
     </button>
 </form>
 @endsection
+ --}}
+
+ @extends('adminlte::page')
+
+@section('title', 'Nuovo Tenant')
+
+@section('content_header')
+    <h1>Nuovo Tenant</h1>
+@stop
+
+@section('content')
+
+@if ($errors->any())
+    <x-adminlte-alert theme="danger" title="Errore">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </x-adminlte-alert>
+@endif
+
+<div class="card card-dark">
+    <div class="card-body">
+
+        <form method="POST" action="{{ route('landlord.tenants.store') }}">
+            @csrf
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label>Email</label>
+                    <input type="email" name="email" class="form-control">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label>Nome</label>
+                    <input type="text" name="first_name" class="form-control">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label>Cognome</label>
+                    <input type="text" name="last_name" class="form-control">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Assegna a Lease (opzionale)</label>
+                    <select name="lease_id" class="form-control">
+                        <option value="">Nessuna</option>
+                        @foreach($leases as $lease)
+                            <option value="{{ $lease->id }}">
+                                Lease #{{ $lease->id }} - {{ $lease->unit->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary">Crea Tenant</button>
+
+        </form>
+
+    </div>
+</div>
+
+@stop
