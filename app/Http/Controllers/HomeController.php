@@ -33,7 +33,10 @@ class HomeController extends Controller
         } elseif(Auth::user()->role == 'tenant'){
             //Route::get('/home', [TenantDashboardController::class,'index'])->name('home');
             return redirect()->route('tenant.dashboard');
-        } else {
+        }  elseif(Auth::user()->role == 'admin'){
+            //Route::get('/home', [TenantDashboardController::class,'index'])->name('home');
+            return redirect()->route('admin.landlords.index');
+            } else {
             Route::get('/home', function () { return view('welcome'); })->name('home');
         }
     }

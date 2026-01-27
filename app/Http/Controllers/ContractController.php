@@ -22,8 +22,9 @@ class ContractController extends Controller
             'unit'     => $unit,
         ])->setPaper('a4');
 
+        //$fileName = 'Contratto_3+2_'.$tenant->last_name.'_'.$lease->id.'.pdf';
+        $tenant = $lease->tenants->first();
         $fileName = 'Contratto_3+2_'.$tenant->last_name.'_'.$lease->id.'.pdf';
-
         return $pdf->download($fileName);
         // oppure ->stream($fileName);
     }

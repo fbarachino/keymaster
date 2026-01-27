@@ -1,44 +1,48 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\EnsureAdmin;
 
 // TENANT CONTROLLERS
-use App\Http\Controllers\Web\Tenant\TenantDashboardController;
-use App\Http\Controllers\Web\Tenant\TenantLeaseController;
-use App\Http\Controllers\Web\Tenant\TenantPaymentController;
-use App\Http\Controllers\Web\Tenant\TenantMessageController;
-use App\Http\Controllers\Web\Tenant\TenantDocumentsController;
-use App\Http\Controllers\Web\Tenant\TicketController;
-use App\Http\Controllers\Web\Tenant\LeaseSignatureController;
-use App\Http\Controllers\Web\Tenant\TenantTicketController;
-
-use App\Http\Controllers\UserProfileController;
-
-// LANDLORD CONTROLLERS
-use App\Http\Controllers\Web\Landlord\LandlordDashboardController;
-use App\Http\Controllers\Web\Landlord\PropertyCrudController;
-use App\Http\Controllers\Web\Landlord\UnitCrudController;
-use App\Http\Controllers\Web\Landlord\LeaseCrudController;
-use App\Http\Controllers\Web\Landlord\PaymentCrudController;
-use App\Http\Controllers\Web\Landlord\LandlordMessageController;
-use App\Http\Controllers\Web\Landlord\TenantManagementController;
-use App\Http\Controllers\Web\Landlord\MaintenanceDashboardController;
-use App\Http\Controllers\Web\Landlord\LandlordTicketController;
-use App\Http\Controllers\Web\Landlord\LandlordTicketDashboardController;
-use App\Http\Controllers\Web\Landlord\LandlordTenantController;
-use App\Http\Controllers\Web\Landlord\LandlordPaymentController;
-
-// COMMON
-use App\Http\Controllers\Web\MessagesController;
-use App\Http\Controllers\Web\LeasePdfController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\EnsureTenant;;
 use App\Http\Middleware\EnsureLandlord;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ContractController;
+use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\Web\LeasePdfController;
+use App\Http\Controllers\Web\MessagesController;
+
+use App\Http\Controllers\Web\Tenant\TicketController;
+
+// LANDLORD CONTROLLERS
+use App\Http\Controllers\Web\Landlord\UnitCrudController;
+use App\Http\Controllers\Web\Landlord\LeaseCrudController;
+use App\Http\Controllers\Web\Tenant\TenantLeaseController;
+use App\Http\Controllers\Web\Tenant\TenantTicketController;
+use App\Http\Controllers\Web\Landlord\PaymentCrudController;
+use App\Http\Controllers\Web\Tenant\TenantMessageController;
+use App\Http\Controllers\Web\Tenant\TenantPaymentController;
+use App\Http\Controllers\Web\Landlord\PropertyCrudController;
+use App\Http\Controllers\Web\Tenant\LeaseSignatureController;
+use App\Http\Controllers\Web\Tenant\TenantDashboardController;
+use App\Http\Controllers\Web\Tenant\TenantDocumentsController;
+use App\Http\Controllers\Web\Landlord\LandlordTenantController;
+
+// COMMON
+use App\Http\Controllers\Web\Landlord\LandlordTicketController;
+use App\Http\Controllers\Web\Landlord\LandlordMessageController;
+use App\Http\Controllers\Web\Landlord\LandlordPaymentController;
+use App\Http\Controllers\Web\Landlord\TenantManagementController;
+use App\Http\Controllers\Web\Landlord\LandlordDashboardController;
+use App\Http\Controllers\Web\Landlord\MaintenanceDashboardController;
+use App\Http\Controllers\Web\Landlord\LandlordTicketDashboardController;
 
 
 
 Route::get('/', function () { return view('welcome'); }); // oppure 'landing', se hai una view dedicata })->name('home');
 Auth::routes(['register' => true]); // Production only (true)
+Auth::routes(['verify' => false]);
+
 Route::get('/home', [HomeController::class,'index'])->name('home'); // Development only (remove in production)
 
 
@@ -46,7 +50,23 @@ Route::get('/home', [HomeController::class,'index'])->name('home'); // Developme
 // ---------------------------------------------------------
 //  AREA AUTENTICATA
 // ---------------------------------------------------------
-Route::middleware(['auth'])->group(function () {
+ Route::middleware(['auth'])->group(function () {
+
+    Route::middleware(EnsureAdmin::class)->prefix('admin')->name('admin.')->group(function () {
+
+    Route::resource('landlords', \App\Http\Controllers\Admin\LandlordController::class);
+
+
+    Route::get('profile/password', [\App\Http\Controllers\Admin\AdminProfileController::class, 'editPassword'])
+        ->name('password.edit');
+
+    Route::post('profile/password', [\App\Http\Controllers\Admin\AdminProfileController::class, 'updatePassword'])
+        ->name('password.update');
+
+
+
+
+});
 
     // -----------------------------------------------------
     //  TENANT PORTAL
@@ -220,9 +240,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/tenants/{tenant}/assign', [LandlordTenantController::class, 'assignStore']) ->name('tenants.assignStore');
     Route::get('/landlord/leases/{lease}/pdf', [\App\Http\Controllers\Web\Landlord\LandlordLeasePdfController::class, 'show'])->name('leases.pdf');
 
-     Route::get('/landlord/tenants', [LandlordTenantController::class, 'index'])->name('.tenants.index');
-     Route::get('/landlord/tenants/create', [LandlordTenantController::class, 'create'])->name('tenants.create');
-     Route::post('/landlord/tenants', [LandlordTenantController::class, 'store'])->name('tenants.store');
+    // Route::get('/tenants', [LandlordTenantController::class, 'index'])->name('.tenants.index');
+     Route::get('/tenants/create', [LandlordTenantController::class, 'create'])->name('tenants.create');
+     Route::post('/tenants', [LandlordTenantController::class, 'store'])->name('tenants.store');
+     Route::delete('/leases/{lease}/tenant/{tenant}', [LandlordTenantController::class, 'detachFromLease'] )->name('tenants.detach');
 
 });
     // -----------------------------------------------------

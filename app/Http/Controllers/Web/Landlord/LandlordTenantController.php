@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Web\Landlord;
 
-use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Unit;
+use App\Models\User;
 use App\Models\Lease;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Notifications\TenantInvitation;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
+
 
 class LandlordTenantController extends Controller
 {
@@ -69,7 +73,7 @@ class LandlordTenantController extends Controller
         $tenants = User::where('role', 'tenant')->get();
         return view('landlord.tenants.index', compact('tenants'));
     }
- */
+
     public function create(Request $request)
     {
         $landlordId = $request->user()->id;
@@ -80,7 +84,7 @@ class LandlordTenantController extends Controller
         })->get();
 
         return view('landlord.tenants.create', compact('leases'));
-    }
+    }*/
 
 /*     public function store(Request $request)
     {
@@ -110,7 +114,7 @@ class LandlordTenantController extends Controller
             ->with('success', 'Tenant creato correttamente.');
     } */
 
-            public function store(Request $request)
+/*             public function store(Request $request)
 {
     $validated = $request->validate([
         'email'      => 'required|email|unique:users,email',
@@ -128,14 +132,96 @@ class LandlordTenantController extends Controller
         'role'       => 'tenant',
     ]);
 
+    $tenant = User::create([
+    'email'      => $validated['email'],
+    'first_name' => $validated['first_name'],
+    'last_name'  => $validated['last_name'],
+    'name'       => $validated['first_name'] . ' ' . $validated['last_name'], // <— aggiungi questo
+    'password'   => bcrypt(str()->random(12)),
+    'role'       => 'tenant',
+]);
+
+
     // collega alla lease se selezionata
     if ($request->lease_id) {
         $lease = Lease::find($request->lease_id);
         $lease->tenants()->syncWithoutDetaching([$tenant->id]);
     }
-
+    $tenant->notify(new TenantInvitation());
     return redirect()->route('landlord.tenants.index')
         ->with('success', 'Tenant creato correttamente.');
+}*/
+
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'email'      => 'required|email|unique:users,email',
+        'first_name' => 'required|string|max:255',
+        'last_name'  => 'required|string|max:255',
+        'lease_id'   => 'nullable|exists:leases,id',
+    ]);
+
+    // Creiamo una password temporanea (non usata dall'utente)
+    $temporaryPassword = Str::random(12);
+
+    // Creiamo il tenant
+    $tenant = User::create([
+        'email'      => $validated['email'],
+        'first_name' => $validated['first_name'],
+        'last_name'  => $validated['last_name'],
+        'name'       => $validated['first_name'] . ' ' . $validated['last_name'],
+        'password'   => bcrypt($temporaryPassword),
+        'role'       => 'tenant',
+    ]);
+
+    // Colleghiamo alla lease se selezionata
+    if ($request->lease_id) {
+        $lease = Lease::find($request->lease_id);
+        $lease->tenants()->syncWithoutDetaching([$tenant->id]);
+    }
+
+    // 🔥 INVIO EMAIL CON LINK PER IMPOSTARE LA PASSWORD
+    Password::sendResetLink(['email' => $tenant->email]);
+    $tenant->notify(new TenantInvitation());
+    return redirect()->route('landlord.tenants.index')
+        ->with('success', 'Tenant creato correttamente. È stata inviata un\'email per impostare la password.');
 }
+
+public function edit(User $tenant)
+{
+    return view('landlord.tenants.edit', compact('tenant'));
+}
+public function update(Request $request, User $tenant)
+{
+    $validated = $request->validate([
+        'email'      => 'required|email|unique:users,email,' . $tenant->id,
+        'first_name' => 'required|string|max:255',
+        'last_name'  => 'required|string|max:255',
+    ]);
+
+    $tenant->update($validated);
+
+    return redirect()->route('landlord.tenants.index')
+        ->with('success', 'Tenant aggiornato correttamente.');
+}
+
+public function detachFromLease(Request $request, Lease $lease, User $tenant)
+{
+    $lease->tenants()->detach($tenant->id);
+
+    return back()->with('success', 'Tenant rimosso dalla lease.');
+}
+
+public function create(Request $request)
+{
+    $leases = Lease::whereHas('unit.property', function ($q) use ($request) {
+        $q->where('landlord_id', $request->user()->id);
+    })->get();
+
+    $selectedLease = $request->lease_id;
+
+    return view('landlord.tenants.create', compact('leases', 'selectedLease'));
+}
+
 
 }

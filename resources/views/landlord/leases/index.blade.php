@@ -34,9 +34,13 @@
                 @endphp
 
                 <tr>
-                    <td>{{ $lease->unit->name }}</td>
-                    <td>{{ $lease->unit->property->name }}</td>
-                    <td>{{ $lease->tenant->name }}</td>
+                    <td>{{ optional($lease->unit)->name ?? 'Unità non trovata' }}</td>
+                    <td>{{ optional(optional($lease->unit)->property)->name ?? 'Proprietà non trovata' }}</td>
+                    <td>
+                        @foreach($lease->tenants as $tenant)
+                            {{ $tenant->first_name }} {{ $tenant->last_name }}<br>
+                        @endforeach
+                    </td>
                     <td>{{ $lease->start_date->format('d/m/Y') }}</td>
                     <td>€ {{ number_format($lease->rent_amount, 2, ',', '.') }}</td>
 
@@ -61,9 +65,15 @@
 {{--                         <a href="{{ route('landlord.leases.show', $lease) }}" class="btn btn-sm btn-secondary">
                             <i class="fas fa-eye"></i> Dettagli
                         </a> --}}
-                        <a href="{{ route('landlord.leases.pdf', $lease) }}" class="btn btn-sm btn-dark" target="_blank">
+                        {{-- <a href="{{ route('landlord.leases.pdf', $lease) }}" class="btn btn-sm btn-dark" target="_blank">
                             <i class="fas fa-file-pdf"></i> PDF
                         </a>
+ --}}
+<a href="{{ route('leases.contract.3plus2', $lease) }}" class="btn btn-sm btn-dark" target="_blank">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </a>
+
+
                     </td>
                 </tr>
                 @endforeach

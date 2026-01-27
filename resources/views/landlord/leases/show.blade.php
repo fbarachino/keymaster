@@ -50,6 +50,13 @@
             <i class="fas fa-file-contract"></i> Informazioni contratto
         </h3>
     </div>
+            <form method="POST" action="{{ route('landlord.tenants.detach', [$lease, $tenant]) }}">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-danger btn-sm">
+                    <i class="fas fa-user-minus"></i> Rimuovi
+                </button>
+            </form>
 
     <div class="card-body">
 

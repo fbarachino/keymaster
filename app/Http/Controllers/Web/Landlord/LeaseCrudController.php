@@ -34,7 +34,7 @@ class LeaseCrudController extends Controller
     {
         $data = $request->validate([
             'unit_id' => 'required|exists:units,id',
-            'tenant_id' => 'required|exists:users,id',
+          //  'tenant_id' => 'required|exists:users,id',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date',
             'rent_amount' => 'required|numeric',
@@ -44,7 +44,15 @@ class LeaseCrudController extends Controller
             'tenants.*' => 'exists:users,id',
         ]);
 
-        $lease = Lease::create($data);
+        $lease = Lease::create([
+            'unit_id' => $data['unit_id'],
+            'start_date' => $data['start_date'],
+            'end_date' => $data['end_date'],
+            'rent_amount' => $data['rent_amount'],
+            'advance_expenses' => $data['advance_expenses'],
+            'deposit_amount' => $data['deposit_amount'],
+        ]);
+
         $lease->tenants()->sync($request->tenants);
 
         return redirect()->route('landlord.leases.index')

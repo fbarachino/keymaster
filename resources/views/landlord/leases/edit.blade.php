@@ -167,7 +167,10 @@
     <div class="card-header">
         <h3 class="card-title"><i class="fas fa-file-contract"></i> Modifica contratto</h3>
     </div>
-
+    <a href="{{ route('landlord.tenants.create', ['lease_id' => $lease->id]) }}"
+        class="btn btn-primary btn-sm">
+            <i class="fas fa-user-plus"></i> Aggiungi Tenant
+        </a>
     <div class="card-body">
         <p class="mb-4">
             Aggiorna i dati del contratto di locazione.
@@ -192,16 +195,17 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label class="form-label font-weight-bold">Inquilino</label>
-                    <select name="tenant_id" class="form-control">
+                    <label class="form-label font-weight-bold">Inquilini</label>
+                    <select name="tenants[]" class="form-control" multiple>
                         @foreach($tenants as $tenant)
                             <option value="{{ $tenant->id }}"
-                                {{ $lease->tenant_id == $tenant->id ? 'selected' : '' }}>
-                                {{ $tenant->name }}
+                                {{ $lease->tenants->contains($tenant->id) ? 'selected' : '' }}>
+                                {{ $tenant->first_name }} {{ $tenant->last_name }}
                             </option>
                         @endforeach
                     </select>
                 </div>
+
             </div>
 
             {{-- DATE --}}

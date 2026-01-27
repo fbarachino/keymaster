@@ -104,13 +104,17 @@
                     <select name="lease_id" class="form-control">
                         <option value="">Nessuna</option>
                         @foreach($leases as $lease)
-                            <option value="{{ $lease->id }}">
+                            <option value="{{ $lease->id }}"
+                                {{ $selectedLease == $lease->id ? 'selected' : '' }}>
                                 Lease #{{ $lease->id }} - {{ $lease->unit->name }}
                             </option>
                         @endforeach
                     </select>
                 </div>
             </div>
+
+
+
 
             <button class="btn btn-primary">Crea Tenant</button>
 

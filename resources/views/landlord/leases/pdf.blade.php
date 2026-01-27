@@ -20,7 +20,9 @@
 
     <div class="section">
         <h2>Dati dell'inquilino</h2>
-        <p>{{ $lease->tenant->name }} — {{ $lease->tenant->email }}</p>
+            @foreach($lease->tenants as $tenant)
+            {{ $tenant->first_name }} {{ $tenant->last_name }}<br>
+        @endforeach
     </div>
 
     <div class="section">

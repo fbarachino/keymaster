@@ -16,8 +16,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (config('app.env') === 'production') {
-	URL::forceScheme('https');
+        URL::forceScheme('https');
         }
+
         $this->app['events']->listen(BuildingMenu::class, function (BuildingMenu $event) {
 
             // Se l'utente non è autenticato, esci subito
@@ -63,6 +64,16 @@ class AppServiceProvider extends ServiceProvider
 
             if ($user->role === 'tenant') {
                 foreach ($itemsTenant as $item) {
+                    $event->menu->add($item);
+                }
+            }
+
+            $itemsAdmin = [
+                [ 'text' => 'Cambia Password', 'route' => 'admin.password.edit', 'icon' => 'nav-icon fas fa-key', 'topnav_user' => true, ],
+            ];
+
+            if ($user->role === 'admin') {
+                foreach ($itemsAdmin as $item) {
                     $event->menu->add($item);
                 }
             }
