@@ -15,6 +15,7 @@ use App\Http\Controllers\Web\MessagesController;
 use App\Http\Controllers\Web\Tenant\TicketController;
 
 // LANDLORD CONTROLLERS
+use App\Http\Controllers\Landlord\UnitReportController;
 use App\Http\Controllers\Web\Landlord\UnitCrudController;
 use App\Http\Controllers\Web\Landlord\LeaseCrudController;
 use App\Http\Controllers\Web\Tenant\TenantLeaseController;
@@ -26,9 +27,9 @@ use App\Http\Controllers\Web\Landlord\PropertyCrudController;
 use App\Http\Controllers\Web\Tenant\LeaseSignatureController;
 use App\Http\Controllers\Web\Tenant\TenantDashboardController;
 use App\Http\Controllers\Web\Tenant\TenantDocumentsController;
-use App\Http\Controllers\Web\Landlord\LandlordTenantController;
 
 // COMMON
+use App\Http\Controllers\Web\Landlord\LandlordTenantController;
 use App\Http\Controllers\Web\Landlord\LandlordTicketController;
 use App\Http\Controllers\Web\Landlord\LandlordMessageController;
 use App\Http\Controllers\Web\Landlord\LandlordPaymentController;
@@ -185,6 +186,10 @@ Route::get('/home', [HomeController::class,'index'])->name('home'); // Developme
             ->name('units.destroy');
 
         Route::get('/units/available', [\App\Http\Controllers\Web\Landlord\LandlordUnitController::class, 'available']) ->name('units.available');
+
+        Route::get('units/{unit}/report', [UnitReportController::class, 'show']) ->name('units.report');
+        Route::get('units/{unit}/report/pdf', [UnitReportController::class, 'pdf']) ->name('units.report.pdf');
+
 
         // Upload foto unità
         Route::post('properties/{property}/units/{unit}/photos',

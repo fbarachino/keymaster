@@ -96,6 +96,9 @@
                            class="btn btn-sm btn-info">
                             <i class="fas fa-edit"></i> Modifica
                         </a>
+                        <a href="{{ route('landlord.units.report', $unit) }}" class="btn btn-info mb-3">
+                            <i class="fas fa-file-alt"></i> Dossier Unit
+                        </a>
 
                         <form action="{{ route('landlord.units.destroy', [$property, $unit]) }}"
                               method="POST"

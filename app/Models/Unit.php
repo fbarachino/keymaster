@@ -40,10 +40,12 @@ class Unit extends Model
         return $this->hasMany(UnitPhoto::class);
     }
 
-    public function inventory()
-    {
-        return $this->hasMany(UnitInventory::class);
-    }
+public function inventory()
+{
+    return $this->hasMany(\App\Models\UnitInventory::class);
+}
+
+
 
     public function documents()
     {
@@ -62,4 +64,18 @@ class Unit extends Model
     }
 
 
+
+
+
+public function expenses()
+{
+    return $this->hasManyThrough(
+        \App\Models\Expense::class,
+        \App\Models\Lease::class,
+        'unit_id',   // Foreign key on leases table
+        'lease_id',  // Foreign key on expenses table
+        'id',        // Local key on units table
+        'id'         // Local key on leases table
+    );
+}
 }
