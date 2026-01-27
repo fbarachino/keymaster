@@ -60,32 +60,29 @@
 <div class="row">
     <div class="col-md-2 mb-3">
         <label>Foglio</label>
-        <input type="text" name="cadastral_sheet" class="form-control"
-               >
+        <input type="text" name="cadastral_sheet" class="form-control">
     </div>
 
     <div class="col-md-2 mb-3">
         <label>Particella</label>
-        <input type="text" name="cadastral_particle" class="form-control"
-               >
+        <input type="text" name="cadastral_particle" class="form-control">
     </div>
 
     <div class="col-md-2 mb-3">
         <label>Subalterno</label>
-        <input type="text" name="cadastral_sub" class="form-control"
-               >
+        <input type="text" name="cadastral_sub" class="form-control">
+
     </div>
 
     <div class="col-md-2 mb-3">
         <label>Categoria</label>
-        <input type="text" name="cadastral_category" class="form-control"
-              >
+        <input type="text" name="cadastral_category" class="form-control">
     </div>
 
     <div class="col-md-2 mb-3">
         <label>Classe</label>
-        <input type="text" name="cadastral_class" class="form-control"
-               >
+        <input type="text" name="cadastral_class" class="form-control">
+
     </div>
 
     <div class="col-md-2 mb-3">

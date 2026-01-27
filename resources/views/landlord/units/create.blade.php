@@ -90,19 +90,15 @@
             <h4>Dati unità</h4>
 
 <div class="row">
-
-
-    <div class="col-md-3 mb-3">
+ <div class="col-md-3 mb-3">
         <label>Interno</label>
-        <input type="text" name="interior" class="form-control">>
+        <input type="text" name="interior" class="form-control">
     </div>
 
     <div class="col-md-3 mb-3">
         <label>Vani</label>
         <input type="number" name="rooms" class="form-control">
     </div>
-
-
 </div>
 
 <div class="row">

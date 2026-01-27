@@ -50,6 +50,8 @@ class UnitCrudController extends Controller
     'interior'    => 'nullable|string|max:50',
     'rooms'       => 'nullable|integer|min:0',
     'accessory'   => 'nullable|string|max:255',
+    'monthly_rent' => 'required|numeric',
+    'status' => 'required|in:available,occupied',
 ]);
 
 
