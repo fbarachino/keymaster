@@ -61,37 +61,37 @@
     <div class="col-md-2 mb-3">
         <label>Foglio</label>
         <input type="text" name="cadastral_sheet" class="form-control"
-               value="{{ old('cadastral_sheet', $property->cadastral_sheet) }}">
+               >
     </div>
 
     <div class="col-md-2 mb-3">
         <label>Particella</label>
         <input type="text" name="cadastral_particle" class="form-control"
-               value="{{ old('cadastral_particle', $property->cadastral_particle) }}">
+               >
     </div>
 
     <div class="col-md-2 mb-3">
         <label>Subalterno</label>
         <input type="text" name="cadastral_sub" class="form-control"
-               value="{{ old('cadastral_sub', $property->cadastral_sub) }}">
+               >
     </div>
 
     <div class="col-md-2 mb-3">
         <label>Categoria</label>
         <input type="text" name="cadastral_category" class="form-control"
-               value="{{ old('cadastral_category', $property->cadastral_category) }}">
+              >
     </div>
 
     <div class="col-md-2 mb-3">
         <label>Classe</label>
         <input type="text" name="cadastral_class" class="form-control"
-               value="{{ old('cadastral_class', $property->cadastral_class) }}">
+               >
     </div>
 
     <div class="col-md-2 mb-3">
         <label>Rendita catastale</label>
-        <input type="number" step="0.01" name="cadastral_rent" class="form-control"
-               value="{{ old('cadastral_rent', $property->cadastral_rent) }}">
+        <input type="number" step="0.01" name="cadastral_rent" class="form-control">
+
     </div>
 </div>
 
