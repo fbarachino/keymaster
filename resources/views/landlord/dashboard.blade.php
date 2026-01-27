@@ -95,7 +95,7 @@
     GRAFICO ENTRATE MENSILI
 =========================== --}}
 <div class="row mt-4">
-    <div class="col-md-12">
+    <div class="col-md-6">
         <div class="card card-primary">
             <div class="card-header">
                 <h3 class="card-title">
@@ -107,14 +107,10 @@
             </div>
         </div>
     </div>
-</div>
-
-
 {{-- ===========================
     GRAFICO SPESE MENSILI
 =========================== --}}
-<div class="row mt-4">
-    <div class="col-md-12">
+    <div class="col-md-6">
         <div class="card card-danger">
             <div class="card-header">
                 <h3 class="card-title">
@@ -127,6 +123,7 @@
         </div>
     </div>
 </div>
+
 
 @stop
 
