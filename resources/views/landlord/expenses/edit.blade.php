@@ -15,13 +15,15 @@
     <div class="card">
         <div class="card-body">
 
+
+
             <div class="form-group">
                 <label>Contratto</label>
                 <select name="lease_id" class="form-control" required>
                     @foreach($leases as $lease)
                         <option value="{{ $lease->id }}"
                             @selected($lease->id == $expense->lease_id)>
-                            #{{ $lease->id }} - {{ $lease->tenant->name }} ({{ $lease->unit->property->name }})
+                            #{{ $lease->id }} - @foreach($lease->tenants as $tenant) {{ $tenant->first_name }} {{ $tenant->last_name }} \n @endforeach  ( {{ $lease->unit->property->name }} )
                         </option>
                     @endforeach
                 </select>

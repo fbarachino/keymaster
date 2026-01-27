@@ -47,7 +47,7 @@
                         <td>{{ $expense->date }}</td>
                         <td>{{ $expense->type }}</td>
                         <td>{{ $expense->lease->id }}</td>
-                        <td>{{ $expense->lease->tenant->name }}</td>
+                        <td> @foreach($expense->lease->tenants as $tenant) {{ $tenant->first_name }} {{ $tenant->last_name }}<br> @endforeach </td>
                         <td>€ {{ number_format($expense->amount, 2) }}</td>
                         <td>
                             <span class="badge {{ expenseBadge($expense->type) }}">

@@ -32,7 +32,7 @@
                 @forelse($payments as $payment)
                     <tr>
                         <td>#{{ $payment->lease->id }}</td>
-                        <td>{{ $payment->lease->tenant->name }}</td>
+                        <td> @foreach($payment->lease->tenants as $tenant) {{ $tenant->first_name }} {{ $tenant->last_name }}<br> @endforeach </td>
 
                         {{-- Tipo pagamento --}}
                         <td>
