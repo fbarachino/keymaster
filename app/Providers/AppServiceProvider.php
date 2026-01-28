@@ -33,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
                 ['text' => 'Dashboard', 'route' => 'landlord.dashboard','icon' => 'far fa-fw fa-dashboard'],
                 ['text' => 'Proprietà', 'route' => 'landlord.properties.index','icon' => 'far fa-fw fa-building'],
                 ['text' => 'Contratti', 'route' => 'landlord.leases.index' ,'icon' => 'far fa-fw fa-file-contract'],
-                ['text' => 'Inquilini & Contratti', 'route' => 'landlord.tenants.index','icon' => 'far fa-fw fa-users'],
+            //    ['text' => 'Inquilini & Contratti', 'route' => 'landlord.tenants.index','icon' => 'far fa-fw fa-users'],
                 ['text' => 'Pagamenti', 'route' => 'landlord.payments.index','icon' => 'far fa-fw fa-credit-card'],
                 ['text' => 'Ticket di manutenzione', 'route' => 'landlord.tickets.index','icon' => 'far fa-fw fa-tools'],
                 ['text' => 'Dashboard manutenzioni', 'route' => 'landlord.maintenance.dashboard','icon' => 'far fa-fw fa-tachometer-alt'],
