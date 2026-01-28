@@ -88,7 +88,7 @@ class UnitCrudController extends Controller
             'status' => 'required|in:available,occupied',
         ]); */
 $data = $request->validate([
-    'name'        => 'required|string|max:255',
+     'name'        => 'required|string|max:255',
     'description' => 'nullable|string',
     //'address'     => 'required|string|max:255',
 
@@ -98,6 +98,8 @@ $data = $request->validate([
     'interior'    => 'nullable|string|max:50',
     'rooms'       => 'nullable|integer|min:0',
     'accessory'   => 'nullable|string|max:255',
+    'monthly_rent' => 'required|numeric',
+    'status' => 'required|in:available,occupied',
 ]);
 
         $unit->update($data);

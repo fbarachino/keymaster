@@ -99,15 +99,15 @@ class LeaseCrudController extends Controller
     public function update(Request $request, Lease $lease)
 {
     $validated = $request->validate([
-        'unit_id'          => 'required|exists:units,id',
-        'tenant_id'        => 'required|exists:users,id',
-        'start_date'       => 'required|date',
-        'end_date'         => 'nullable|date|after_or_equal:start_date',
-        'rent_amount'      => 'required|numeric|min:0',
-        'advance_expenses' => 'nullable|numeric|min:0',
-        'deposit_amount'   => 'nullable|numeric|min:0',
-        'tenants' => 'required|array|min:1',
-        'tenants.*' => 'exists:users,id',
+        'unit_id' => 'required|exists:units,id',
+          //  'tenant_id' => 'required|exists:users,id',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date',
+            'rent_amount' => 'required|numeric',
+            'advance_expenses' => 'nullable|numeric',
+            'deposit_amount' => 'nullable|numeric',
+            'tenants' => 'required|array|min:1',
+            'tenants.*' => 'exists:users,id',
     ]);
 
     /*$lease->update([

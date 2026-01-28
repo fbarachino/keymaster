@@ -113,7 +113,7 @@
 
     <p class="section-title">Art. 4 - (Deposito cauzionale)</p>
     <p>A garanzia delle obbligazioni assunte col presente contratto, ivi compresa la restituzione dell’immobile a scadenza,
-        il conduttore si impegna a versare al locatore entro e non oltre il giorno 01 agosto 2020 la somma di Euro
+        il conduttore si impegna a versare al locatore entro e non oltre il giorno {{ $lease->deposit_date ?? '___/___/____' }} la somma di Euro
         {{ $lease->deposit_amount ? number_format($lease->deposit_amount, 2, ',', '.') : '__________' }} - (
         {{ $lease->deposit_amount ? \App\Models\Lease::convertNumberToWords($lease->deposit_amount) : '________________' }} Euro),
         pari a due mensilità del canone, non imputabile in conto canoni e non produttiva di interessi.
@@ -221,12 +221,12 @@ Per quanto non previsto dal presente contratto le parti rinviano a quanto in mat
     </p>
 
     <p class="mt-10">
-        Il Locatore: ______________________________
+        Il Locatore: ({{ $landlord->first_name }} {{ $landlord->last_name }}) ______________________________
     </p>
-
+   @foreach($lease->tenants as $tenant)
     <p class="mt-10">
-        Il Conduttore: ____________________________
+        Il Conduttore ( {{ $tenant->first_name }} {{ $tenant->last_name }}): ____________________________
     </p>
-
+   @endforeach
 </body>
 </html>
