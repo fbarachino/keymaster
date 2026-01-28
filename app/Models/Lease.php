@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use NumberToWords\NumberToWords;
 
 class Lease extends Model
 {
@@ -79,6 +80,13 @@ class Lease extends Model
             'total_payments' => $totalPayments,
             'balance' => $totalExpenses - $totalPayments,
         ];
+    }
+
+    public static function convertNumberToWords($number, $locale = 'it')
+    {
+        $numberToWords = new NumberToWords();
+        $numberTransformer = $numberToWords->getNumberTransformer($locale);
+        return $numberTransformer->toWords($number);
     }
 
 }

@@ -61,6 +61,16 @@ class PropertyCrudController extends Controller
     'interior'    => 'nullable|string|max:50',
     'rooms'       => 'nullable|integer|min:0',
     'accessory'   => 'nullable|string|max:255',
+    'purchase_price' => 'nullable|numeric|min:0',
+
+    // 'address', 'zip', 'city', 'province', 'country',
+
+    'cadastral_sheet' => 'nullable|string|max:255',
+    'cadastral_particle' => 'nullable|string|max:255',
+    'cadastral_sub' => 'nullable|string|max:255',
+    'cadastral_category' => 'nullable|string|max:255',
+    'cadastral_class' => 'nullable|string|max:255',
+    'cadastral_rent' => 'nullable|numeric|min:0',
 ]);
 
         $data['purchase_price'] = $request->purchase_price;
