@@ -54,6 +54,7 @@ class LandlordController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name'  => 'required|string|max:255',
             'email'      => 'required|email|unique:users,email,'.$landlord->id,
+
         ]);
 
         $landlord->update([
@@ -61,6 +62,7 @@ class LandlordController extends Controller
             'last_name'  => $data['last_name'],
             'name'       => $data['first_name'].' '.$data['last_name'],
             'email'      => $data['email'],
+            'role'       => 'landlord',
         ]);
 
         return redirect()->route('admin.landlords.index')
