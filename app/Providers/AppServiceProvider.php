@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
                 ['text' => 'Ticket di manutenzione', 'route' => 'landlord.tickets.index','icon' => 'far fa-fw fa-tools'],
                 ['text' => 'Dashboard manutenzioni', 'route' => 'landlord.maintenance.dashboard','icon' => 'far fa-fw fa-tachometer-alt'],
                 ['text' => 'Messaggi', 'route' => 'landlord.messages.index','icon' => 'far fa-fw fa-envelope'],
-                ['text' => 'Nuovo messaggio', 'route' => 'landlord.messages.create','icon' => 'far fa-fw fa-edit'],
+            //    ['text' => 'Nuovo messaggio', 'route' => 'landlord.messages.create','icon' => 'far fa-fw fa-edit'],
                 [ 'text' => 'Spese', 'url' => 'landlord/expenses', 'icon' => 'fas fa-receipt'], // se usi Gate o middleware ]
                 [ 'text' => 'Conguagli annuali', 'url' => 'landlord/yearly-reports', 'icon' => 'fas fa-file-invoice-dollar', ],
                 [ 'text' => 'Profilo', 'url' => 'profile', 'icon' => 'fas fa-user-cog', 'topnav_user' => true,], // <— questa è la chiave importante
@@ -55,9 +55,9 @@ class AppServiceProvider extends ServiceProvider
                 ['text' => 'Dashboard', 'route' => 'tenant.dashboard','icon' => 'far fa-fw fa-dashboard'],
                 ['text' => 'I miei contratti', 'route' => 'tenant.leases.index','icon' => 'far fa-fw fa-file-contract'],
                 ['text' => 'I miei pagamenti', 'route' => 'tenant.payments.index','icon' => 'far fa-fw fa-credit-card'],
-                ['text' => 'I miei ticket di manutenzione', 'route' => 'tenant.tickets.index','icon' => 'far fa-fw fa-tools'],
+                ['text' => 'Ticket di manutenzione', 'route' => 'tenant.tickets.index','icon' => 'far fa-fw fa-tools'],
                 ['text' => 'Messaggi', 'route' => 'tenant.messages.index','icon' => 'far fa-fw fa-envelope'],
-                ['text' => 'Nuovo messaggio', 'route' => 'tenant.messages.create','icon' => 'far fa-fw fa-edit'],
+            //    ['text' => 'Nuovo messaggio', 'route' => 'tenant.messages.create','icon' => 'far fa-fw fa-edit'],
                 [ 'text' => 'Conguagli annuali', 'url' => 'tenant/yearly-reports', 'icon' => 'fas fa-file-invoice-dollar', ],
                 [ 'text' => 'Profilo', 'url' => 'profile', 'icon' => 'fas fa-user-cog', 'topnav_user' => true, ],
             ]; // <— questa è la chiave importante
