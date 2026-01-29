@@ -157,7 +157,7 @@ Route::middleware(['auth'])->group(function ()
         Route::get('units/{unit}/report/pdf', [UnitReportController::class, 'pdf']) ->name('units.report.pdf');
 
         // Upload foto unità
-        Route::post('properties/{property}/units/{unit}/photos',[UnitCrudController::class, 'uploadPhotos'])>name('units.photos.upload');
+        Route::post('properties/{property}/units/{unit}/photos',[UnitCrudController::class, 'uploadPhotos'])->name('units.photos.upload');
 
         // Inventario unità
         Route::post('properties/{property}/units/{unit}/inventory',[UnitCrudController::class, 'addInventory'])->name('units.inventory.add');
