@@ -9,8 +9,7 @@
 <p>È stato firmato da:</p>
 
 <p>
-    <strong>{{ $lease->tenant->name }}</strong><br>
-    {{ $lease->tenant->email }}
+    <strong>{{ $lease->tenant->name }}</strong> {{ $lease->tenant->email }}
 </p>
 
 <p>Data firma: {{ $lease->signed_by_tenant_at->format('d/m/Y H:i') }}</p>
