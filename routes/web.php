@@ -90,9 +90,9 @@ Route::middleware(['auth'])->group(function ()
         Route::get('leases/{lease}', [TenantLeaseController::class, 'show'])->name('leases.show');
 
         // Firma digitale contratto
-        Route::get('/tenant/leases/{lease}/sign', [LeaseSignatureController::class, 'showForm'])->name('leases.sign.form');
+        Route::get('leases/{lease}/sign', [LeaseSignatureController::class, 'showForm'])->name('leases.sign.form');
 
-        Route::post('/tenant/leases/{lease}/sign', [LeaseSignatureController::class, 'sign'])->name('leases.sign');
+        Route::post('leases/{lease}/sign', [LeaseSignatureController::class, 'sign'])->name('leases.sign');
 
         // Pagamenti
         Route::get('payments', [TenantPaymentController::class, 'index'])->name('payments.index');
