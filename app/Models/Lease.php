@@ -20,9 +20,19 @@ class Lease extends Model
         'signed_by_landlord_at',
         'signature_token',
         'advance_expenses',
+        'split_mode',
     ];
 
     protected $casts = [ 'start_date' => 'date', 'end_date' => 'date', 'signed_by_tenant_at' => 'datetime', 'signed_by_landlord_at' => 'datetime', ];
+
+
+
+    public function isSplitModeEqual()
+    {
+        return $this->split_mode === 'equal';
+    }
+
+    public function property() { return $this->belongsTo(Property::class); }
 
     public function tenant()
     {
@@ -30,9 +40,9 @@ class Lease extends Model
     }
 
     public function tenants()
-{
-    return $this->belongsToMany(User::class, 'lease_tenant', 'lease_id', 'tenant_id');
-}
+    {
+        return $this->belongsToMany(User::class, 'lease_tenant', 'lease_id', 'tenant_id');
+    }
 
     //public function expenses() { return $this->hasMany(\App\Models\Expense::class); }
 

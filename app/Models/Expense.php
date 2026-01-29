@@ -21,4 +21,12 @@ class Expense extends Model
     {
         return $this->belongsTo(Lease::class);
     }
+
+
+
+    public function documents()
+    {
+        return $this->hasMany(ExpenseDocument::class);
+    }
+
 }

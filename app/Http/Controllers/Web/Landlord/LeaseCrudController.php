@@ -42,6 +42,7 @@ class LeaseCrudController extends Controller
             'deposit_amount' => 'nullable|numeric',
             'tenants' => 'required|array|min:1',
             'tenants.*' => 'exists:users,id',
+       //     'split_mode' => 'required|in:equal,full',
         ]);
 
         $lease = Lease::create([
@@ -51,6 +52,7 @@ class LeaseCrudController extends Controller
             'rent_amount' => $data['rent_amount'],
             'advance_expenses' => $data['advance_expenses'],
             'deposit_amount' => $data['deposit_amount'],
+       //     'split_mode' => $data['split_mode'],
         ]);
 
         $lease->tenants()->sync($request->tenants);
@@ -108,6 +110,7 @@ class LeaseCrudController extends Controller
             'deposit_amount' => 'nullable|numeric',
             'tenants' => 'required|array|min:1',
             'tenants.*' => 'exists:users,id',
+            'split_mode' => 'required|in:equal,full',
     ]);
 
     /*$lease->update([

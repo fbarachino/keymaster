@@ -242,6 +242,17 @@
                     <input type="number" step="0.01" name="deposit_amount" class="form-control"
                            value="{{ $lease->deposit_amount }}">
                 </div>
+                <div class="form-group">
+                    <label>Modalità di ripartizione</label>
+                    <select name="split_mode" class="form-control">
+                        <option value="equal" {{ $lease->split_mode === 'equal' ? 'selected' : '' }}>
+                            Dividi in parti uguali
+                        </option>
+                        <option value="full" {{ $lease->split_mode === 'full' ? 'selected' : '' }}>
+                            Report unico per tutti
+                        </option>
+                    </select>
+                </div>
             </div>
 
             <button class="btn btn-primary">
