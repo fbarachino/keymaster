@@ -13,8 +13,7 @@ class LeaseSignatureController extends Controller
      */
     public function showForm(Lease $lease)
     {
-        abort_if($lease->tenant_id !== auth()->id(), 403);
-
+        abort_if(!$lease->tenants->pluck('id')->contains(auth()->id()), 403);
         return view('tenant.leases.sign', compact('lease'));
     }
 
@@ -23,7 +22,7 @@ class LeaseSignatureController extends Controller
      */
 public function sign(Request $request, Lease $lease)
 {
-    abort_if($lease->tenant_id !== auth()->id(), 403);
+    abort_if(!$lease->tenants->pluck('id')->contains(auth()->id()), 403);
 
     $request->validate(['signature' => 'required']);
 
