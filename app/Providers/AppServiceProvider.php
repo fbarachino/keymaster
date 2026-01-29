@@ -53,7 +53,7 @@ class AppServiceProvider extends ServiceProvider
             // Menu Tenant
             $itemsTenant = [
                 ['text' => 'Dashboard', 'route' => 'tenant.dashboard','icon' => 'fas fa-tachometer-alt'],
-                ['text' => 'Le mie proprietà', 'route' => 'tenant.properties.index','icon' => 'fas fa-building'],
+                // ['text' => 'Le mie proprietà', 'route' => 'tenant.properties.index','icon' => 'fas fa-building'],
                 ['text' => 'I miei contratti', 'route' => 'tenant.leases.index','icon' => 'fas fa-file-contract'],
                 ['text' => 'I miei pagamenti', 'route' => 'tenant.payments.index','icon' => 'far fa-fw fa-credit-card'],
                 ['text' => 'Ticket di manutenzione', 'route' => 'tenant.tickets.index','icon' => 'fas fa-exclamation-triangle'],
