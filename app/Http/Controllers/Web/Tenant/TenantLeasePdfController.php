@@ -12,7 +12,7 @@ class TenantLeasePdfController extends Controller
     public function show(Request $request, Lease $lease)
     {
         // Sicurezza: il tenant può scaricare solo i suoi contratti
-        abort_if($lease->tenant_id !== $request->user()->id, 403);
+        abort_if(!$lease->tenants->pluck('id')->contains(auth()->id()), 403);
 
         $lease->load(['tenant', 'unit.property']);
 
