@@ -51,23 +51,14 @@ Route::get('/home', [HomeController::class,'index'])->name('home'); // Developme
 // ---------------------------------------------------------
 //  AREA AUTENTICATA
 // ---------------------------------------------------------
- Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth'])->group(function ()
+ {
 
     Route::middleware(EnsureAdmin::class)->prefix('admin')->name('admin.')->group(function () {
-
-    Route::resource('landlords', \App\Http\Controllers\Admin\LandlordController::class);
-
-
-    Route::get('profile/password', [\App\Http\Controllers\Admin\AdminProfileController::class, 'editPassword'])
-        ->name('password.edit');
-
-    Route::post('profile/password', [\App\Http\Controllers\Admin\AdminProfileController::class, 'updatePassword'])
-        ->name('password.update');
-
-
-
-
-});
+        Route::resource('landlords', \App\Http\Controllers\Admin\LandlordController::class);
+        Route::get('profile/password', [\App\Http\Controllers\Admin\AdminProfileController::class, 'editPassword'])->name('password.edit');
+        Route::post('profile/password', [\App\Http\Controllers\Admin\AdminProfileController::class, 'updatePassword'])->name('password.update');
+    });
 
     // -----------------------------------------------------
     //  TENANT PORTAL
@@ -81,54 +72,44 @@ Route::get('/home', [HomeController::class,'index'])->name('home'); // Developme
         Route::get('/tickets/{ticket}', [TenantTicketController::class, 'show'])->name('tickets.show');
 
         // Messaggi
-        Route::resource('messages', TenantMessageController::class)
-            ->only(['index', 'create', 'store',]);
-
+        Route::resource('messages', TenantMessageController::class)->only(['index', 'create', 'store',]);
         Route::get('/messages/{thread}', [TenantMessageController::class, 'show']) ->name('messages.show');
         Route::get('/messages/create', [TenantMessageController::class, 'create'])->name('messages.create');
         Route::post('/messages/{thread}/reply', [TenantMessageController::class, 'reply'])->name('messages.reply');
 
-
         // Dashboard
-        Route::get('dashboard', [TenantDashboardController::class, 'index'])
-            ->name('dashboard');
+        Route::get('dashboard', [TenantDashboardController::class, 'index'])->name('dashboard');
 
         // Contratti
-        Route::get('leases', [TenantLeaseController::class, 'index'])
-            ->name('leases.index');
+        Route::get('leases', [TenantLeaseController::class, 'index'])->name('leases.index');
 
-            // Report annuale conguaglio spese
-            Route::get('yearly-reports', [\App\Http\Controllers\Web\Tenant\YearlyReportController::class, 'index']) ->name('yearly-reports.index');
-            Route::get('yearly-reports/{report}/download', [\App\Http\Controllers\Web\Tenant\YearlyReportController::class, 'download']) ->name('yearly-reports.download');
+        // Report annuale conguaglio spese
+        Route::get('yearly-reports', [\App\Http\Controllers\Web\Tenant\YearlyReportController::class, 'index']) ->name('yearly-reports.index');
+        Route::get('yearly-reports/{report}/download', [\App\Http\Controllers\Web\Tenant\YearlyReportController::class, 'download']) ->name('yearly-reports.download');
 
-        Route::get('leases/{lease}', [TenantLeaseController::class, 'show'])
-            ->name('leases.show');
+        Route::get('leases/{lease}', [TenantLeaseController::class, 'show'])->name('leases.show');
 
         // Firma digitale contratto
-        Route::get('leases/{lease}/sign', [LeaseSignatureController::class, 'showForm'])
-            ->name('leases.sign.form');
+        Route::get('leases/{lease}/sign', [LeaseSignatureController::class, 'showForm'])->name('leases.sign.form');
 
-        Route::post('leases/{lease}/sign', [LeaseSignatureController::class, 'sign'])
-            ->name('leases.sign');
+        Route::post('leases/{lease}/sign', [LeaseSignatureController::class, 'sign'])->name('leases.sign');
 
         // Pagamenti
-        Route::get('payments', [TenantPaymentController::class, 'index'])
-            ->name('payments.index');
+        Route::get('payments', [TenantPaymentController::class, 'index'])->name('payments.index');
         Route::get('/payments/{payment}', [TenantPaymentController::class, 'show']) ->name('payments.show');
         Route::get('payments/{payment}/receipt', [TenantPaymentController::class, 'receipt'] )->name('payments.receipt');
 
         // Documenti unità
-        Route::get('documents', [TenantDocumentsController::class, 'index'])
-            ->name('documents.index');
+        Route::get('documents', [TenantDocumentsController::class, 'index'])->name('documents.index');
 
-             Route::get('/leases/{lease}/pdf', [\App\Http\Controllers\Web\Tenant\TenantLeasePdfController::class, 'show']) ->name('leases.pdf');
+        Route::get('/leases/{lease}/pdf', [\App\Http\Controllers\Web\Tenant\TenantLeasePdfController::class, 'show']) ->name('leases.pdf');
 
         // Ticket manutenzione
-        Route::resource('tickets', TenantTicketController::class)
-            ->only(['index', 'create', 'store', 'show']);
+        Route::resource('tickets', TenantTicketController::class)->only(['index', 'create', 'store', 'show']);
 
-            Route::get('/tenant/leases/{lease}/sign', [\App\Http\Controllers\Web\Tenant\TenantLeaseSignController::class, 'show']) ->name('leases.sign.show');
-            Route::post('/tenant/leases/{lease}/sign', [\App\Http\Controllers\Web\Tenant\TenantLeaseSignController::class, 'sign']) ->name('leases.sign.perform');
+        // Signature Leases
+        Route::get('/tenant/leases/{lease}/sign', [\App\Http\Controllers\Web\Tenant\TenantLeaseSignController::class, 'show']) ->name('leases.sign.show');
+        Route::post('/tenant/leases/{lease}/sign', [\App\Http\Controllers\Web\Tenant\TenantLeaseSignController::class, 'sign']) ->name('leases.sign.perform');
     });
 
 
@@ -151,64 +132,41 @@ Route::get('/home', [HomeController::class,'index'])->name('home'); // Developme
          Route::get('/messages', [LandlordMessageController::class, 'index']) ->name('messages.index');
          Route::get('/messages/{message}', [LandlordMessageController::class, 'show']) ->name('messages.show');*/
 
-                 // Messaggi
-        Route::resource('messages', LandlordMessageController::class)
-            ->only(['index']);
+        // Messaggi
+        Route::resource('messages', LandlordMessageController::class)->only(['index']);
         Route::get('/messages/create', [LandlordMessageController::class, 'create'])->name('messages.create');
         Route::post('/messages', [LandlordMessageController::class, 'store'])->name('messages.store');
         Route::get('/messages/{thread}', [LandlordMessageController::class, 'show'])->name('messages.show');
         Route::post('/messages/{thread}/reply', [LandlordMessageController::class, 'reply'])->name('messages.reply');
 
         // Dashboard
-        Route::get('dashboard', [LandlordDashboardController::class, 'index'])
-            ->name('dashboard');
+        Route::get('dashboard', [LandlordDashboardController::class, 'index'])->name('dashboard');
 
         // Proprietà
         Route::resource('properties', PropertyCrudController::class);
 
         // Unità
-        Route::get('properties/{property}/units', [UnitCrudController::class, 'index'])
-            ->name('units.index');
-
-        Route::get('properties/{property}/units/create', [UnitCrudController::class, 'create'])
-            ->name('units.create');
-
-        Route::post('properties/{property}/units', [UnitCrudController::class, 'store'])
-            ->name('units.store');
-
-        Route::get('properties/{property}/units/{unit}/edit', [UnitCrudController::class, 'edit'])
-            ->name('units.edit');
-
-        Route::put('properties/{property}/units/{unit}', [UnitCrudController::class, 'update'])
-            ->name('units.update');
-
-        Route::delete('properties/{property}/units/{unit}', [UnitCrudController::class, 'destroy'])
-            ->name('units.destroy');
-
+        Route::get('properties/{property}/units', [UnitCrudController::class, 'index'])->name('units.index');
+        Route::get('properties/{property}/units/create', [UnitCrudController::class, 'create'])->name('units.create');
+        Route::post('properties/{property}/units', [UnitCrudController::class, 'store'])->name('units.store');
+        Route::get('properties/{property}/units/{unit}/edit', [UnitCrudController::class, 'edit'])->name('units.edit');
+        Route::put('properties/{property}/units/{unit}', [UnitCrudController::class, 'update'])->name('units.update');
+        Route::delete('properties/{property}/units/{unit}', [UnitCrudController::class, 'destroy'])->name('units.destroy');
         Route::get('/units/available', [\App\Http\Controllers\Web\Landlord\LandlordUnitController::class, 'available']) ->name('units.available');
-
         Route::get('units/{unit}/report', [UnitReportController::class, 'show']) ->name('units.report');
         Route::get('units/{unit}/report/pdf', [UnitReportController::class, 'pdf']) ->name('units.report.pdf');
 
-
         // Upload foto unità
-        Route::post('properties/{property}/units/{unit}/photos',
-            [UnitCrudController::class, 'uploadPhotos'])
-            ->name('units.photos.upload');
+        Route::post('properties/{property}/units/{unit}/photos',[UnitCrudController::class, 'uploadPhotos'])>name('units.photos.upload');
 
         // Inventario unità
-        Route::post('properties/{property}/units/{unit}/inventory',
-            [UnitCrudController::class, 'addInventory'])
-            ->name('units.inventory.add');
+        Route::post('properties/{property}/units/{unit}/inventory',[UnitCrudController::class, 'addInventory'])->name('units.inventory.add');
 
         // Documenti unità
-        Route::post('properties/{property}/units/{unit}/documents',
-            [UnitCrudController::class, 'uploadDocument'])
-            ->name('units.documents.upload');
+        Route::post('properties/{property}/units/{unit}/documents',[UnitCrudController::class, 'uploadDocument'])->name('units.documents.upload');
 
         // Contratti
-        Route::resource('/leases', LeaseCrudController::class)
-            ->except(['show']);
+        Route::resource('/leases', LeaseCrudController::class)->except(['show']);
 
         // Pagamenti
         // Route::resource('payments', PaymentCrudController::class);
@@ -217,7 +175,7 @@ Route::get('/home', [HomeController::class,'index'])->name('home'); // Developme
         Route::post('/payments', [LandlordPaymentController::class, 'store']) ->name('payments.store');
         Route::get('/landlord/payments/{payment}/receipt', [LandlordPaymentController::class, 'receipt'])->name('payments.receipt');
         Route::patch('payments/{payment}/mark-paid', [LandlordPaymentController::class, 'markPaid'] )->name('payments.markPaid');
-         Route::get('payments/{payment}/edit', [LandlordPaymentController::class, 'edit']) ->name('payments.edit');
+        Route::get('payments/{payment}/edit', [LandlordPaymentController::class, 'edit']) ->name('payments.edit');
         Route::put('payments/{payment}', [LandlordPaymentController::class, 'update']) ->name('payments.update');
         Route::delete('payments/{payment}', [LandlordPaymentController::class, 'destroy']) ->name('payments.destroy');
 
@@ -229,26 +187,22 @@ Route::get('/home', [HomeController::class,'index'])->name('home'); // Developme
 
 
         // Creazione inquilino + assegnazione contratto
-        Route::get('tenants/create', [TenantManagementController::class, 'create'])
-            ->name('tenants.create');
-
-        Route::post('tenants', [TenantManagementController::class, 'store'])
-            ->name('tenants.store');
+        Route::get('tenants/create', [TenantManagementController::class, 'create'])->name('tenants.create');
+        Route::post('tenants', [TenantManagementController::class, 'store'])->name('tenants.store');
 
         // Dashboard manutenzioni
-        Route::get('maintenance', [MaintenanceDashboardController::class, 'index'])
-            ->name('maintenance.dashboard');
+        Route::get('maintenance', [MaintenanceDashboardController::class, 'index'])->name('maintenance.dashboard');
 
         // Gestione inquilini
-    Route::get('/tenants', [LandlordTenantController::class, 'index']) ->name('tenants.index');
-    Route::get('/tenants/{tenant}/assign', [LandlordTenantController::class, 'assignForm']) ->name('tenants.assignForm');
-    Route::post('/tenants/{tenant}/assign', [LandlordTenantController::class, 'assignStore']) ->name('tenants.assignStore');
-    Route::get('/landlord/leases/{lease}/pdf', [\App\Http\Controllers\Web\Landlord\LandlordLeasePdfController::class, 'show'])->name('leases.pdf');
+        Route::get('/tenants', [LandlordTenantController::class, 'index']) ->name('tenants.index');
+        Route::get('/tenants/{tenant}/assign', [LandlordTenantController::class, 'assignForm']) ->name('tenants.assignForm');
+        Route::post('/tenants/{tenant}/assign', [LandlordTenantController::class, 'assignStore']) ->name('tenants.assignStore');
+        Route::get('/landlord/leases/{lease}/pdf', [\App\Http\Controllers\Web\Landlord\LandlordLeasePdfController::class, 'show'])->name('leases.pdf');
 
-    // Route::get('/tenants', [LandlordTenantController::class, 'index'])->name('.tenants.index');
-     Route::get('/tenants/create', [LandlordTenantController::class, 'create'])->name('tenants.create');
-     Route::post('/tenants', [LandlordTenantController::class, 'store'])->name('tenants.store');
-     Route::delete('/leases/{lease}/tenant/{tenant}', [LandlordTenantController::class, 'detachFromLease'] )->name('tenants.detach');
+        // Route::get('/tenants', [LandlordTenantController::class, 'index'])->name('.tenants.index');
+        Route::get('/tenants/create', [LandlordTenantController::class, 'create'])->name('tenants.create');
+        Route::post('/tenants', [LandlordTenantController::class, 'store'])->name('tenants.store');
+        Route::delete('/leases/{lease}/tenant/{tenant}', [LandlordTenantController::class, 'detachFromLease'] )->name('tenants.detach');
 
 });
     // -----------------------------------------------------
@@ -256,18 +210,19 @@ Route::get('/home', [HomeController::class,'index'])->name('home'); // Developme
     // -----------------------------------------------------
 
     // Messaggi globali tenant ↔ landlord
-    Route::resource('messages', MessagesController::class)
-        ->only(['index', 'create', 'store', 'show']);
+    Route::resource('messages', MessagesController::class)->only(['index', 'create', 'store', 'show']);
 
     // PDF contratto
-    Route::get('leases/{lease}/pdf', [LeasePdfController::class, 'downloadPdf'])
-        ->name('leases.pdf');
+    Route::get('leases/{lease}/pdf', [LeasePdfController::class, 'downloadPdf'])->name('leases.pdf');
 
+    // Profilo
     Route::get('/profile', [UserProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
 
+    // Stampa contratto 3+2
     Route::get('/leases/{lease}/contract-3-2', [ContractController::class, 'contract3plus2']) ->name('leases.contract.3plus2');
-})
+ }
+)
 // ---------------------------------------------------------
 //  FINE AREA AUTENTICATA
 ;
