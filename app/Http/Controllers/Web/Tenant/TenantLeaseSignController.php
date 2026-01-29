@@ -11,14 +11,15 @@ class TenantLeaseSignController extends Controller
 {
     public function show(Lease $lease)
     {
-        abort_if($lease->tenant_id !== auth()->id(), 403);
+        abort_if(!$lease->tenants->pluck('id')->contains(auth()->id()), 403);
+
 
         return view('tenant.leases.sign', compact('lease'));
     }
 
     public function sign(Request $request, Lease $lease)
     {
-        abort_if($lease->tenant_id !== auth()->id(), 403);
+        abort_if(!$lease->tenants->pluck('id')->contains(auth()->id()), 403);
         $timestamp = now()->format('Y-m-d H:i:s');
         $request->validate([
             'accept' => 'accepted',
