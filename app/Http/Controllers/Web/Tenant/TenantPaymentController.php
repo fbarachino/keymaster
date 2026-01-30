@@ -13,11 +13,25 @@ class TenantPaymentController extends Controller
 
     public function index() {
         $tenant = auth()->user()->tenant;
+
         $payments = Payment::where('tenant_id', $tenant->id)
             ->orderBy('due_date')
             ->get();
 
-         return view('tenant.payments.index', compact('payments'));
+        $chartLabels = $payments->groupBy(fn($p) => $p->due_date->format('Y-m'))
+            ->keys();
+
+        $chartDue = $payments->groupBy(fn($p) => $p->due_date->format('Y-m'))
+            ->map(fn($g) => $g->sum('amount_due'))
+            ->values();
+
+        $chartPaid = $payments->groupBy(fn($p) => $p->due_date->format('Y-m'))
+            ->map(fn($g) => $g->sum('amount_paid'))
+            ->values();
+
+
+         /* return view('tenant.payments.index', compact('payments')); */
+         return view('tenant.payments.index', compact( 'payments', 'chartLabels', 'chartDue', 'chartPaid' ));
         }
 
     public function show(Payment $payment)

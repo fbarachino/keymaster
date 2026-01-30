@@ -1,4 +1,4 @@
-3@extends('adminlte::page')
+@extends('adminlte::page')
 
 @section('title', 'Dettaglio contratto')
 
@@ -85,6 +85,20 @@
 
     </div>
 
+</div>
+<div class="card card-dark">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-chart-bar"></i> Andamento Pagamenti
+        </h3>
+    </div>
+    <div class="card-body">
+       <h3>Andamento Pagamenti</h3>
+
+    </div>
+    <div class="card-body">
+        <canvas id="paymentsChart" width="400" height="200"></canvas>
+    </div>
 </div>
 <div class="card card-dark">
     <div class="card-header">
@@ -267,4 +281,39 @@
     <i class="fas fa-arrow-left"></i> Torna ai contratti
 </a>
 
+@stop
+
+@section('js')
+@parent
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('paymentsChart').getContext('2d');
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: @json($chartLabels),
+        datasets: [
+            {
+                label: 'Dovuto',
+                data: @json($chartDue),
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2,
+                fill: false
+            },
+            {
+                label: 'Pagato',
+                data: @json($chartPaid),
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                fill: false
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        tension: 0.3
+    }
+});
+</script>
 @stop
