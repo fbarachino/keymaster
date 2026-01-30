@@ -192,6 +192,109 @@
     </table>
     </div>
 </div>
+<div class="card card-dark">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-file-pdf"></i> PDF Mensili
+        </h3>
+    </div>
+    <div class="card-body">
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Periodo</th>
+                <th>Tipo</th>
+                <th>Scarica PDF</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($totals->where('period_type', 'monthly') as $total)
+            <tr>
+                <td>{{ $total->period }}</td>
+                <td>{{ ucfirst($total->period_type) }}</td>
+                <td>
+                    <a href="{{ route('landlord.lease.monthly.pdf', [$lease->id, $total->period]) }}" class="btn btn-sm btn-outline-primary">
+                        PDF
+                    </a>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    </div>
+</div>
+<div class="card card-dark mb-4">
+    <div class="card-header">
+    <h3 class="card-title">
+        <i class="fas fa-file-pdf"></i> PDF Mensili
+    </h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Periodo</th>
+                    <th>Affitto</th>
+                    <th>Anticipo Spese</th>
+                    <th>Totale</th>
+                    <th>PDF</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($monthlyTotals as $total)
+                <tr>
+                    <td>{{ $total->period }}</td>
+                    <td>€ {{ number_format($total->rent_total, 2, ',', '.') }}</td>
+                    <td>€ {{ number_format($total->advance_total, 2, ',', '.') }}</td>
+                    <td>€ {{ number_format($total->rent_total + $total->advance_total, 2, ',', '.') }}</td>
+                    <td>
+                        <a href="{{ route('landlord.lease.monthly.pdf', [$lease->id, $total->period]) }}"
+                        class="btn btn-sm btn-outline-primary">
+                            Scarica PDF
+                        </a>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="card card-dark mb-4">
+    <div class="card-header">
+    <h3 class="card-title">
+        <i class="fas fa-file-pdf"></i> PDF Annuali
+    </h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Anno</th>
+                    <th>Spese Inquilino</th>
+                    <th>Conguaglio</th>
+                    <th>PDF</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($yearlyTotals as $total)
+                <tr>
+                    <td>{{ $total->period }}</td>
+                    <td>€ {{ number_format($total->expenses_total, 2, ',', '.') }}</td>
+                    <td>€ {{ number_format($total->settlement_total, 2, ',', '.') }}</td>
+                    <td>
+                        <a href="{{ route('landlord.lease.yearly.pdf', [$lease->id, $total->period]) }}"
+                        class="btn btn-sm btn-outline-primary">
+                            Scarica PDF
+                        </a>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+    </div>
+</div>
 
 <a href="{{ route('landlord.leases.index') }}" class="btn btn-link pl-0">
     <i class="fas fa-arrow-left"></i> Torna ai contratti

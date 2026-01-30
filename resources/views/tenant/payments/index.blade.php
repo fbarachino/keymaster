@@ -20,6 +20,7 @@
             <th>Pagato</th>
             <th>Stato</th>
             <th>Scadenza</th>
+            <th>PDF</th>
         </tr>
     </thead>
     <tbody>
@@ -34,6 +35,11 @@
                 </span>
             </td>
             <td>{{ $payment->due_date->format('d/m/Y') }}</td>
+             <td>
+                <a href="{{ route('tenant.payments.pdf', $payment) }}" class="btn btn-sm btn-outline-primary">
+                    PDF
+                </a>
+            </td>
         </tr>
         @endforeach
         @empty

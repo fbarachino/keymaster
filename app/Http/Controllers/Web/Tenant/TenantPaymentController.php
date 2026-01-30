@@ -12,12 +12,12 @@ class TenantPaymentController extends Controller
 {
 
     public function index() {
-        $payments = Payment::where('tenant_id', auth()->user()->tenant->id)
-        ->orderBy('due_date')
-        ->get();
-
-    return view('tenant.payments.index', compact('payments'));
-    }
+        $tenant = auth()->user()->tenant;
+        $payments = Payment::where('tenant_id', $tenant->id)
+         ->orderBy('due_date')
+         ->get();
+         return view('tenant.payments.index', compact('payments'));
+        }
 
     public function show(Payment $payment)
     {
@@ -38,5 +38,22 @@ class TenantPaymentController extends Controller
 
         return $pdf->download('ricevuta_' . $payment->id . '.pdf');
     }
+
+    public function downloadPdf(Payment $payment) {
+        $tenant = auth()->user()->tenant;
+        abort_unless($payment->tenant_id === $tenant->id, 403);
+        $period = $payment->reference; // es: "Affitto 2025-01" → se vuoi puoi parsarlo meglio
+        $pdf = PDF::loadView('pdf.monthly_tenant_summary', [
+            'tenant' => $tenant,
+            'lease' => $payment->lease,
+            'period' => $period,
+            'payments' => Payment::where('tenant_id', $tenant->id)
+                ->where('lease_id', $payment->lease_id)
+                ->where('reference', $payment->reference)
+                ->get(),
+            ]);
+        return $pdf->download("riepilogo_mensile_{$tenant->id}_{$payment->id}.pdf");
+        }
+
 
 }
