@@ -4,47 +4,40 @@ namespace App\Console\Commands;
 
 use App\Models\Lease;
 use App\Models\Payment;
-use Barryvdh\DomPDF\PDF;
 use App\Models\LeaseTotal;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\PaymentRegistered;
 use App\Notifications\MonthlyLeaseSummaryGenerated;
+use PDF;
 
 class GenerateMonthlyPayments extends Command
 {
     protected $signature = 'payments:generate-monthly';
-    protected $description = 'Genera i pagamenti mensili per ogni lease attiva (modello ibrido)';
+    protected $description = 'Genera i pagamenti mensili per ogni lease attiva (modello C)';
 
     public function handle(): int
     {
         $today = now();
-        $period = $today->format('Y-m'); // es: 2025-01
-        $dueDate = $today->copy()->startOfMonth()->addDays(4); // 5 del mese
+        $period = $today->format('Y-m');
+        $dueDate = $today->copy()->startOfMonth()->addDays(4);
 
-        $leases = Lease::where('start_date', '<=', $today)
+        $leases = Lease::with('tenants', 'unit.property.landlord')
+            ->where('start_date', '<=', $today)
             ->where('end_date', '>=', $today)
-            ->with('tenants')
             ->get();
-
-        if ($leases->isEmpty()) {
-            $this->info('Nessuna lease attiva trovata.');
-            return self::SUCCESS;
-        }
-
-
 
         foreach ($leases as $lease) {
 
             $tenants = $lease->tenants;
             $tenantCount = max(1, $tenants->count());
 
-            // Totali lease (livello contabile)
+            // Totali lease
             $rentTotal = $lease->rent_amount;
             $advanceTotal = $lease->advance_expenses;
 
-            // Crea record contabile mensile
-            LeaseTotal::updateOrCreate(
+            // Salva totale mensile
+            $total = LeaseTotal::updateOrCreate(
                 [
                     'lease_id' => $lease->id,
                     'period' => $period,
@@ -56,34 +49,11 @@ class GenerateMonthlyPayments extends Command
                 ]
             );
 
-                    // Genera PDF mensile unico per lease
-            $pdf = app('dompdf.wrapper')->loadView('pdf.monthly_lease_summary', [
-                'lease' => $lease,
-                'total' => LeaseTotal::where('lease_id', $lease->id)
-                    ->where('period', $period)
-                    ->where('period_type', 'monthly')
-                    ->first(),
-                'period' => $period,
-            ]);
-
-            $pdfContent = $pdf->output();
-
-            // Salvataggio PDF
-            $path = "reports/{$period}/mensile_lease_{$lease->id}.pdf";
-            Storage::disk('public')->put($path, $pdfContent);
-
-            $lease->unit->property->landlord->notify( new MonthlyLeaseSummaryGenerated($lease, $pdfContent, $period) );
-
             // Pagamenti individuali
-            // ----------------------
-
-            // AFFITTO
             if ($rentTotal > 0) {
-
                 $quota = $rentTotal / $tenantCount;
 
                 foreach ($tenants as $tenant) {
-
                     $payment = Payment::create([
                         'lease_id'   => $lease->id,
                         'tenant_id'  => $tenant->id,
@@ -94,17 +64,31 @@ class GenerateMonthlyPayments extends Command
                         'reference'  => "Affitto {$period}",
                     ]);
 
-                    $tenant->notify(new PaymentRegistered($payment));
+                    // PDF individuale
+                    $pdf = PDF::loadView('pdf.monthly_tenant_summary', [
+                        'tenant' => $tenant,
+                        'lease' => $lease,
+                        'period' => $period,
+                        'payments' => Payment::where('tenant_id', $tenant->id)
+                            ->where('lease_id', $lease->id)
+                            ->where('reference', "Affitto {$period}")
+                            ->get(),
+                    ]);
+
+                    $pdfContent = $pdf->output();
+                    $path = "reports/{$period}/mensile_tenant_{$tenant->id}_{$lease->id}.pdf";
+                    Storage::disk('public')->put($path, $pdfContent);
+
+                    // Notifica individuale
+                    $tenant->notify(new PaymentRegistered($payment, $pdfContent, $period));
                 }
             }
 
-            // ANTICIPO SPESE
+            // Anticipo spese
             if ($advanceTotal > 0) {
-
                 $quota = $advanceTotal / $tenantCount;
 
                 foreach ($tenants as $tenant) {
-
                     $payment = Payment::create([
                         'lease_id'   => $lease->id,
                         'tenant_id'  => $tenant->id,
@@ -115,30 +99,44 @@ class GenerateMonthlyPayments extends Command
                         'reference'  => "Anticipo spese {$period}",
                     ]);
 
-                    $tenant->notify(new PaymentRegistered($payment));
+                    // PDF individuale
+                    $pdf = PDF::loadView('pdf.monthly_tenant_summary', [
+                        'tenant' => $tenant,
+                        'lease' => $lease,
+                        'period' => $period,
+                        'payments' => Payment::where('tenant_id', $tenant->id)
+                            ->where('lease_id', $lease->id)
+                            ->where('reference', "Anticipo spese {$period}")
+                            ->get(),
+                    ]);
+
+                    $pdfContent = $pdf->output();
+                    $path = "reports/{$period}/mensile_tenant_{$tenant->id}_{$lease->id}.pdf";
+                    Storage::disk('public')->put($path, $pdfContent);
+
+                    // Notifica individuale
+                    $tenant->notify(new PaymentRegistered($payment, $pdfContent, $period));
                 }
             }
-            // Genera PDF individuale per tenant
-            $pdf = app('dompdf.wrapper')->loadView('pdf.monthly_tenant_summary', [
-            'tenant' => $tenant,
-            'lease' => $lease,
-            'period' => $period,
-            'payments' => Payment::where('tenant_id', $tenant->id)
-                ->where('lease_id', $lease->id)
-                ->where('reference', 'like', "%{$period}%")
-                ->get(),
-        ]);
 
-        $pdfContent = $pdf->output();
+            // PDF mensile unico per lease
+            $pdfLease = PDF::loadView('pdf.monthly_lease_summary', [
+                'lease' => $lease,
+                'total' => $total,
+                'period' => $period,
+            ]);
 
-        // Salvataggio PDF
-        $path = "reports/{$period}/mensile_tenant_{$tenant->id}_{$lease->id}.pdf";
-        Storage::disk('public')->put($path, $pdfContent);
+            $pdfLeaseContent = $pdfLease->output();
+            $leasePath = "reports/{$period}/mensile_lease_{$lease->id}.pdf";
+            Storage::disk('public')->put($leasePath, $pdfLeaseContent);
 
+            // Notifica al landlord
+            $lease->unit->property->landlord->notify(
+                new MonthlyLeaseSummaryGenerated($lease, $pdfLeaseContent, $period)
+            );
         }
 
-        $this->info('Pagamenti mensili generati con successo (modello ibrido).');
-
+        $this->info("Pagamenti mensili generati correttamente per il periodo {$period}.");
         return self::SUCCESS;
     }
 }

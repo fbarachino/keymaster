@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\Lease;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -11,15 +12,15 @@ class YearlySettlementGenerated extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $amount;
-    public $year;
-    public $dueDate;
+    protected $lease;
+    protected $pdfContent;
+    protected $year;
 
-    public function __construct(float $quota, int $year, $dueDate)
+    public function __construct(Lease $lease, string $pdfContent, string $year)
     {
-        $this->quota = $quota;
+        $this->lease = $lease;
+        $this->pdfContent = $pdfContent;
         $this->year = $year;
-        $this->dueDate = $dueDate;
     }
 
     public function via($notifiable)
@@ -30,25 +31,15 @@ class YearlySettlementGenerated extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject("Conguaglio spese {$this->year}")
+            ->subject("Conguaglio annuale – {$this->year}")
             ->greeting("Ciao {$notifiable->name},")
-            ->line("È stato generato il conguaglio annuale delle spese.")
-            ->line("**La tua quota:** € " . number_format($this->quota, 2, ',', '.'))
-            ->line("**Scadenza:** " . $this->dueDate->format('d/m/Y'))
-            ->action('Visualizza i pagamenti', url('/tenant/payments'))
-            ->line('Grazie per la collaborazione.');
-    }
-
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(object $notifiable): array
-    {
-        return [
-            //
-        ];
+            ->line("È stato generato il conguaglio annuale della lease per l'anno **{$this->year}**.")
+            ->attachData(
+                $this->pdfContent,
+                "conguaglio_lease_{$this->lease->id}_{$this->year}.pdf",
+                ['mime' => 'application/pdf']
+            )
+            ->action('Apri la tua area riservata', url('/landlord/leases/' . $this->lease->id))
+            ->line('Grazie per utilizzare KeyMaster.');
     }
 }

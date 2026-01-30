@@ -21,3 +21,4 @@ Schedule::command('reports:monthly-expenses')->monthly();
 
 Schedule::command('payments:generate-monthly') ->monthlyOn(1, '00:10'); // scheduling il primo di ogni mese alle 00:10
 Schedule::command('reports:send-monthly')->monthlyOn(1, '00:05');
+Schedule::command('payments:send-reminders')->dailyAt('08:00');

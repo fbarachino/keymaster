@@ -10,7 +10,7 @@
 
 <div class="card">
     <div class="card-body p-0">
- <h3>I tuoi pagamenti</h3>
+<h3>I tuoi pagamenti</h3>
 
 <table class="table table-striped">
     <thead>
@@ -35,25 +35,16 @@
                 </span>
             </td>
             <td>{{ $payment->due_date->format('d/m/Y') }}</td>
-             <td>
+            <td>
                 <a href="{{ route('tenant.payments.pdf', $payment) }}" class="btn btn-sm btn-outline-primary">
                     PDF
                 </a>
             </td>
         </tr>
         @endforeach
-        @empty
-            <tr>
-                <td colspan="6" class="text-center">Nessun pagamento registrato.</td>
-            </tr>
-        @endforelse
     </tbody>
 </table>
 
-
-
-    </tbody>
-</table>
 
     </div>
 </div>

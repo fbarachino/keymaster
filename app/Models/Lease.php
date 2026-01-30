@@ -39,9 +39,15 @@ class Lease extends Model
         return $this->belongsTo(User::class, 'tenant_id');
     }
 
-    public function tenants()
+   /*  public function tenants()
     {
         return $this->belongsToMany(User::class, 'lease_tenant', 'lease_id', 'tenant_id');
+    }
+    */
+
+    public function tenants()
+    {
+        return $this->belongsToMany(Tenant::class);
     }
 
     //public function expenses() { return $this->hasMany(\App\Models\Expense::class); }

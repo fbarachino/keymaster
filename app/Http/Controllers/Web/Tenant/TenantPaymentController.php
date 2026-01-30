@@ -14,8 +14,9 @@ class TenantPaymentController extends Controller
     public function index() {
         $tenant = auth()->user()->tenant;
         $payments = Payment::where('tenant_id', $tenant->id)
-         ->orderBy('due_date')
-         ->get();
+            ->orderBy('due_date')
+            ->get();
+
          return view('tenant.payments.index', compact('payments'));
         }
 
