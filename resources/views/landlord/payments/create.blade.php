@@ -21,7 +21,7 @@
                     <option value="">Seleziona...</option>
                     @foreach($leases as $lease)
                         <option value="{{ $lease->id }}">
-                            #{{ $lease->id }} - {{ $lease->tenant->name }} ({{ $lease->unit->property->name }})
+                            #{{ $lease->id }} - {{ $lease->tenants->pluck('name')->join(', ') }} - ({{ $lease->unit->property->name }})
                         </option>
                     @endforeach
                 </select>

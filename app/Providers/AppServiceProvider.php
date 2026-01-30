@@ -41,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
             //    ['text' => 'Nuovo messaggio', 'route' => 'landlord.messages.create','icon' => 'far fa-fw fa-edit'],
                 [ 'text' => 'Spese', 'url' => 'landlord/expenses', 'icon' => 'fas fa-receipt'], // se usi Gate o middleware ]
                 [ 'text' => 'Conguagli annuali', 'url' => 'landlord/yearly-reports', 'icon' => 'fas fa-file-invoice-dollar', ],
+                ['text' => 'Aggiungi Locatario', 'route' => 'landlord.tenants.create', 'icon' => 'fas fa-user-plus'],
                 [ 'text' => 'Profilo', 'url' => 'profile', 'icon' => 'fas fa-user-cog', 'topnav_user' => true,], // <— questa è la chiave importante
             ];
 

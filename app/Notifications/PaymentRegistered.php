@@ -24,11 +24,18 @@ public function via($notifiable)
 
 public function toMail($notifiable)
 {
+    if ($this->payment->lease->tenants->count() > 1) {
+        $paymentQuotas = $this->payment->amount / $this->payment->lease->tenants->count();
+        $lineAmount = 'Importo per te: € ' . number_format($paymentQuotas, 2);
+    }
+    else {
+        $lineAmount = 'Importo: € ' . number_format($this->payment->amount, 2);
+    }
     return (new MailMessage)
         ->subject('Nuovo pagamento registrato')
         ->greeting('Ciao ' . $notifiable->name)
         ->line('È stato registrato un nuovo pagamento.')
-        ->line('Importo: € ' . number_format($this->payment->amount, 2))
+        ->line($lineAmount ?? 'Nessun importo da pagare')
         ->line('Data scadenza: ' . $this->payment->due_date)
         ->action('Visualizza pagamento', url('/tenant/payments/' . $this->payment->id));
 }
