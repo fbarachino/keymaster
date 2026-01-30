@@ -7,28 +7,27 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Payment extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'lease_id',
+        'tenant_id',
+        'type',
+        'amount',        // totale lease (se usi ancora questo campo)
+        'amount_due',    // quota individuale
+        'amount_paid',
         'due_date',
-        'paid_date',
-        'amount',
+        'paid_at',
         'status',
         'reference',
         'notes',
-         'type',
     ];
 
-    protected $casts = [
-        'due_date' => 'date',
-        'paid_date' => 'date',
-    ];
+    public function lease()
+    {
+        return $this->belongsTo(Lease::class);
+    }
 
-    /* RELAZIONI */
-
-    public function lease() { return $this->belongsTo(Lease::class); }
-
-
-
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class);
+    }
 }

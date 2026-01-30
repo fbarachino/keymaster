@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->string('notes')->nullable();
             $table->string('reference')->nullable();
             $table->foreign('lease_id')->references('id')->on('leases');
+
         });
     }
 

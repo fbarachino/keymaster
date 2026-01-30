@@ -19,6 +19,17 @@ class LandlordLeaseController extends Controller
     {
         abort_if($lease->unit->property->landlord_id !== $request->user()->id, 403);
 
-        return $lease->load(['unit.property', 'tenant', 'payments']);
+        $totals = $lease->totals()
+            ->orderBy('period_type')
+            ->orderBy('period', 'desc')
+            ->get();
+
+        $payments = $lease->payments()
+            ->with('tenant')
+            ->orderBy('due_date')
+            ->get();
+
+        return view('landlord.leases.show', compact('lease', 'totals', 'payments'));
+        // return $lease->load(['unit.property', 'tenant', 'payments']);
     }
 }

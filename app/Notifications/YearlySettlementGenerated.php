@@ -15,9 +15,9 @@ class YearlySettlementGenerated extends Notification implements ShouldQueue
     public $year;
     public $dueDate;
 
-    public function __construct($amount, $year, $dueDate)
+    public function __construct(float $quota, int $year, $dueDate)
     {
-        $this->amount = $amount;
+        $this->quota = $quota;
         $this->year = $year;
         $this->dueDate = $dueDate;
     }
@@ -30,13 +30,13 @@ class YearlySettlementGenerated extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject("Conguaglio spese $this->year")
+            ->subject("Conguaglio spese {$this->year}")
             ->greeting("Ciao {$notifiable->name},")
-            ->line("È stato generato il conguaglio delle spese per l'anno $this->year.")
-            ->line("Saldo risultante: € " . number_format($this->amount, 2, ',', '.'))
-            ->line("Scadenza pagamento: " . $this->dueDate->format('d/m/Y'))
-            ->line("Puoi visualizzare i dettagli accedendo alla tua area riservata.")
-            ->salutation("Grazie, " . config('app.name'));
+            ->line("È stato generato il conguaglio annuale delle spese.")
+            ->line("**La tua quota:** € " . number_format($this->quota, 2, ',', '.'))
+            ->line("**Scadenza:** " . $this->dueDate->format('d/m/Y'))
+            ->action('Visualizza i pagamenti', url('/tenant/payments'))
+            ->line('Grazie per la collaborazione.');
     }
 
 

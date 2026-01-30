@@ -59,9 +59,15 @@ class Lease extends Model
     {
         return $this->hasMany(YearlyReport::class);
     }
+
     public function expenses()
     {
         return $this->hasMany(Expense::class);
+    }
+
+    public function totals()
+    {
+        return $this->hasMany(LeaseTotal::class);
     }
 
     public function currentBalance()

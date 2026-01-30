@@ -117,6 +117,80 @@
         </div>
 
     </div>
+
+</div>
+<div class="card card-dark">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-file-invoice-dollar"></i> Totali Lease
+
+        </h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Periodo</th>
+                    <th>Tipo</th>
+                    <th>Affitto</th>
+                    <th>Anticipo</th>
+                    <th>Spese</th>
+                    <th>Conguaglio</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($totals as $total)
+                <tr>
+                    <td>{{ $total->period }}</td>
+                    <td>{{ ucfirst($total->period_type) }}</td>
+                    <td>€ {{ number_format($total->rent_total, 2, ',', '.') }}</td>
+                    <td>€ {{ number_format($total->advance_total, 2, ',', '.') }}</td>
+                    <td>€ {{ number_format($total->expenses_total, 2, ',', '.') }}</td>
+                    <td>€ {{ number_format($total->settlement_total, 2, ',', '.') }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card card-dark">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-receipt"></i> Pagamenti individuali
+        </h3>
+    </div>
+    <div class="card-body">
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Tenant</th>
+                <th>Tipo</th>
+                <th>Quota</th>
+                <th>Pagato</th>
+                <th>Stato</th>
+                <th>Scadenza</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($payments as $payment)
+            <tr>
+                <td>{{ $payment->tenant->name }}</td>
+                <td>{{ ucfirst(str_replace('_', ' ', $payment->type)) }}</td>
+                <td>€ {{ number_format($payment->amount_due, 2, ',', '.') }}</td>
+                <td>€ {{ number_format($payment->amount_paid, 2, ',', '.') }}</td>
+                <td>
+                    <span class="badge badge-{{ $payment->status == 'paid' ? 'success' : ($payment->status == 'overdue' ? 'danger' : 'warning') }}">
+                        {{ ucfirst($payment->status) }}
+                    </span>
+                </td>
+                <td>{{ $payment->due_date->format('d/m/Y') }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    </div>
 </div>
 
 <a href="{{ route('landlord.leases.index') }}" class="btn btn-link pl-0">

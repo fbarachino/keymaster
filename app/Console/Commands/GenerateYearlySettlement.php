@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use PDF;
 use App\Models\Lease;
 use App\Models\Payment;
+use App\Models\LeaseTotal;
 use App\Models\YearlyReport;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -14,16 +15,18 @@ use App\Notifications\YearlySettlementGenerated;
 class GenerateYearlySettlement extends Command
 {
     protected $signature = 'reports:yearly-settlement {year?}';
-    protected $description = 'Genera il conguaglio annuale delle spese per ogni lease';
+    protected $description = 'Genera il conguaglio annuale delle spese per ogni lease (modello ibrido)';
 
     public function handle()
     {
         $year = $this->argument('year') ?? now()->subYear()->year;
 
-        $leases = Lease::with(['tenant', 'unit.property'])
-            ->get();
+        $leases = Lease::with(['tenants', 'unit.property'])->get();
 
         foreach ($leases as $lease) {
+
+            $tenants = $lease->tenants;
+            $tenantCount = max(1, $tenants->count());
 
             // Spese dell'anno
             $expenses = $lease->expenses()
@@ -38,21 +41,30 @@ class GenerateYearlySettlement extends Command
             $totalTenantExpenses = $expenses->sum('tenant_share');
             $totalLandlordExpenses = $expenses->sum('landlord_share');
 
-            // Pagamenti del tenant nell'anno
-            /*$payments = Payment::where('lease_id', $lease->id)
-                ->whereYear('paid_date', $year)
-                ->where('status', 'paid')
-                ->sum('amount');*/
+            // Pagamenti dei tenants nell'anno
             $payments = Payment::where('lease_id', $lease->id)
                 ->where('type', 'expense')
-                ->whereYear('paid_date', $year)
+                ->whereYear('paid_at', $year)
                 ->where('status', 'paid')
-                ->sum('amount');
+                ->sum('amount_paid');
 
             // Saldo finale
             $balance = $totalTenantExpenses - $payments;
 
-            // Genera PDF
+            // Salva totale annuale (livello contabile)
+            LeaseTotal::updateOrCreate(
+                [
+                    'lease_id' => $lease->id,
+                    'period' => $year,
+                    'period_type' => 'yearly',
+                ],
+                [
+                    'expenses_total' => $totalTenantExpenses,
+                    'settlement_total' => $balance,
+                ]
+            );
+
+            // Genera PDF unico per la lease
             $pdf = PDF::loadView('pdf.yearly_settlement', [
                 'lease' => $lease,
                 'expenses' => $expenses,
@@ -65,44 +77,52 @@ class GenerateYearlySettlement extends Command
 
             $pdfContent = $pdf->output();
 
-                        // Salvataggio del PDF per archivio
+            // Salvataggio PDF
             $path = "reports/{$year}/conguaglio_lease_{$lease->id}.pdf";
             Storage::disk('public')->put($path, $pdfContent);
 
-            // Salva nel database (se usi la tabella yearly_reports)
+            // Salva nel database
             YearlyReport::create([
                 'lease_id' => $lease->id,
                 'year' => $year,
                 'file_path' => $path,
             ]);
 
-            // Invia email
-            $lease->tenant->notify(new YearlySettlementReport($lease, $pdfContent, $year));
-            $lease->unit->property->landlord->notify(new YearlySettlementReport($lease, $pdfContent, $year));
+            // Notifica a tutti i tenants
+            foreach ($tenants as $tenant) {
+                $tenant->notify(new YearlySettlementReport($lease, $pdfContent, $year));
+            }
 
-            $this->info("Conguaglio annuale generato per il lease ID {$lease->id} per l'anno {$year}.");
+            // Notifica al landlord
+            $lease->unit->property->landlord->notify(
+                new YearlySettlementReport($lease, $pdfContent, $year)
+            );
 
+            // Se il tenant deve ancora soldi (saldo negativo)
             if ($balance < 0) {
 
                 $amountDue = abs($balance);
+                $quota = $amountDue / $tenantCount;
 
-                // Scadenza: mese successivo
-                $dueDate = now()->addMonth()->startOfMonth()->addDays(27); // 28 del mese prossimo
-                //$payment_date = now()->subYear()->endOfYear();
-                Payment::create([
-                    'lease_id'   => $lease->id,
-                    'amount'     => $amountDue,
-                    'due_date'   => $dueDate,
-                    'reference'  => 'Conguaglio spese ' . $year,
-                    'notes'      => 'Conguaglio spese anno ' . $year,
-                    'status'     => 'pending',
-                    'type'       => 'expense-settlement',
-                ]);
+                $dueDate = now()->addMonth()->startOfMonth()->addDays(27);
 
-                // (Opzionale) notifica al tenant
-                $lease->tenant->notify(new YearlySettlementGenerated($amountDue, $year, $dueDate));
+                foreach ($tenants as $tenant) {
+
+                    $payment = Payment::create([
+                        'lease_id'   => $lease->id,
+                        'tenant_id'  => $tenant->id,
+                        'type'       => 'expense_settlement',
+                        'amount_due' => $quota,
+                        'due_date'   => $dueDate,
+                        'status'     => 'pending',
+                        'reference'  => "Conguaglio spese {$year}",
+                    ]);
+
+                    $tenant->notify(new YearlySettlementGenerated($quota, $year, $dueDate));
+                }
             }
 
+            $this->info("Conguaglio annuale generato per il lease ID {$lease->id} per l'anno {$year}.");
         }
 
         return Command::SUCCESS;

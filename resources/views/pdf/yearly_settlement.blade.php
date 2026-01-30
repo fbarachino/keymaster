@@ -1,83 +1,63 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <title>Conguaglio Annuale {{ $year }}</title>
     <style>
-        body {
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 13px;
-            color: #333;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 25px;
-        }
-
-        th, td {
-            padding: 10px;
-            border: 1px solid #999;
-        }
-
-        th {
-            background: #f2f2f2;
-            text-align: left;
-        }
-
-        .qr {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .signature {
-            margin-top: 40px;
-            text-align: right;
-            font-size: 14px;
-        }
-
-        .footer {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 12px;
-            color: #777;
-        }
-
-        .positive { color: green; }
-        .negative { color: red; }
+        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
+        h1 { text-align: center; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+        th { background: #f0f0f0; }
     </style>
 </head>
 <body>
 
-<h1>Conguaglio Spese - Anno {{ $year }}</h1>
+<h1>Conguaglio Annuale {{ $year }}</h1>
 
-<p><strong>Inquilino:</strong> {{ $lease->tenant->name }}</p>
-<p><strong>Proprietà:</strong> {{ $lease->unit->property->name }}</p>
-<p><strong>Unità:</strong> {{ $lease->unit->name }}</p>
+<p><strong>Lease:</strong> {{ $lease->unit->name }} ({{ $lease->unit->property->name }})</p>
 
-<h3>Dettaglio Spese Annuali</h3>
+<h3>Totali Lease</h3>
+<table>
+    <tr>
+        <th>Totale spese inquilino</th>
+        <td>€ {{ number_format($totalTenantExpenses, 2, ',', '.') }}</td>
+    </tr>
+    <tr>
+        <th>Totale spese proprietario</th>
+        <td>€ {{ number_format($totalLandlordExpenses, 2, ',', '.') }}</td>
+    </tr>
+    <tr>
+        <th>Totale pagato dai tenants</th>
+        <td>€ {{ number_format($payments, 2, ',', '.') }}</td>
+    </tr>
+    <tr>
+        <th>Saldo finale</th>
+        <td>
+            @if($balance >= 0)
+                € {{ number_format($balance, 2, ',', '.') }} (a credito)
+            @else
+                € {{ number_format(abs($balance), 2, ',', '.') }} (a debito)
+            @endif
+        </td>
+    </tr>
+</table>
 
+<h3>Dettaglio Spese</h3>
 <table>
     <thead>
         <tr>
             <th>Data</th>
-            <th>Tipo</th>
-            <th>Importo</th>
-            <th>Quota Inquilino</th>
-            <th>Quota Proprietario</th>
+            <th>Descrizione</th>
+            <th>Quota Tenant</th>
+            <th>Quota Landlord</th>
         </tr>
     </thead>
     <tbody>
         @foreach($expenses as $expense)
         <tr>
-            <td>{{ \Carbon\Carbon::parse($expense->date)->format('d/m/Y') }}</td>
-            <td>{{ ucfirst($expense->type) }}</td>
-            <td>€ {{ number_format($expense->amount, 2, ',', '.') }}</td>
+            <td>{{ $expense->date->format('d/m/Y') }}</td>
+            <td>{{ $expense->description }}</td>
             <td>€ {{ number_format($expense->tenant_share, 2, ',', '.') }}</td>
             <td>€ {{ number_format($expense->landlord_share, 2, ',', '.') }}</td>
         </tr>
@@ -85,50 +65,26 @@
     </tbody>
 </table>
 
+{{-- SE VUOI MOSTRARE LE QUOTE INDIVIDUALI, ATTIVA QUESTA SEZIONE
+<h3>Quote Individuali Tenants</h3>
 <table>
-    <tr>
-        <th>Totale spese imputate all'inquilino</th>
-        <td>€ {{ number_format($totalTenantExpenses, 2, ',', '.') }}</td>
-    </tr>
-    <tr>
-        <th>Pagamenti effettuati dall'inquilino</th>
-        <td>€ {{ number_format($payments, 2, ',', '.') }}</td>
-    </tr>
-    <tr>
-        <th>Saldo finale</th>
-        <td>
-            @if($balance > 0)
-                <span class="negative">Debito: € {{ number_format($balance, 2, ',', '.') }}</span>
-            @elseif($balance < 0)
-                <span class="positive">Credito: € {{ number_format(abs($balance), 2, ',', '.') }}</span>
-            @else
-                Nessuna differenza
-            @endif
-        </td>
-    </tr>
+    <thead>
+        <tr>
+            <th>Tenant</th>
+            <th>Quota Conguaglio</th>
+        </tr>
+    </thead>
+    <tbody>
+        @php $quota = $balance < 0 ? abs($balance) / $lease->tenants->count() : 0; @endphp
+        @foreach($lease->tenants as $tenant)
+        <tr>
+            <td>{{ $tenant->name }}</td>
+            <td>€ {{ number_format($quota, 2, ',', '.') }}</td>
+        </tr>
+        @endforeach
+    </tbody>
 </table>
-
-<div class="qr">
-    <img src="data:image/png;base64, {!! base64_encode(
-        QrCode::format('png')->size(150)->generate(
-            'Conguaglio '.$year.
-            ' | Inquilino: '.$lease->tenant->name.
-            ' | Totale spese: '.$totalTenantExpenses.
-            ' | Pagamenti: '.$payments.
-            ' | Saldo: '.$balance
-        )
-    ) !!}">
-    <p style="font-size: 11px; color: #666;">QR Code riepilogo conguaglio</p>
-</div>
-
-<div class="signature">
-    <p><strong>Firma digitale:</strong></p>
-    <p>{{ $lease->unit->property->landlord->name }}</p>
-</div>
-
-<div class="footer">
-    Documento generato automaticamente dal sistema gestionale.
-</div>
+--}}
 
 </body>
 </html>
