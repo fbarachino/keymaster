@@ -25,15 +25,12 @@ class SendMonthlyReports extends Command
         Log::info("Inviando report mensili per $month/$year");
 
         // Recupera tutte le leases attive
-       /* $leases = Lease::with(['tenants', 'expenses.documents', 'property'])
-           // ->where('active', true)
-            ->get();*/
             $leases = Lease::with([
-    'tenants',
-    'expenses.documents',
-    'property',
-    'unit.property' // se la property è legata all’unit
-])->get();
+                'tenants',
+                'expenses.documents',
+                'property',
+                'unit.property' // se la property è legata all’unit
+            ])->get();
 
         //dd($leases->property);
         foreach ($leases as $lease) {

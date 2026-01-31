@@ -61,6 +61,10 @@
 <p><strong>Unità:</strong> {{ $lease->unit->name }}</p>
 
 <h3>Dettaglio Spese Annuali</h3>
+<p>In queto documento, vengono riepilogate le spese sostenute nell'anno {{ $year }} e il relativo conguaglio.</p>
+<p>Vengono inoltre riportati i pagamenti effettuati relativi al contratto in corso, per il canone di affitto e gli anticipi spesa.</p>
+<p>Si prega di verificare attentamente i dati riportati e, in caso di discrepanze, contattare l'amministratore della proprietà.</p>
+<p>Grazie per la collaborazione.</p>
 
 <table>
     <thead>
@@ -108,6 +112,7 @@
     </tr>
 </table>
 
+{{-- // QRCode
 <div class="qr">
     <img src="data:image/png;base64, {!! base64_encode(
         QrCode::format('png')->size(150)->generate(
@@ -120,7 +125,26 @@
     ) !!}">
     <p style="font-size: 11px; color: #666;">QR Code riepilogo conguaglio</p>
 </div>
-
+ --}}
+<hr>
+<h3>Pagamenti del canone di affitto effettuati</h3>
+@foreach($lease->payments()->whereYear('date', $year)->where('type', 'rent')->where('status', 'paid')->get() as $payment_rent)
+    <p style="font-size: 11px; color: #666; text-align: center;">{{ $payment_rent->date }} - € {{ number_format($payment_rent->amount, 2, ',', '.') }} </p>
+@endforeach
+<hr>
+<h3>Anticipi spese versati nell'anno</h3>
+@foreach($lease->payments()->whereYear('date', $year)->where('type', 'advance-expenses')->where('status', 'paid')->get() as $payment_expense)
+    <p style="font-size: 11px; color: #666; text-align: center;">{{ $payment_expense->date }} - € {{ number_format($payment_expense->amount, 2, ',', '.') }} </p>
+@endforeach
+<hr>
+@foreach($lease->expenses()->whereYear('date', $year)->where('charged_to', 'tenant')->get() as $expense)
+    <p style="font-size: 11px; color: #666; text-align: center;">Anticipo spese del {{ $expense->date }} - € {{ number_format($expense->amount, 2, ',', '.') }} </p>
+@endforeach
+<hr>
+<p>Si attesta che il presente conguaglio spese è stato redatto in conformità ai dati contabili disponibili e riflette accuratamente le spese sostenute e i pagamenti effettuati nell'anno {{ $year }}.</p>
+<p>Data: {{ \Carbon\Carbon::now()->format('d/m/Y') }}</p>
+<br>
+<p><small><i>In caso di domande o chiarimenti, si prega di contattare l'amministratore della proprietà.</i></small></p>
 <div class="signature">
     <p><strong>Firma digitale:</strong></p>
     <p>{{ $lease->unit->property->landlord->name }}</p>

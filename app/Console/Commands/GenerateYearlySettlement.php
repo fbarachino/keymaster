@@ -20,7 +20,7 @@ class GenerateYearlySettlement extends Command
     {
         $year = $this->argument('year') ?? now()->subYear()->year;
 
-        $leases = Lease::with(['tenant', 'unit.property'])
+        $leases = Lease::with(['tenants', 'unit.property'])
             ->get();
 
         foreach ($leases as $lease) {
@@ -77,7 +77,9 @@ class GenerateYearlySettlement extends Command
             ]);
 
             // Invia email
-            $lease->tenant->notify(new YearlySettlementReport($lease, $pdfContent, $year));
+            foreach ($lease->tenants as $tenant) {
+                $tenant->notify(new YearlySettlementReport($lease, $pdfContent, $year));
+            }
             $lease->unit->property->landlord->notify(new YearlySettlementReport($lease, $pdfContent, $year));
 
             $this->info("Conguaglio annuale generato per il lease ID {$lease->id} per l'anno {$year}.");
