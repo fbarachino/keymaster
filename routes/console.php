@@ -12,8 +12,8 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::job(new GenerateMonthlyPayments)->monthly();
-//Schedule::command('reports:yearly-settlement')->yearlyOn(1, 0, 0);  //scheduling al primo gennaio di ogni anno alle 00:00
+// Schedule::job(new GenerateMonthlyPayments)->monthly();
+// Schedule::command('reports:yearly-settlement')->yearlyOn(1, 0, 0);  //scheduling al primo gennaio di ogni anno alle 00:00
 Schedule::command('reports:yearly-settlement')->yearlyOn(31, 1, '23:59'); // scheduling al 31 gennaio di ogni anno alle 23:59
 
 // Schedule::job(new SendOverduePaymentNotifications)->daily();

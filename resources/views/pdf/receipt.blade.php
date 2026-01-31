@@ -59,7 +59,7 @@
 <table>
     <tr>
         <th>Inquilino</th>
-        <td>{{ $payment->lease->tenant->name }}</td>
+        <td>{{ $payment->lease->tenants->first()->name }}</td>
     </tr>
 
     <tr>

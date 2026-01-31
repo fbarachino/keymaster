@@ -22,7 +22,7 @@
         </tr>
     </thead>
     <tbody>
-
+        {{-- {{ dd($payments) }} --}}
         @forelse($payments as $payment)
             <tr>
 
