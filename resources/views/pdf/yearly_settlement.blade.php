@@ -56,7 +56,7 @@
 
 <h1>Conguaglio Spese - Anno {{ $year }}</h1>
 
-<p><strong>Inquilino:</strong> {{ $lease->tenant->name }}</p>
+<p><strong>Inquilini:</strong> {{ implode(', ', $lease->tenants->pluck('name')->toArray())   }}</p>
 <p><strong>Proprietà:</strong> {{ $lease->unit->property->name }}</p>
 <p><strong>Unità:</strong> {{ $lease->unit->name }}</p>
 
