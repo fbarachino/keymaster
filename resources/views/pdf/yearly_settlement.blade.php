@@ -128,16 +128,16 @@
  --}}
 <hr>
 <h3>Pagamenti del canone di affitto effettuati</h3>
-@foreach($lease->payments()->whereYear('date', $year)->where('type', 'rent')->where('status', 'paid')->get() as $payment_rent)
+@foreach($lease->payments()->whereYear('date', $year-1)->where('type', 'rent')->where('status', 'paid')->get() as $payment_rent)
     <p style="font-size: 11px; color: #666; text-align: center;">{{ $payment_rent->date }} - € {{ number_format($payment_rent->amount, 2, ',', '.') }} </p>
 @endforeach
 <hr>
 <h3>Anticipi spese versati nell'anno</h3>
-@foreach($lease->payments()->whereYear('date', $year)->where('type', 'advance-expenses')->where('status', 'paid')->get() as $payment_expense)
+@foreach($lease->payments()->whereYear('date', $year-1)->where('type', 'advance-expenses')->where('status', 'paid')->get() as $payment_expense)
     <p style="font-size: 11px; color: #666; text-align: center;">{{ $payment_expense->date }} - € {{ number_format($payment_expense->amount, 2, ',', '.') }} </p>
 @endforeach
 <hr>
-@foreach($lease->expenses()->whereYear('date', $year)->where('charged_to', 'tenant')->get() as $expense)
+@foreach($lease->expenses()->whereYear('date', $year-1)->where('charged_to', 'tenant')->get() as $expense)
     <p style="font-size: 11px; color: #666; text-align: center;">Anticipo spese del {{ $expense->date }} - € {{ number_format($expense->amount, 2, ',', '.') }} </p>
 @endforeach
 <hr>
