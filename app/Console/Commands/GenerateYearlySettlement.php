@@ -84,7 +84,7 @@ class GenerateYearlySettlement extends Command
 
             $this->info("Conguaglio annuale generato per il lease ID {$lease->id} per l'anno {$year}.");
 
-            if ($balance < 0) {
+            if ($balance > 0) {
 
                 $amountDue = abs($balance);
 
@@ -102,7 +102,9 @@ class GenerateYearlySettlement extends Command
                 ]);
 
                 // (Opzionale) notifica al tenant
-                $lease->tenant->notify(new YearlySettlementGenerated($amountDue, $year, $dueDate));
+                foreach ($lease->tenants as $tenant) {
+                    $tenant->notify(new YearlySettlementGenerated($amountDue, $year, $dueDate));
+                }
             }
 
         }
