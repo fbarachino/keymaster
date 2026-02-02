@@ -25,7 +25,11 @@
                     <tr>
                         <td>{{ $report->year }}</td>
                         <td>#{{ $report->lease->id }}</td>
-                        <td>{{ $report->lease->tenant->name }}</td>
+                        <td>
+                            @foreach($report->lease->tenants as $tenant)
+                                {{ $tenant->name }}@if(!$loop->last), @endif
+                            @endforeach
+                        </td>
                         <td>{{ $report->lease->unit->property->name }}</td>
                         <td>
                             <a href="{{ route('landlord.yearly-reports.download', $report) }}"
