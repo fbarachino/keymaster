@@ -45,7 +45,7 @@ class LandlordPaymentController extends Controller
             'reference' => 'nullable|string',
             'notes' => 'nullable|string',
             'due_date' => 'required|date',
-            'type' => 'required|in:rent,deposit,expense,other',
+            'type' => 'required|in:rent,deposit,expense,other,advance-expenses,expense-settlement',
     ]);
 
     // Recupera il lease e verifica che appartenga al landlord
@@ -56,7 +56,7 @@ class LandlordPaymentController extends Controller
         ->firstOrFail();
 
     // Crea il pagamento
-    $payment = Payment::create([
+    /* $payment = Payment::create([
         'lease_id' => $lease->id,
         'amount' => $data['amount'],
         'due_date' => $data['due_date'],
@@ -65,7 +65,28 @@ class LandlordPaymentController extends Controller
         'status' => 'pending',
         'paid_date' => now(),
         'type' => $data['type'],
-    ]);
+    ]); */
+    if ($lease->tenants->isEmpty()) {
+        return back()->withErrors(['lease_id' => 'Il lease selezionato non ha tenant associati.'])->withInput();
+    }
+    if($lease->split_mode === 'equal') {
+        $data['amount'] = $data['amount'] / $lease->tenants->count();
+    }else{
+        $data['amount'] = $data['amount'];
+    }
+    foreach ($lease->tenants as $tenant) {
+        $payment = Payment::create([
+            'lease_id' => $lease->id,
+            'amount' => $data['amount'],
+            'due_date' => $data['due_date'],
+            'reference' => $data['reference'] ?? null,
+            'notes' => $data['notes'] ?? null,
+            'status' => 'pending',
+            'paid_date' => now(),
+            'type' => $data['type'],
+            'tenant_id' => $tenant->id,
+        ]);
+    }
 
     // Notifica al tenant
     foreach ($lease->tenants as $tenant) {

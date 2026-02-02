@@ -35,6 +35,8 @@
                     <option value="rent" @selected($payment->type === 'rent')>Affitto</option>
                     <option value="deposit" @selected($payment->type === 'deposit')>Cauzione</option>
                     <option value="expense" @selected($payment->type === 'expense')>Spesa imputata</option>
+                    <option value="advance-expenses" @selected($payment->type === 'advance-expenses')>Anticipo spese</option>
+                    <option value="expense-settlement" @selected($payment->type === 'expense-settlement')>Conguaglio spese</option>
                     <option value="other" @selected($payment->type === 'other')>Altro</option>
                 </select>
             </div>

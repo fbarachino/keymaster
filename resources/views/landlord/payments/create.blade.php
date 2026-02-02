@@ -7,7 +7,15 @@
 @stop
 
 @section('content')
-
+@if($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <form action="{{ route('landlord.payments.store') }}" method="POST">
     @csrf
 
@@ -34,6 +42,8 @@
                     <option value="rent">Affitto</option>
                     <option value="deposit">Cauzione</option>
                     <option value="expense">Spesa imputata</option>
+                    <option value="advance-expenses">Anticipo spese</option>
+                    <option value="expense-settlement">Conguaglio spese</option>
                     <option value="other">Altro</option>
                 </select>
             </div>
