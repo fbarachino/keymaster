@@ -41,7 +41,9 @@ class GenerateMonthlyPayments extends Command
                     'status'    => 'pending',
                     'type'      => 'rent',
                 ]);
-                $lease->tenant->notify(new PaymentRegistered($payment));
+                foreach($lease->tenants as $tenant) {
+                    $tenant->notify(new PaymentRegistered($payment));
+                }
             }
 
 
@@ -55,7 +57,9 @@ class GenerateMonthlyPayments extends Command
                     'status'    => 'pending',
                     'type'      => 'advance-expenses',
                 ]);
-                $lease->tenant->notify(new PaymentRegistered($payment));
+                foreach($lease->tenants as $tenant) {
+                    $tenant->notify(new PaymentRegistered($payment));
+                }
             }
         }
 

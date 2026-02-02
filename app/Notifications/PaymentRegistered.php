@@ -39,7 +39,7 @@ public function toMail($notifiable)
         ->greeting('Ciao ' . $notifiable->name)
         ->line('È stato registrato un nuovo pagamento per un totale di € ' . number_format($this->payment->amount, 2) . '.')
         ->line($lineAmount ?? 'Nessun importo da pagare')
-        ->line('Data scadenza: ' . $this->payment->due_date)
+        ->line('Data scadenza: ' . $this->payment->due_date->format('d/m/Y'))
         ->action('Visualizza pagamento', url('/tenant/payments/' . $this->payment->id));
 }
 

@@ -20,14 +20,14 @@ class PaymentDueNotification extends Notification
     {
         return (new \Illuminate\Notifications\Messages\MailMessage)
             ->subject('Pagamento in scadenza')
-            ->line('Hai un pagamento in scadenza il ' . $this->payment->due_date)
+            ->line('Hai un pagamento in scadenza il ' . $this->payment->due_date->format('d/m/Y') . '.')
             ->action('Visualizza pagamento', url('/tenant/payments/' . $this->payment->id));
     }
 
     public function toDatabase($notifiable)
     {
         return [
-            'message' => 'Pagamento in scadenza il ' . $this->payment->due_date,
+            'message' => 'Pagamento in scadenza il ' . $this->payment->due_date->format('d/m/Y'),
             'payment_id' => $this->payment->id,
         ];
     }
