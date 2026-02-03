@@ -351,7 +351,9 @@
     </div>
 
 </div>
-
+<a href="{{ route('landlord.payments.export.excel') }}" class="btn btn-success">
+    <i class="fas fa-file-excel"></i> Esporta Excel
+</a>
 
 </div>
 @endsection

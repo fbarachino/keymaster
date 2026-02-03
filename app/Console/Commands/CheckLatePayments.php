@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Payment;
 use App\Services\NotificationService;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PaymentLateMail;
 
 class CheckLatePayments extends Command
 {
@@ -38,6 +40,16 @@ class CheckLatePayments extends Command
                     route('landlord.payments.show', $payment->id)
                 );
             }
+
+
+            Mail::to($payment->tenant->user->email)
+                ->send(new PaymentLateMail($payment));
+
+            foreach ($payment->lease->property->landlords as $landlord) {
+                Mail::to($landlord->user->email)
+                    ->send(new PaymentLateMail($payment));
+            }
+
         }
 
         $this->info('Notifiche pagamenti in ritardo generate.');

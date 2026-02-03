@@ -3,17 +3,18 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\EnsureLandlord;
 
-use App\Http\Controllers\Web\Landlord\LandlordDashboardController;
-use App\Http\Controllers\Web\Landlord\PropertyCrudController;
 use App\Http\Controllers\Web\Landlord\UnitCrudController;
 use App\Http\Controllers\Web\Landlord\LeaseCrudController;
-use App\Http\Controllers\Web\Landlord\LandlordPaymentController;
-use App\Http\Controllers\Web\Landlord\LandlordExpenseController;
+use App\Http\Controllers\Web\Landlord\PropertyCrudController;
+use App\Http\Controllers\Web\Landlord\LandlordReportController;
 use App\Http\Controllers\Web\Landlord\LandlordTenantController;
-use App\Http\Controllers\Web\Landlord\LandlordMessageController;
 use App\Http\Controllers\Web\Landlord\LandlordTicketController;
-use App\Http\Controllers\Web\Landlord\LandlordTicketDashboardController;
+use App\Http\Controllers\Web\Landlord\LandlordExpenseController;
+use App\Http\Controllers\Web\Landlord\LandlordMessageController;
+use App\Http\Controllers\Web\Landlord\LandlordPaymentController;
+use App\Http\Controllers\Web\Landlord\LandlordDashboardController;
 use App\Http\Controllers\Web\Landlord\MaintenanceDashboardController;
+use App\Http\Controllers\Web\Landlord\LandlordTicketDashboardController;
 
 Route::middleware(['auth', EnsureLandlord::class])
     ->prefix('landlord')
@@ -27,6 +28,10 @@ Route::middleware(['auth', EnsureLandlord::class])
         Route::resource('properties', PropertyCrudController::class);
 
         Route::get('/units/available', [\App\Http\Controllers\Web\Landlord\LandlordUnitController::class, 'available']) ->name('units.available');
+
+        Route::get('properties/{property}/report/pdf', [LandlordReportController::class, 'propertyReport'])->name('properties.report.pdf');
+
+        Route::get('payments/export/excel', [LandlordPaymentController::class, 'exportExcel']) ->name('payments.export.excel');
 
         // Unità
         Route::prefix('properties/{property}/units')->name('units.')->group(function () {

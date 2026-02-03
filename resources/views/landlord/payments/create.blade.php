@@ -1,85 +1,61 @@
-@extends('layouts.admin')
+@extends('adminlte::page')
 
-@section('title', 'Registra Pagamento')
+@section('title', 'Nuovo pagamento')
 
 @section('content_header')
-    <h1>Registra un nuovo pagamento</h1>
-@stop
+    <h1>Nuovo pagamento</h1>
+@endsection
 
 @section('content')
-@if($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-<form action="{{ route('landlord.payments.store') }}" method="POST">
-    @csrf
+<div class="card">
+    <div class="card-body">
 
-    <div class="card">
-        <div class="card-body">
+        <form action="{{ route('landlord.payments.store') }}" method="POST">
+            @csrf
 
-            {{-- Selezione contratto --}}
             <div class="form-group">
-                <label>Contratto</label>
-                <select name="lease_id" class="form-control" required>
-                    <option value="">Seleziona...</option>
+                <label for="lease_id">Contratto</label>
+                <select name="lease_id" id="lease_id" class="form-control">
                     @foreach($leases as $lease)
                         <option value="{{ $lease->id }}">
-                            #{{ $lease->id }} - {{ $lease->tenants->pluck('name')->join(', ') }} - ({{ $lease->unit->property->name }})
+                            {{ $lease->property->name }} — {{ $lease->tenants->pluck('name')->join(', ') }}
                         </option>
                     @endforeach
                 </select>
             </div>
 
-            {{-- Tipo pagamento --}}
             <div class="form-group">
-                <label>Tipo di pagamento</label>
-                <select name="type" class="form-control" required>
-                    <option value="rent">Affitto</option>
-                    <option value="deposit">Cauzione</option>
-                    <option value="expense">Spesa imputata</option>
-                    <option value="advance-expenses">Anticipo spese</option>
-                    <option value="expense-settlement">Conguaglio spese</option>
-                    <option value="other">Altro</option>
+                <label for="tenant_id">Inquilino</label>
+                <select name="tenant_id" id="tenant_id" class="form-control">
+                    @foreach($leases as $lease)
+                        @foreach($lease->tenants as $tenant)
+                            <option value="{{ $tenant->id }}">
+                                {{ $tenant->name }} ({{ $lease->property->name }})
+                            </option>
+                        @endforeach
+                    @endforeach
                 </select>
             </div>
 
-            {{-- Importo --}}
             <div class="form-group">
-                <label>Importo</label>
-                <input type="number" step="0.01" name="amount" class="form-control" required>
+                <label for="due_date">Data scadenza</label>
+                <input type="date" name="due_date" id="due_date" class="form-control" required>
             </div>
 
-            {{-- Data scadenza --}}
             <div class="form-group">
-                <label>Data scadenza</label>
-                <input type="date" name="due_date" class="form-control" required>
+                <label for="amount_total">Importo</label>
+                <input type="number" step="0.01" name="amount_total" id="amount_total" class="form-control" required>
             </div>
 
-            {{-- Riferimento --}}
             <div class="form-group">
-                <label>Riferimento</label>
-                <input type="text" name="reference" class="form-control" placeholder="Es: Affitto Gennaio, Cauzione, Spesa condominiale...">
+                <label for="description">Descrizione</label>
+                <input type="text" name="description" id="description" class="form-control">
             </div>
 
-            {{-- Note --}}
-            <div class="form-group">
-                <label>Note</label>
-                <textarea name="notes" class="form-control"></textarea>
-            </div>
-
-        </div>
-
-        <div class="card-footer">
-            <button class="btn btn-success">Salva</button>
+            <button class="btn btn-primary">Salva</button>
             <a href="{{ route('landlord.payments.index') }}" class="btn btn-secondary">Annulla</a>
-        </div>
+        </form>
+
     </div>
-
-</form>
-
-@stop
+</div>
+@endsection

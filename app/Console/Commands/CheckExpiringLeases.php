@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Lease;
 use App\Services\NotificationService;
+            use Illuminate\Support\Facades\Mail;
+use App\Mail\LeaseExpiringMail;
 
 class CheckExpiringLeases extends Command
 {
@@ -40,6 +42,18 @@ class CheckExpiringLeases extends Command
                     route('landlord.leases.edit', [$lease->property_id, $lease->id])
                 );
             }
+
+
+            foreach ($lease->tenants as $tenant) {
+                Mail::to($tenant->user->email)
+                    ->send(new LeaseExpiringMail($lease));
+            }
+
+            foreach ($lease->property->landlords as $landlord) {
+                Mail::to($landlord->user->email)
+                    ->send(new LeaseExpiringMail($lease));
+            }
+
         }
 
         $this->info('Notifiche contratti in scadenza generate.');

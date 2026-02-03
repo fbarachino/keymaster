@@ -3,21 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Payment extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'lease_id',
+        'tenant_id',
         'due_date',
         'paid_date',
-        'amount',
+        'amount_total',
+        'amount_paid',
         'status',
-        'reference',
-        'notes',
-         'type',
+        'description',
     ];
 
     protected $casts = [
@@ -25,10 +22,18 @@ class Payment extends Model
         'paid_date' => 'date',
     ];
 
-    /* RELAZIONI */
+    public function lease()
+    {
+        return $this->belongsTo(Lease::class);
+    }
 
-    public function lease() { return $this->belongsTo(Lease::class); }
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class);
+    }
 
-
-
+    public function isLate()
+    {
+        return $this->status === 'pending' && $this->due_date->isPast();
+    }
 }

@@ -14,6 +14,9 @@
             <dt class="col-sm-3">Proprietà</dt>
             <dd class="col-sm-9">{{ $payment->lease->property->name }}</dd>
 
+            <dt class="col-sm-3">Inquilino</dt>
+            <dd class="col-sm-9">{{ $payment->tenant->name }}</dd>
+
             <dt class="col-sm-3">Scadenza</dt>
             <dd class="col-sm-9">{{ $payment->due_date }}</dd>
 
@@ -29,11 +32,15 @@
                 @endif
             </dd>
 
+            <dt class="col-sm-3">Data pagamento</dt>
+            <dd class="col-sm-9">{{ $payment->paid_date ?? '-' }}</dd>
+
             <dt class="col-sm-3">Descrizione</dt>
             <dd class="col-sm-9">{{ $payment->description ?? '-' }}</dd>
         </dl>
 
-        <a href="{{ route('tenant.payments.index') }}" class="btn btn-secondary">Torna ai pagamenti</a>
+        <a href="{{ route('landlord.payments.edit', $payment) }}" class="btn btn-primary">Modifica</a>
+        <a href="{{ route('landlord.payments.index') }}" class="btn btn-secondary">Torna all’elenco</a>
 
     </div>
 </div>

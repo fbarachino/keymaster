@@ -6,48 +6,32 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    public function up()
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
 
-            // Tenant che deve pagare
-            $table->foreignId('tenant_id')
-                  ->constrained()
-                  ->cascadeOnDelete();
+            $table->unsignedBigInteger('lease_id');
+            $table->unsignedBigInteger('tenant_id');
 
-            // Lease a cui si riferisce il pagamento
-            $table->foreignId('lease_id')
-                  ->constrained()
-                  ->cascadeOnDelete();
+            $table->date('due_date');
+            $table->date('paid_date')->nullable();
 
-            // Importo dovuto e pagato
-            $table->decimal('amount_due', 10, 2);
+            $table->decimal('amount_total', 10, 2);
             $table->decimal('amount_paid', 10, 2)->default(0);
 
-            // Stato del pagamento
-            $table->enum('status', [
-                'pending',      // non pagato
-                'partial',      // pagato in parte
-                'paid',         // pagato completamente
-                'overdue',      // scaduto
-            ])->default('pending');
+            $table->enum('status', ['pending', 'paid'])->default('pending');
 
-            // Date
-            $table->date('due_date')->nullable();       // scadenza
-            $table->date('paid_at')->nullable();        // data pagamento
-
-            // Descrizione (es: "Canone + anticipo spese 02/2026")
             $table->string('description')->nullable();
 
-            // Note interne
-            $table->text('notes')->nullable();
-
             $table->timestamps();
+
+            $table->foreign('lease_id')->references('id')->on('leases')->onDelete('cascade');
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
     }
 
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('payments');
     }

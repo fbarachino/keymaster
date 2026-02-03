@@ -1,110 +1,94 @@
-@extends('layouts.admin')
+@extends('adminlte::page')
 
 @section('title', 'Pagamenti')
 
 @section('content_header')
     <h1>Pagamenti</h1>
-@stop
+@endsection
 
 @section('content')
 
-<div class="mb-3">
-    <a href="{{ route('landlord.payments.create') }}" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Nuovo Pagamento
-    </a>
-</div>
-
 <div class="card">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">Elenco pagamenti</h3>
+
+        <a href="{{ route('landlord.payments.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nuovo pagamento
+        </a>
+    </div>
+
     <div class="card-body p-0">
-        <table class="table table-striped">
+
+        <table class="table table-striped mb-0">
             <thead>
                 <tr>
-                    <th>Contratto</th>
+                    <th>Proprietà</th>
                     <th>Inquilino</th>
-                    <th>Tipo</th>
-                    <th>Importo</th>
                     <th>Scadenza</th>
+                    <th>Importo</th>
                     <th>Stato</th>
-                    <th>Azioni</th>
+                    <th class="text-right">Azioni</th>
                 </tr>
             </thead>
+
             <tbody>
-                @forelse($payments as $payment)
+                @forelse($payments as $p)
                     <tr>
-                        <td>#{{ $payment->lease->id }}</td>
-                        {{-- <td> @foreach($payment->lease->tenants as $tenant) {{ $tenant->first_name }} {{ $tenant->last_name }}<br> @endforeach </td> --}}
-                        <td>{{ $payment->tenant->user->name }}</td>
+                        <td>{{ $p->lease->property->name }}</td>
+                        <td>{{ $p->tenant->name }}</td>
+                        <td>{{ $p->due_date->format('d/m/Y') }}</td>
+                        <td>{{ number_format($p->amount_total, 2, ',', '.') }} €</td>
 
-                        {{-- Tipo pagamento --}}
                         <td>
-                            @php
-                                $colors = [
-                                    'rent' => 'badge-primary',
-                                    'deposit' => 'badge-warning',
-                                    'expense' => 'badge-info',
-                                    'other' => 'badge-secondary',
-                                ];
-                            @endphp
-
-                            <span class="badge {{ $colors[$payment->type] ?? 'badge-secondary' }}">
-                                {{ ucfirst($payment->type) }}
-                            </span>
-                        </td>
-
-                        <td>€ {{ number_format($payment->amount, 2) }}</td>
-                        <td>{{ $payment->due_date }}</td>
-
-                        {{-- Stato pagamento --}}
-                        <td>
-                            @if($payment->status === 'paid')
+                            @if($p->status === 'paid')
                                 <span class="badge badge-success">Pagato</span>
+                            @elseif($p->due_date->isPast())
+                                <span class="badge badge-danger">In ritardo</span>
                             @else
-                                <span class="badge badge-danger">Non pagato</span>
+                                <span class="badge badge-warning">Da pagare</span>
                             @endif
                         </td>
 
-                        <td>
-                            {{-- Modifica --}}
-                            <a href="{{ route('landlord.payments.edit', $payment) }}"
-                               class="btn btn-sm btn-warning">
+                        <td class="text-right">
+                            <a href="{{ route('landlord.payments.show', $p) }}" class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <a href="{{ route('landlord.payments.edit', $p) }}" class="btn btn-sm btn-primary">
                                 <i class="fas fa-edit"></i>
                             </a>
 
-                            {{-- Segna come pagato --}}
-                            @if($payment->status !== 'paid')
-                                <form action="{{ route('landlord.payments.markPaid', $payment) }}"
-                                      method="POST"
-                                      style="display:inline-block">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button class="btn btn-sm btn-success">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                </form>
-                            @endif
-
-                            {{-- Elimina --}}
-                            <form action="{{ route('landlord.payments.destroy', $payment) }}"
+                            <form action="{{ route('landlord.payments.destroy', $p) }}"
                                   method="POST"
-                                  style="display:inline-block">
+                                  class="d-inline"
+                                  onsubmit="return confirm('Sei sicuro di voler eliminare questo pagamento?')">
                                 @csrf
                                 @method('DELETE')
-                                <button class="btn btn-sm btn-danger"
-                                        onclick="return confirm('Eliminare questo pagamento?')">
+                                <button class="btn btn-sm btn-danger">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
-
                         </td>
+
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center">Nessun pagamento registrato.</td>
+                        <td colspan="6" class="text-center py-4">
+                            Nessun pagamento trovato.
+                        </td>
                     </tr>
                 @endforelse
             </tbody>
+
         </table>
+
     </div>
+
+    <div class="card-footer">
+        {{ $payments->links() }}
+    </div>
+
 </div>
 
-@stop
+@endsection

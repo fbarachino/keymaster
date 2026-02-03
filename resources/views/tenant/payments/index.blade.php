@@ -1,95 +1,68 @@
-@extends('layouts.admin')
+@extends('adminlte::page')
 
-@section('title', 'I tuoi pagamenti')
+@section('title', 'I miei pagamenti')
 
 @section('content_header')
-    <h1>I tuoi pagamenti</h1>
-@stop
+    <h1>I miei pagamenti</h1>
+@endsection
 
 @section('content')
 
 <div class="card">
+
     <div class="card-body p-0">
- <table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Tipo</th>
-            <th>Importo</th>
-            <th>Scadenza</th>
-            <th>Stato</th>
-            <th>Riferimento</th>
-            <th>Azioni</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{-- {{ dd($payments) }} --}}
-        @forelse($payments as $payment)
-            <tr>
 
-                {{-- Tipo pagamento --}}
-                <td>
-                    @php
-                        $colors = [
-                            'rent' => 'badge-primary',
-                            'deposit' => 'badge-warning',
-                            'expense' => 'badge-info',
-                            'other' => 'badge-secondary',
-                        ];
-                    @endphp
+        <table class="table table-striped mb-0">
+            <thead>
+                <tr>
+                    <th>Proprietà</th>
+                    <th>Scadenza</th>
+                    <th>Importo</th>
+                    <th>Stato</th>
+                    <th class="text-right">Azioni</th>
+                </tr>
+            </thead>
 
-                    <span class="badge {{ $colors[$payment->type] ?? 'badge-secondary' }}">
-                        {{ ucfirst($payment->type) }}
-                    </span>
-                </td>
+            <tbody>
+                @forelse($payments as $p)
+                    <tr>
+                        <td>{{ $p->lease->property->name }}</td>
+                        <td>{{ $p->due_date->format('d/m/Y') }}</td>
+                        <td>{{ number_format($p->amount_total, 2, ',', '.') }} €</td>
 
-                {{-- Importo --}}
-                <td>€ {{ number_format($payment->amount, 2) }}</td>
+                        <td>
+                            @if($p->status === 'paid')
+                                <span class="badge badge-success">Pagato</span>
+                            @elseif($p->due_date->isPast())
+                                <span class="badge badge-danger">In ritardo</span>
+                            @else
+                                <span class="badge badge-warning">Da pagare</span>
+                            @endif
+                        </td>
 
-                {{-- Scadenza --}}
-                <td>{{ $payment->due_date }}</td>
+                        <td class="text-right">
+                            <a href="{{ route('tenant.payments.show', $p) }}" class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="text-center py-4">
+                            Nessun pagamento trovato.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
 
-                {{-- Stato --}}
-                <td>
-                    @if($payment->status === 'paid')
-                        <span class="badge badge-success">Pagato</span>
-                    @else
-                        <span class="badge badge-danger">Non pagato</span>
-                    @endif
-                </td>
-
-                {{-- Riferimento --}}
-                <td>{{ $payment->reference ?? '-' }}</td>
-
-                {{-- Azioni --}}
-                <td>
-
-                    {{-- 🔍 Pulsante dettaglio --}}
-                    <a href="{{ route('tenant.payments.show', $payment) }}"
-                       class="btn btn-sm btn-info">
-                        <i class="fas fa-eye"></i>
-                    </a>
-
-                    {{-- 📄 Ricevuta (solo se pagato) --}}
-                    @if($payment->status === 'paid')
-                        <a href="{{ route('tenant.payments.receipt', $payment) }}"
-                           class="btn btn-sm btn-primary">
-                            <i class="fas fa-file-pdf"></i>
-                        </a>
-                    @endif
-
-                </td>
-
-            </tr>
-        @empty
-            <tr>
-                <td colspan="6" class="text-center">Nessun pagamento registrato.</td>
-            </tr>
-        @endforelse
-
-    </tbody>
-</table>
+        </table>
 
     </div>
+
+    <div class="card-footer">
+        {{ $payments->links() }}
+    </div>
+
 </div>
 
-@stop
+@endsection
