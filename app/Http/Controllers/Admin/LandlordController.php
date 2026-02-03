@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Landlord;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 
 class LandlordController extends Controller
 {
     public function index()
     {
-        $landlords = User::where('role', 'landlord')->get();
+        $landlords = Landlord::with('user')->whereHas('user', function($query) {
+            $query->where('role', 'landlord');
+        })->get();
+
 
         return view('admin.landlords.index', compact('landlords'));
     }
@@ -30,14 +34,19 @@ class LandlordController extends Controller
             'password'   => 'required|min:6',
         ]);
 
-        User::create([
+        $user = User::create(
+            [
+                'name' => $data['first_name'].' '.$data['last_name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'role' => 'landlord',
+            ]);
+        $landlord = Landlord::create([
+            'user_id' => $user->id,
             'first_name' => $data['first_name'],
             'last_name'  => $data['last_name'],
-            'name'       => $data['first_name'].' '.$data['last_name'],
-            'email'      => $data['email'],
-            'password'   => Hash::make($data['password']),
-            'role'       => 'landlord',
-        ]);
+           // 'email'      => $data['email'],
+            ]);
 
         return redirect()->route('admin.landlords.index')
             ->with('success', 'Landlord creato correttamente.');

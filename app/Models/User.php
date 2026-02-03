@@ -17,7 +17,7 @@ protected $fillable = [ 'name', 'email', 'password', 'language', 'notification_p
 // dati personali
 'first_name', 'last_name', 'birth_date', 'birth_place', 'fiscal_code', 'nationality',
 // residenza
-'address', 'zip', 'city', 'province', 'country',
+'address', 'zip', 'city', 'province', 'country', 'role',
 // documento
 'document_type', 'document_number', 'document_issue_date', 'document_expiry_date', 'document_issuer',
 // contatti
@@ -65,4 +65,6 @@ protected $fillable = [ 'name', 'email', 'password', 'language', 'notification_p
     {
         return $this->hasMany(Notification::class);
     }
+
+    public function landlord() { return $this->hasOne(Landlord::class); }
 }

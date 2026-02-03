@@ -12,6 +12,9 @@ return new class extends Migration {
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('language', 5)->default('it')->after('email');
+            $table->string('notification_preference')->default('email');
+            $table->string('telegram_chat_id')->nullable();
             $table->string('role')->default('tenant'); // tenant | landlord | admin
             $table->rememberToken();
             $table->string('api_token', 80)->unique()->nullable()->default(null);

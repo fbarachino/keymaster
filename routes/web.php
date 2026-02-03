@@ -132,7 +132,9 @@ Route::middleware(['auth'])->group(function ()
          Route::get('/messages', [LandlordMessageController::class, 'index']) ->name('messages.index');
          Route::get('/messages/{message}', [LandlordMessageController::class, 'show']) ->name('messages.show');*/
 
-        // Messaggi
+
+
+         // Messaggi
         Route::resource('messages', LandlordMessageController::class)->only(['index']);
         Route::get('/messages/create', [LandlordMessageController::class, 'create'])->name('messages.create');
         Route::post('/messages', [LandlordMessageController::class, 'store'])->name('messages.store');
@@ -166,7 +168,15 @@ Route::middleware(['auth'])->group(function ()
         Route::post('properties/{property}/units/{unit}/documents',[UnitCrudController::class, 'uploadDocument'])->name('units.documents.upload');
 
         // Contratti
-        Route::resource('/leases', LeaseCrudController::class)->except(['show']);
+        Route::prefix('landlord/properties/{property}/leases')->name('leases.')->group(function () {
+            Route::get('/', [LeaseCrudController::class, 'index'])->name('index');
+            Route::get('/create', [LeaseCrudController::class, 'create'])->name('create');
+            Route::post('/', [LeaseCrudController::class, 'store'])->name('store');
+            Route::get('/{lease}/edit', [LeaseCrudController::class, 'edit'])->name('edit');
+            Route::put('/{lease}', [LeaseCrudController::class, 'update'])->name('update');
+            Route::delete('/{lease}', [LeaseCrudController::class, 'destroy'])->name('destroy');
+        });
+
 
         // Pagamenti
         // Route::resource('payments', PaymentCrudController::class);

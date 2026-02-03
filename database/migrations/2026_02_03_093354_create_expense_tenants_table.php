@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('leases', function (Blueprint $table) {
-        $table->string('signature_path')->nullable();
-        $table->timestamp('signed_at')->nullable();
-    });
+        Schema::create('expense_tenants', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('expense_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
+    $table->decimal('amount', 10, 2);
+    $table->timestamps();
+});
 
     }
 
@@ -23,8 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('leases', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('expense_tenants');
     }
 };

@@ -2,174 +2,116 @@
 
 namespace App\Http\Controllers\Web\Landlord;
 
-use App\Models\Unit;
-use App\Models\Property;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Models\Property;
+use App\Models\Unit;
+use Illuminate\Http\Request;
 
 class UnitCrudController extends Controller
 {
-    public function index(Property $property)
+    public function index(Property $property, Request $request)
     {
-        abort_if($property->landlord_id !== auth()->id(), 403);
+        $this->authorizeProperty($property, $request);
 
-        return view('landlord.units.index', [
-            'property' => $property,
-            'units' => $property->units
-        ]);
+        $units = $property->units()->orderBy('name')->paginate(10);
+
+        return view('landlord.units.index', compact('property', 'units'));
     }
 
-    public function create(Property $property)
+    public function create(Property $property, Request $request)
     {
-        abort_if($property->landlord_id !== auth()->id(), 403);
+        $this->authorizeProperty($property, $request);
 
         return view('landlord.units.create', compact('property'));
     }
 
-    public function store(Request $request, Property $property)
+    public function store(Property $property, Request $request)
     {
-        abort_if($property->landlord_id !== auth()->id(), 403);
+        $this->authorizeProperty($property, $request);
 
-        /* $data = $request->validate([
-            'name' => 'required',
-            'floor' => 'nullable|integer',
-            'size' => 'nullable|integer',
-            'monthly_rent' => 'required|numeric',
-            'status' => 'required|in:available,occupied',
-        ]); */
         $data = $request->validate([
-    'name'        => 'required|string|max:255',
-    'description' => 'nullable|string',
-    //'address'     => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'type' => 'nullable|string|max:255',
+            'floor' => 'nullable|integer',
+            'size_sqm' => 'nullable|numeric',
 
-    // nuovi campi
-    'size'        => 'nullable|numeric|min:0',
-    'floor'       => 'nullable|string|max:50',
-    'interior'    => 'nullable|string|max:50',
-    'rooms'       => 'nullable|integer|min:0',
-    'accessory'   => 'nullable|string|max:255',
-    'monthly_rent' => 'required|numeric',
-    'status' => 'required|in:available,occupied',
-]);
+            'interior' => 'nullable|string|max:255',
+            'rooms' => 'nullable|integer',
+            'accessory' => 'nullable|string|max:255',
+            'status' => 'required|string|in:available,occupied',
+            'monthly_rent' => 'nullable|numeric',
+
+            'notes' => 'nullable|string',
+        ]);
 
 
         $data['property_id'] = $property->id;
 
         Unit::create($data);
 
-        return redirect()->route('landlord.units.index', $property)
-            ->with('success', 'Unità creata con successo.');
+        return redirect()
+            ->route('landlord.units.index', $property)
+            ->with('success', 'Unità creata correttamente.');
     }
 
-    public function edit(Property $property, Unit $unit)
+    public function edit(Property $property, Unit $unit, Request $request)
     {
-        abort_if($property->landlord_id !== auth()->id(), 403);
-        abort_if($unit->property_id !== $property->id, 403);
-        $qr = base64_encode(
-            QrCode::format('png')->size(200)->generate(url('/unit/' . $unit->id))
-        );
+        $this->authorizeProperty($property, $request);
+        $this->authorizeUnit($unit, $property);
 
-
-        return view('landlord.units.edit', compact('property', 'unit', 'qr'));
+        return view('landlord.units.edit', compact('property', 'unit'));
     }
 
-    public function update(Request $request, Property $property, Unit $unit)
+    public function update(Property $property, Unit $unit, Request $request)
     {
-        abort_if($property->landlord_id !== auth()->id(), 403);
-        abort_if($unit->property_id !== $property->id, 403);
+        $this->authorizeProperty($property, $request);
+        $this->authorizeUnit($unit, $property);
 
-      /*   $data = $request->validate([
-            'name' => 'required',
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'nullable|string|max:255',
             'floor' => 'nullable|integer',
-            'size' => 'nullable|integer',
-            'monthly_rent' => 'required|numeric',
-            'status' => 'required|in:available,occupied',
-        ]); */
-$data = $request->validate([
-     'name'        => 'required|string|max:255',
-    'description' => 'nullable|string',
-    //'address'     => 'required|string|max:255',
-
-    // nuovi campi
-    'size'        => 'nullable|numeric|min:0',
-    'floor'       => 'nullable|string|max:50',
-    'interior'    => 'nullable|string|max:50',
-    'rooms'       => 'nullable|integer|min:0',
-    'accessory'   => 'nullable|string|max:255',
-    'monthly_rent' => 'required|numeric',
-    'status' => 'required|in:available,occupied',
-]);
+            'size_sqm' => 'nullable|numeric',
+            'interior' => 'nullable|string|max:255',
+            'rooms' => 'nullable|integer',
+            'accessory' => 'nullable|string|max:255',
+            'status' => 'required|string|in:available,occupied',
+            'monthly_rent' => 'nullable|numeric',
+            'notes' => 'nullable|string',
+        ]);
 
         $unit->update($data);
 
-        return redirect()->route('landlord.units.index', $property)
-            ->with('success', 'Unità aggiornata con successo.');
+        return redirect()
+            ->route('landlord.units.index', $property)
+            ->with('success', 'Unità aggiornata correttamente.');
     }
 
-    public function destroy(Property $property, Unit $unit)
+    public function destroy(Property $property, Unit $unit, Request $request)
     {
-        abort_if($property->landlord_id !== auth()->id(), 403);
-        abort_if($unit->property_id !== $property->id, 403);
+        $this->authorizeProperty($property, $request);
+        $this->authorizeUnit($unit, $property);
 
         $unit->delete();
 
-        return redirect()->route('landlord.units.index', $property)
+        return redirect()
+            ->route('landlord.units.index', $property)
             ->with('success', 'Unità eliminata.');
     }
 
-
-
-    public function uploadDocument(Request $request, Property $property, Unit $unit)
+    private function authorizeProperty(Property $property, Request $request)
     {
-        abort_if($unit->property_id !== $property->id, 403);
+        $landlord = $request->user()->landlord;
 
-        $data = $request->validate([
-            'name' => 'required',
-            'document' => 'required|file|max:10240', // 10MB
-        ]);
-
-        $path = $request->file('document')->store('unit_documents', 'public');
-
-        $unit->documents()->create([
-            'name' => $data['name'],
-            'path' => $path,
-        ]);
-
-        return back()->with('success', 'Documento caricato.');
-    }
-
-    public function addInventory(Request $request, Property $property, Unit $unit)
-    {
-        abort_if($unit->property_id !== $property->id, 403);
-
-        $data = $request->validate([
-            'item' => 'required',
-            'condition' => 'required|in:good,worn,damaged',
-            'notes' => 'nullable',
-        ]);
-
-        $unit->inventory()->create($data);
-
-        return back()->with('success', 'Elemento aggiunto all’inventario.');
-    }
-
-    public function uploadPhotos(Request $request, Property $property, Unit $unit)
-    {
-        abort_if($unit->property_id !== $property->id, 403);
-
-        $request->validate([
-            'photos.*' => 'required|image|max:4096',
-        ]);
-
-        foreach ($request->file('photos') as $photo) {
-            $path = $photo->store('units', 'public');
-            $unit->photos()->create(['path' => $path]);
+        if (!$property->landlords->contains($landlord->id)) {
+            abort(403, 'Non sei autorizzato ad accedere a questa proprietà.');
         }
-
-        return back()->with('success', 'Foto caricate con successo.');
     }
 
-
+    private function authorizeUnit(Unit $unit, Property $property)
+    {
+        if ($unit->property_id !== $property->id) {
+            abort(403, 'Questa unità non appartiene a questa proprietà.');
+        }
+    }
 }

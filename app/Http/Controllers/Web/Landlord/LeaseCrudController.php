@@ -2,143 +2,147 @@
 
 namespace App\Http\Controllers\Web\Landlord;
 
-use App\Models\Lease;
-use App\Models\Unit;
-use App\Models\User;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Lease;
+use App\Models\Property;
+use App\Models\Unit;
+use App\Models\Tenant;
+use Illuminate\Http\Request;
 
 class LeaseCrudController extends Controller
 {
-    public function index(Request $request)
+    public function index(Property $property, Request $request)
     {
-        $leases = Lease::whereHas('unit.property', fn($q) =>
-            $q->where('landlord_id', $request->user()->id)
-        )->with(['unit.property', 'tenant'])->get();
+        $this->authorizeProperty($property, $request);
 
-        return view('landlord.leases.index', compact('leases'));
+        $leases = $property->leases()
+            ->with('units', 'tenants')
+            ->orderBy('start_date', 'desc')
+            ->paginate(10);
+
+        return view('landlord.leases.index', compact('property', 'leases'));
     }
 
-    public function create()
+    public function create(Property $property, Request $request)
     {
-        $units = Unit::whereHas('property', fn($q) =>
-            $q->where('landlord_id', auth()->id())
-        )->get();
+        $this->authorizeProperty($property, $request);
 
-        $tenants = User::where('role', 'tenant')->get();
+        $units = $property->units;
+        $tenants = Tenant::orderBy('name')->get();
 
-        return view('landlord.leases.create', compact('units', 'tenants'));
+        return view('landlord.leases.create', compact('property', 'units', 'tenants'));
     }
 
-    public function store(Request $request)
+    public function store(Property $property, Request $request)
     {
-        $data = $request->validate([
-            'unit_id' => 'required|exists:units,id',
-          //  'tenant_id' => 'required|exists:users,id',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date',
-            'rent_amount' => 'required|numeric',
-            'advance_expenses' => 'nullable|numeric',
-            'deposit_amount' => 'nullable|numeric',
-            'tenants' => 'required|array|min:1',
-            'tenants.*' => 'exists:users,id',
-       //     'split_mode' => 'required|in:equal,full',
-        ]);
-
-        $lease = Lease::create([
-            'unit_id' => $data['unit_id'],
-            'start_date' => $data['start_date'],
-            'end_date' => $data['end_date'],
-            'rent_amount' => $data['rent_amount'],
-            'advance_expenses' => $data['advance_expenses'],
-            'deposit_amount' => $data['deposit_amount'],
-       //     'split_mode' => $data['split_mode'],
-        ]);
-
-        $lease->tenants()->sync($request->tenants);
-
-        return redirect()->route('landlord.leases.index')
-            ->with('success', 'Contratto creato con successo.');
-    }
-
-    public function edit(Lease $lease)
-    {
-        // Sicurezza: il contratto deve appartenere al landlord
-        abort_if($lease->unit->property->landlord_id !== auth()->id(), 403);
-
-        $units = Unit::whereHas('property', fn($q) =>
-            $q->where('landlord_id', auth()->id())
-        )->get();
-
-        $tenants = User::where('role', 'tenant')->get();
-
-        return view('landlord.leases.edit', compact('lease', 'units', 'tenants'));
-        //$tenants = User::where('role', 'tenant')->get();
-//return view('leases.edit', compact('lease', 'tenants'));
-
-    }
-
-    /* public function update(Request $request, Lease $lease)
-    {
-        abort_if($lease->unit->property->landlord_id !== auth()->id(), 403);
+        $this->authorizeProperty($property, $request);
 
         $data = $request->validate([
-            'unit_id' => 'required|exists:units,id',
-            'tenant_id' => 'required|exists:users,id',
             'start_date' => 'required|date',
-            'end_date' => 'nullable|date',
-            'rent_amount' => 'required|numeric',
-            'deposit_amount' => 'nullable|numeric',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+
+            'rent_total' => 'required|numeric',
+            'advance_expense' => 'nullable|numeric',
+            'deposit' => 'nullable|numeric',
+
+            'split_mode' => 'required|in:equal,percentage,fixed,unit_based,custom',
+            'status' => 'required|in:active,terminated,pending',
+
+            'notes' => 'nullable|string',
+
+            'units' => 'required|array',
+            'units.*' => 'exists:units,id',
+
+            'tenants' => 'required|array',
+            'tenants.*' => 'exists:tenants,id',
+        ]);
+
+        $data['property_id'] = $property->id;
+
+        $lease = Lease::create($data);
+
+        // Associazione unit
+        $lease->units()->sync($data['units']);
+
+        // Associazione tenant
+        $lease->tenants()->sync($data['tenants']);
+
+        return redirect()
+            ->route('landlord.leases.index', $property)
+            ->with('success', 'Contratto creato correttamente.');
+    }
+
+    public function edit(Property $property, Lease $lease, Request $request)
+    {
+        $this->authorizeProperty($property, $request);
+        $this->authorizeLease($lease, $property);
+
+        $units = $property->units;
+        $tenants = Tenant::orderBy('name')->get();
+
+        return view('landlord.leases.edit', compact('property', 'lease', 'units', 'tenants'));
+    }
+
+    public function update(Property $property, Lease $lease, Request $request)
+    {
+        $this->authorizeProperty($property, $request);
+        $this->authorizeLease($lease, $property);
+
+        $data = $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+
+            'rent_total' => 'required|numeric',
+            'advance_expense' => 'nullable|numeric',
+            'deposit' => 'nullable|numeric',
+
+            'split_mode' => 'required|in:equal,percentage,fixed,unit_based,custom',
+            'status' => 'required|in:active,terminated,pending',
+
+            'notes' => 'nullable|string',
+
+            'units' => 'required|array',
+            'units.*' => 'exists:units,id',
+
+            'tenants' => 'required|array',
+            'tenants.*' => 'exists:tenants,id',
         ]);
 
         $lease->update($data);
 
-        return redirect()->route('landlord.leases.index')
-            ->with('success', 'Contratto aggiornato con successo.');
+        $lease->units()->sync($data['units']);
+        $lease->tenants()->sync($data['tenants']);
+
+        return redirect()
+            ->route('landlord.leases.index', $property)
+            ->with('success', 'Contratto aggiornato correttamente.');
     }
- */
 
-    public function update(Request $request, Lease $lease)
-{
-    $validated = $request->validate([
-        'unit_id' => 'required|exists:units,id',
-          //  'tenant_id' => 'required|exists:users,id',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date',
-            'rent_amount' => 'required|numeric',
-            'advance_expenses' => 'nullable|numeric',
-            'deposit_amount' => 'nullable|numeric',
-            'tenants' => 'required|array|min:1',
-            'tenants.*' => 'exists:users,id',
-            'split_mode' => 'required|in:equal,full',
-    ]);
-
-    /*$lease->update([
-        'unit_id'          => $validated['unit_id'],
-        'tenant_id'        => $validated['tenant_id'],
-        'start_date'       => $validated['start_date'],
-        'end_date'         => $validated['end_date'] ?? null,
-        'rent_amount'      => $validated['rent_amount'],
-        'advance_expenses' => $validated['advance_expenses'] ?? 0,
-        'deposit_amount'   => $validated['deposit_amount'] ?? 0,
-    ]);*/
-$lease->update($validated);
-
-// aggiorna i tenants
-$lease->tenants()->sync($request->tenants);
-
-    return redirect()
-        ->route('landlord.leases.index')
-        ->with('success', 'Contratto aggiornato correttamente.');
-}
-
-    public function destroy(Lease $lease)
+    public function destroy(Property $property, Lease $lease, Request $request)
     {
-        abort_if($lease->unit->property->landlord_id !== auth()->id(), 403);
+        $this->authorizeProperty($property, $request);
+        $this->authorizeLease($lease, $property);
 
         $lease->delete();
 
-        return redirect()->route('landlord.leases.index')
+        return redirect()
+            ->route('landlord.leases.index', $property)
             ->with('success', 'Contratto eliminato.');
+    }
+
+    private function authorizeProperty(Property $property, Request $request)
+    {
+        $landlord = $request->user()->landlord;
+
+        if (!$property->landlords->contains($landlord->id)) {
+            abort(403, 'Non sei autorizzato ad accedere a questa proprietà.');
+        }
+    }
+
+    private function authorizeLease(Lease $lease, Property $property)
+    {
+        if ($lease->property_id !== $property->id) {
+            abort(403, 'Questo contratto non appartiene a questa proprietà.');
+        }
     }
 }

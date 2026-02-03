@@ -26,7 +26,7 @@
                 @foreach($landlords as $landlord)
                     <tr>
                         <td>{{ $landlord->first_name }} {{ $landlord->last_name }}</td>
-                        <td>{{ $landlord->email }}</td>
+                        <td>{{ $landlord->user->email }}</td>
                         <td>
                             <a href="{{ route('admin.landlords.edit', $landlord) }}" class="btn btn-warning btn-sm">
                                 Modifica

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Landlord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -9,114 +10,80 @@ class Property extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
-           'name',
-        'landlord_id',
-        'address',
+        'name',
         'description',
-    'purchase_price',
 
-    'address', 'zip', 'city', 'province', 'country',
+        // Dati economici
+        'purchase_price',
 
-    'cadastral_sheet', 'cadastral_particle', 'cadastral_sub',
-    'cadastral_category', 'cadastral_class', 'cadastral_rent',
-];
+        // Indirizzo
+        'address',
+        'zip',
+        'city',
+        'province',
+        'country',
 
+        // Dati catastali
+        'cadastral_sheet',
+        'cadastral_particle',
+        'cadastral_sub',
+        'cadastral_category',
+        'cadastral_class',
+        'cadastral_rent',
 
-    /* RELAZIONI */
+        // Note interne
+        'notes',
+    ];
 
-    public function landlord()
+    /**
+     * Landlords (comproprietari) della property.
+     * Relazione molti-a-molti tramite property_landlord.
+     */
+    public function landlords()
     {
-        return $this->belongsTo(User::class, 'landlord_id');
+        return $this->belongsToMany(Landlord::class, 'property_landlord')
+                    ->withPivot('ownership_percentage')
+                    ->withTimestamps();
     }
 
+    /**
+     * Unità immobiliari appartenenti alla property.
+     */
     public function units()
     {
         return $this->hasMany(Unit::class);
     }
 
-    // app/Models/Property.php
-
-    public function grossYield()
+    /**
+     * Lease associate alla property.
+     */
+    public function leases()
     {
-        if (!$this->purchase_price || $this->purchase_price <= 0) {
-            return null;
-        }
-
-        // Somma affitti annui di tutte le unità con lease attiva
-        $annualRent = $this->units->sum(function ($unit) {
-            $lease = $unit->activeLease();
-            return $lease ? ($lease->rent_amount * 12) : 0;
-        });
-
-        return ($annualRent / $this->purchase_price) * 100;
+        return $this->hasMany(Lease::class);
     }
 
-    /* public function netYield()
+    /**
+     * Spese associate alla property.
+     */
+    public function expenses()
     {
-        if (!$this->purchase_price || $this->purchase_price <= 0) {
-            return null;
-        }
-
-        // Affitto annuo
-        $annualRent = $this->units->sum(function ($unit) {
-            $lease = $unit->activeLease();
-            return $lease ? ($lease->rent_amount * 12) : 0;
-        });
-
-        // Costi annui (se vuoi puoi aggiungere un campo dedicato)
-        $annualCosts = $this->annual_costs ?? 0;
-
-        return (($annualRent - $annualCosts) / $this->purchase_price) * 100;
-    } */
-
-
-/*         public function netYield()
-{
-    if (!$this->purchase_price || $this->purchase_price <= 0) {
-        return null;
+        return $this->hasMany(Expense::class);
     }
 
-    // Affitto annuo
-    $annualRent = $this->units->sum(function ($unit) {
-        $lease = $unit->activeLease();
-        return $lease ? ($lease->rent_amount * 12) : 0;
-    });
-
-    // Costi annui del landlord
-    $annualCosts = $this->annualLandlordCosts();
-
-    return (($annualRent - $annualCosts) / $this->purchase_price) * 100;
-} */
-
-
-    public function netYield()
-{
-    if (!$this->purchase_price || $this->purchase_price <= 0) {
-        return null;
+    /**
+     * Tenants che vivono in questa property (tramite lease).
+     */
+    public function tenants()
+    {
+        return $this->hasManyThrough(Tenant::class, Lease::class);
     }
 
-    // Affitto annuo
-    $annualRent = $this->units->sum(function ($unit) {
-        $lease = $unit->activeLease();
-        return $lease ? ($lease->rent_amount * 12) : 0;
-    });
-
-    // Costi annuali del landlord
-    $annualCosts = $this->annualLandlordCosts();
-
-    return (($annualRent - $annualCosts) / $this->purchase_price) * 100;
-}
-
-    public function annualLandlordCosts() {
-        return $this->units->sum(function ($unit) {
-            $lease = $unit->activeLease();
-            if (!$lease) { return 0; }
-            return $lease->expenses()
-                ->where('charged_to', 'landlord')
-                ->whereYear('date', now()->year)
-                ->sum('amount');
-            }); }
-
+    /**
+     * Pagamenti relativi a questa property (tramite lease).
+     */
+    public function payments()
+    {
+        return $this->hasManyThrough(Payment::class, Lease::class);
+    }
 }

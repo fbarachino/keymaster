@@ -2,58 +2,123 @@
 
 namespace App\Http\Controllers\Web\Landlord;
 
-use App\Models\Lease;
-use App\Models\Expense;
-use App\Models\Payment;
-use App\Models\Property;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Lease;
+use App\Models\Payment;
+use App\Models\Expense;
+use App\Models\Property;
+use App\Models\Unit;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
-class LandlordDashboardController extends Controller
+class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $driver = DB::getDriverName();
+        $landlord = $request->user()->landlord;
 
-    $monthExpr = $driver === 'sqlite'
-    ? "strftime('%m', date)"
-    : "MONTH(date)";
-    $monthDueExpr = $driver === 'sqlite'
-    ? "strftime('%m', due_date)"
-    : "MONTH(due_date)";
+        // Filtri
+        $propertyId   = $request->property_id;
+        $monthFilter  = $request->month;
+        $leaseStatus  = $request->lease_status;
+        $unitStatus   = $request->unit_status;
 
-        $landlord = $request->user();
+        // Range mese
+        if ($monthFilter) {
+            $month = Carbon::parse($monthFilter);
+            $start = $month->copy()->startOfMonth();
+            $end   = $month->copy()->endOfMonth();
+        } else {
+            $start = Carbon::now()->startOfMonth();
+            $end   = Carbon::now()->endOfMonth();
+        }
 
-        // Pagamenti per mese
-        $payments = Payment::whereHas('lease.unit.property', fn($q) =>
-            $q->where('landlord_id', $landlord->id)
-        )
-        ->selectRaw("$monthDueExpr as month, SUM(amount) as total")
-        ->groupBy('month')
-        ->orderBy('month')
-        ->get();
+        // Query base property
+        $propertyFilter = function ($q) use ($landlord, $propertyId) {
+            $q->whereHas('landlords', fn($l) => $l->whereKey($landlord->id));
 
-        // Contratti attivi
-        $leases = Lease::whereHas('unit.property', fn($q) =>
-            $q->where('landlord_id', $landlord->id)
-        )->count();
+            if ($propertyId) {
+                $q->where('id', $propertyId);
+            }
+        };
 
-        // Spese mensili
+        // KPI
+        $propertiesCount = Property::where($propertyFilter)->count();
 
+        $unitsCount = Unit::whereHas('property', $propertyFilter)
+            ->when($unitStatus, fn($q) => $q->where('status', $unitStatus))
+            ->count();
 
+        $activeLeasesCount = Lease::whereHas('property', $propertyFilter)
+            ->when($leaseStatus, fn($q) => $q->where('status', $leaseStatus))
+            ->count();
 
-        $monthlyExpenses = Expense::whereHas('lease.unit.property', fn($q) =>
-    $q->where('landlord_id', auth()->id())
-)
-->selectRaw("$monthExpr as month, SUM(amount) as total")
-->groupBy('month')
-->pluck('total', 'month');
+        $occupiedUnitsCount = Unit::whereHas('property', $propertyFilter)
+            ->where('status', 'occupied')
+            ->count();
 
-//return view('landlord.dashboard', compact('payments', 'leases', 'monthlyExpenses'));
+        $occupancyRate = $unitsCount > 0 ? round($occupiedUnitsCount / $unitsCount * 100, 1) : 0;
 
+        // Affitti mensili
+        $monthlyRent = Lease::whereHas('property', $propertyFilter)
+            ->when($leaseStatus, fn($q) => $q->where('status', $leaseStatus))
+            ->sum('rent_total');
 
-        return view('landlord.dashboard', compact('payments', 'leases', 'monthlyExpenses'));
+        // Grafico entrate/uscite ultimi 6 mesi
+        $months = collect();
+        $paymentsPerMonth = collect();
+        $expensesPerMonth = collect();
+
+        for ($i = 5; $i >= 0; $i--) {
+            $month = Carbon::now()->subMonths($i);
+            $label = $month->format('m/Y');
+            $months->push($label);
+
+            $startM = $month->copy()->startOfMonth();
+            $endM   = $month->copy()->endOfMonth();
+
+            $paymentsSum = Payment::whereBetween('due_date', [$startM, $endM])
+                ->whereHas('lease.property', $propertyFilter)
+                ->sum('amount_total');
+
+            $expensesSum = Expense::whereBetween('date', [$startM, $endM])
+                ->whereHas('lease.property', $propertyFilter)
+                ->sum('amount_total');
+
+            $paymentsPerMonth->push($paymentsSum);
+            $expensesPerMonth->push($expensesSum);
+        }
+
+        // Ultimi pagamenti
+        $latestPayments = Payment::with('lease.property')
+            ->whereHas('lease.property', $propertyFilter)
+            ->orderByDesc('due_date')
+            ->limit(5)
+            ->get();
+
+        // Ultime spese
+        $latestExpenses = Expense::with('lease.property')
+            ->whereHas('lease.property', $propertyFilter)
+            ->orderByDesc('date')
+            ->limit(5)
+            ->get();
+
+        // Property list for filter
+        $properties = Property::whereHas('landlords', fn($q) => $q->whereKey($landlord->id))->get();
+
+        return view('landlord.dashboard.index', compact(
+            'properties',
+            'propertiesCount',
+            'unitsCount',
+            'activeLeasesCount',
+            'occupancyRate',
+            'monthlyRent',
+            'months',
+            'paymentsPerMonth',
+            'expensesPerMonth',
+            'latestPayments',
+            'latestExpenses'
+        ));
     }
 
 }
