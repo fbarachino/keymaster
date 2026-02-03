@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container-fluid">
-    <form method="GET" class="mb-4">
+<form method="GET" class="mb-4">
     <div class="card card-outline card-secondary">
         <div class="card-header">
             <h3 class="card-title">Filtri avanzati</h3>
@@ -114,6 +114,74 @@
             </div>
         </div>
     </div>
+    <div class="row">
+
+    {{-- Pagamenti in ritardo --}}
+    <div class="col-md-3">
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3>{{ $latePayments->count() }}</h3>
+                <p>Pagamenti in ritardo</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <a href="{{ route('landlord.payments.index') }}" class="small-box-footer">
+                Vedi dettagli <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    {{-- Lease in scadenza --}}
+    <div class="col-md-3">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>{{ $expiringLeases->count() }}</h3>
+                <p>Contratti in scadenza</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-hourglass-half"></i>
+            </div>
+            <a href="{{ route('landlord.properties.index') }}" class="small-box-footer">
+                Gestisci contratti <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    {{-- Unità disponibili --}}
+    <div class="col-md-3">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>{{ $availableUnits->count() }}</h3>
+                <p>Unità disponibili</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-door-open"></i>
+            </div>
+            <a href="{{ route('landlord.units.available') }}" class="small-box-footer">
+                Vedi unità <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    {{-- Spese anomale --}}
+    <div class="col-md-3">
+        <div class="small-box bg-secondary">
+            <div class="inner">
+                <h3>{{ $highExpenses->count() }}</h3>
+                <p>Spese elevate</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <a href="{{ route('landlord.expenses.index') }}" class="small-box-footer">
+                Analizza spese <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+</div>
+
 
     {{-- ROW 2: AFFITTI MENSILI + GRAFICO --}}
     <div class="row">
@@ -215,13 +283,81 @@
                     </table>
                 </div>
             </div>
+
+        </div>
+    </div>
+    <div class="row">
+
+    {{-- Pagamenti in ritardo --}}
+    <div class="col-md-6">
+        <div class="card card-outline card-danger">
+            <div class="card-header">
+                <h3 class="card-title">Pagamenti in ritardo</h3>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Proprietà</th>
+                            <th>Importo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($latePayments as $p)
+                            <tr>
+                                <td>{{ $p->due_date }}</td>
+                                <td>{{ $p->lease->property->name }}</td>
+                                <td>{{ number_format($p->amount_total, 2, ',', '.') }} €</td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="3" class="text-center py-3">Nessun pagamento in ritardo</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {{-- Lease in scadenza --}}
+    <div class="col-md-6">
+        <div class="card card-outline card-warning">
+            <div class="card-header">
+                <h3 class="card-title">Contratti in scadenza</h3>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Fine</th>
+                            <th>Proprietà</th>
+                            <th>Inquilini</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($expiringLeases as $l)
+                            <tr>
+                                <td>{{ $l->end_date }}</td>
+                                <td>{{ $l->property->name }}</td>
+                                <td>{{ $l->tenants->pluck('name')->join(', ') }}</td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="3" class="text-center py-3">Nessuna lease in scadenza</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
 </div>
+
+
+</div>
 @endsection
 
-@push('scripts')
+@section('js')
+@parent
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const ctx = document.getElementById('paymentsExpensesChart').getContext('2d');
@@ -276,4 +412,4 @@
         }
     });
 </script>
-@endpush
+@endsection

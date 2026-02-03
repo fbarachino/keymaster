@@ -11,7 +11,7 @@ use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class DashboardController extends Controller
+class LandlordDashboardController extends Controller
 {
     public function index(Request $request)
     {
@@ -41,6 +41,36 @@ class DashboardController extends Controller
                 $q->where('id', $propertyId);
             }
         };
+        // ALERT: Pagamenti in ritardo
+        $latePayments = Payment::where('status', 'pending')
+            ->whereDate('due_date', '<', now())
+            ->whereHas('lease.property.landlords', fn($q) => $q->whereKey($landlord->id))
+            ->orderBy('due_date')
+            ->limit(5)
+            ->get();
+
+        // ALERT: Lease in scadenza (entro 60 giorni)
+        $expiringLeases = Lease::where('status', 'active')
+            ->whereBetween('end_date', [now(), now()->addDays(60)])
+            ->whereHas('property.landlords', fn($q) => $q->whereKey($landlord->id))
+            ->orderBy('end_date')
+            ->limit(5)
+            ->get();
+
+        // ALERT: Unità disponibili
+        $availableUnits = Unit::where('status', 'available')
+            ->whereHas('property.landlords', fn($q) => $q->whereKey($landlord->id))
+            ->orderBy('name')
+            ->limit(5)
+            ->get();
+
+        // ALERT: Spese anomale (sopra soglia)
+        $expenseThreshold = 500; // puoi renderlo configurabile
+        $highExpenses = Expense::where('amount_total', '>', $expenseThreshold)
+            ->whereHas('lease.property.landlords', fn($q) => $q->whereKey($landlord->id))
+            ->orderByDesc('amount_total')
+            ->limit(5)
+            ->get();
 
         // KPI
         $propertiesCount = Property::where($propertyFilter)->count();
@@ -117,7 +147,12 @@ class DashboardController extends Controller
             'paymentsPerMonth',
             'expensesPerMonth',
             'latestPayments',
-            'latestExpenses'
+            'latestExpenses',
+            'latePayments',
+            'expiringLeases',
+            'availableUnits',
+            'highExpenses',
+
         ));
     }
 

@@ -32,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
             $itemsLandlord = [
                 ['text' => 'Dashboard', 'route' => 'landlord.dashboard','icon' => 'fas fa-tachometer-alt'],
                 ['text' => 'Proprietà', 'route' => 'landlord.properties.index','icon' => 'fas fa-building'],
-                ['text' => 'Contratti', 'route' => 'landlord.leases.index' ,'icon' => 'fas fa-file-contract'],
+               // ['text' => 'Contratti', 'route' => 'landlord.leases.index' ,'icon' => 'fas fa-file-contract'],
             //    ['text' => 'Inquilini & Contratti', 'route' => 'landlord.tenants.index','icon' => 'far fa-fw fa-users'],
                 ['text' => 'Pagamenti', 'route' => 'landlord.payments.index','icon' => 'far fa-fw fa-credit-card'],
                 ['text' => 'Ticket di manutenzione', 'route' => 'landlord.tickets.index','icon' => 'fas fa-exclamation-triangle'],
@@ -55,7 +55,7 @@ class AppServiceProvider extends ServiceProvider
             $itemsTenant = [
                 ['text' => 'Dashboard', 'route' => 'tenant.dashboard','icon' => 'fas fa-tachometer-alt'],
                 // ['text' => 'Le mie proprietà', 'route' => 'tenant.properties.index','icon' => 'fas fa-building'],
-                ['text' => 'I miei contratti', 'route' => 'tenant.leases.index','icon' => 'fas fa-file-contract'],
+            //    ['text' => 'I miei contratti', 'route' => 'tenant.leases.index','icon' => 'fas fa-file-contract'],
                 ['text' => 'I miei pagamenti', 'route' => 'tenant.payments.index','icon' => 'far fa-fw fa-credit-card'],
                 ['text' => 'Ticket di manutenzione', 'route' => 'tenant.tickets.index','icon' => 'fas fa-exclamation-triangle'],
                 ['text' => 'Messaggi', 'route' => 'tenant.messages.index','icon' => 'far fa-fw fa-envelope'],
