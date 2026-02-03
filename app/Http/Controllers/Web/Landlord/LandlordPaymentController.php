@@ -11,6 +11,7 @@ use App\Jobs\ProcessPaymentJob;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\PaymentRegistered;
+use App\Services\NotificationService;
 
 
 class LandlordPaymentController extends Controller
@@ -47,6 +48,10 @@ class LandlordPaymentController extends Controller
             'due_date' => 'required|date',
             'type' => 'required|in:rent,deposit,expense,other,advance-expenses,expense-settlement',
     ]);
+
+
+
+
 
     // Recupera il lease e verifica che appartenga al landlord
     $lease = Lease::where('id', $data['lease_id'])
@@ -86,6 +91,14 @@ class LandlordPaymentController extends Controller
             'type' => $data['type'],
             'tenant_id' => $tenant->id,
         ]);
+
+        NotificationService::notify(
+            $payment->tenant->user,
+            'payment_created',
+            'Nuovo pagamento disponibile',
+            "Hai un nuovo pagamento di {$payment->amount_total} € con scadenza {$payment->due_date}.",
+            route('tenant.payments.show', $payment->id)
+        );
     }
 
     // Notifica al tenant

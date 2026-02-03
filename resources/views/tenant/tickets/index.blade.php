@@ -25,7 +25,7 @@
 </div>
 @endsection
  --}}
- @extends('adminlte::page')
+ @extends('layouts.admin')
 
 @section('title', 'I tuoi ticket')
 

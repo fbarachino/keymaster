@@ -49,7 +49,7 @@
 </x-adminlte-card>
 @endsection
  --}}
- @extends('adminlte::page')
+ @extends('layouts.admin')
 
 @section('title', 'Nuovo ticket')
 

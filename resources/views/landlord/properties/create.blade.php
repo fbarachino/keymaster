@@ -1,5 +1,5 @@
 
-@extends('adminlte::page')
+@extends('layouts.admin')
 
 @section('title', 'Aggiungi proprietà')
 
