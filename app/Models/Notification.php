@@ -1,26 +1,15 @@
 <?php
 
+// app/Models/Notification.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Notification extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'user_id',
-        'type',
-        'message',
-        'read_at',
+        'user_id', 'type', 'title', 'message', 'link', 'is_read',
     ];
-
-    protected $casts = [
-        'read_at' => 'datetime',
-    ];
-
-    /* RELAZIONI */
 
     public function user()
     {

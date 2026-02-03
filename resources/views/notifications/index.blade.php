@@ -1,14 +1,65 @@
-@extends('layouts.portal')
+@extends('layouts.admin')
+
+@section('title', 'Notifiche')
 
 @section('content')
-<h1 class="text-2xl font-bold mb-6">Notifiche</h1>
+<div class="container-fluid">
 
-<div class="space-y-4">
-    @foreach(auth()->user()->notifications as $notification)
-        <div class="bg-white p-4 shadow rounded">
-            <p>{{ $notification->data['message'] }}</p>
-            <small class="text-gray-500">{{ $notification->created_at->diffForHumans() }}</small>
+    <h1 class="h3 mb-3">Notifiche</h1>
+
+    <div class="card card-outline card-primary">
+        <div class="card-body p-0">
+
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Titolo</th>
+                        <th>Messaggio</th>
+                        <th>Data</th>
+                        <th>Stato</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @forelse($notifications as $n)
+                        <tr>
+                            <td>{{ $n->title }}</td>
+                            <td>{{ $n->message }}</td>
+                            <td>{{ $n->created_at }}</td>
+                            <td>
+                                @if($n->is_read)
+                                    <span class="badge badge-secondary">Letta</span>
+                                @else
+                                    <span class="badge badge-success">Nuova</span>
+                                @endif
+                            </td>
+                            <td class="text-right">
+                                @if(!$n->is_read)
+                                    <form method="POST" action="{{ route('notifications.read', $n) }}">
+                                        @csrf
+                                        <button class="btn btn-sm btn-outline-primary">Segna come letta</button>
+                                    </form>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-3">
+                                Nessuna notifica
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+
+            </table>
+
         </div>
-    @endforeach
+
+        <div class="card-footer">
+            {{ $notifications->links() }}
+        </div>
+    </div>
+
 </div>
 @endsection
