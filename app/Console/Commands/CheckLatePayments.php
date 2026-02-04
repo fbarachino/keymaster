@@ -29,6 +29,8 @@ class CheckLatePayments extends Command
                 "Il pagamento di {$payment->amount_total} € è in ritardo.",
                 route('tenant.payments.show', $payment->id)
             );
+            Mail::to($payment->tenant->user->email)
+                ->send(new PaymentLateMail($payment));
 
             // Notifica landlord
             foreach ($payment->lease->property->landlords as $landlord) {
@@ -39,11 +41,11 @@ class CheckLatePayments extends Command
                     "Un pagamento di {$payment->amount_total} € risulta in ritardo.",
                     route('landlord.payments.show', $payment->id)
                 );
+
             }
 
 
-            Mail::to($payment->tenant->user->email)
-                ->send(new PaymentLateMail($payment));
+
 
             foreach ($payment->lease->property->landlords as $landlord) {
                 Mail::to($landlord->user->email)
