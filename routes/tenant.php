@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\Tenant\TenantLeaseController;
 use App\Http\Controllers\Web\Tenant\TenantReportController;
 use App\Http\Controllers\Web\Tenant\TenantTicketController;
+use App\Http\Controllers\Web\Tenant\TenantExpenseController;
 use App\Http\Controllers\Web\Tenant\TenantMessageController;
 use App\Http\Controllers\Web\Tenant\TenantPaymentController;
 use App\Http\Controllers\Web\Tenant\TenantDashboardController;
@@ -27,6 +28,7 @@ Route::middleware(['auth', EnsureTenant::class])
         ->name('reports.monthly');
         Route::get('reports/yearly', [TenantReportController::class, 'yearly'])
         ->name('reports.yearly');
+        Route::resource('expenses', TenantExpenseController::class)->only(['index', 'show']);
 
 
     });

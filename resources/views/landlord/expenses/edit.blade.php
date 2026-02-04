@@ -1,71 +1,92 @@
-@extends('layouts.portal')
+@extends('adminlte::page')
 
-@section('title', 'Modifica Spesa')
+@section('title', 'Modifica spesa')
 
 @section('content_header')
-    <h1>Modifica Spesa</h1>
-@stop
+    <h1>Modifica spesa</h1>
+@endsection
 
 @section('content')
 
-<form action="{{ route('landlord.expenses.update', $expense) }}" method="POST">
-    @csrf
-    @method('PUT')
+<div class="card">
+    <div class="card-body">
 
-    <div class="card">
-        <div class="card-body">
-
-
+        <form action="{{ route('landlord.expenses.update', $expense) }}" method="POST">
+            @csrf
+            @method('PUT')
 
             <div class="form-group">
-                <label>Contratto</label>
-                <select name="lease_id" class="form-control" required>
-                    @foreach($leases as $lease)
-                        <option value="{{ $lease->id }}"
-                            @selected($lease->id == $expense->lease_id)>
-                            #{{ $lease->id }} - @foreach($lease->tenants as $tenant) {{ $tenant->first_name }} {{ $tenant->last_name }} \n @endforeach  ( {{ $lease->unit->property->name }} )
+                <label for="property_id">Proprietà</label>
+                <select name="property_id" id="property_id" class="form-control" required>
+                    @foreach($properties as $property)
+                        <option value="{{ $property->id }}" @selected($property->id == $expense->property_id)>
+                            {{ $property->name }}
                         </option>
                     @endforeach
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Tipo di spesa</label>
-                <input type="text" name="type" class="form-control" value="{{ $expense->type }}" required>
-            </div>
-
-            <div class="form-group">
-                <label>Importo</label>
-                <input type="number" step="0.01" name="amount" class="form-control" value="{{ $expense->amount }}" required>
-            </div>
-
-            <div class="form-group">
-                <label>Imputazione</label>
-                <select name="charged_to" class="form-control" required>
-                    <option value="tenant" @selected($expense->charged_to === 'tenant')>Tenant</option>
-                    <option value="landlord" @selected($expense->charged_to === 'landlord')>Landlord</option>
-                    <option value="both" @selected($expense->charged_to === 'both')>50 / 50</option>
+                <label for="lease_id">Contratto</label>
+                <select name="lease_id" id="lease_id" class="form-control" required>
+                    @foreach($leases as $lease)
+                        <option value="{{ $lease->id }}" @selected($lease->id == $expense->lease_id)>
+                            {{ $lease->property->name }} — {{ $lease->tenants->pluck('name')->join(', ') }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Data</label>
-                <input type="date" name="date" class="form-control" value="{{ $expense->date }}" required>
+                <label for="tenant_id">Inquilino (opzionale)</label>
+                <select name="tenant_id" id="tenant_id" class="form-control">
+                    <option value="">— Spesa condivisa —</option>
+                    @foreach($leases as $lease)
+                        @foreach($lease->tenants as $tenant)
+                            <option value="{{ $tenant->id }}" @selected($tenant->id == $expense->tenant_id)>
+                                {{ $tenant->name }}
+                            </option>
+                        @endforeach
+                    @endforeach
+                </select>
             </div>
 
             <div class="form-group">
-                <label>Note</label>
-                <textarea name="notes" class="form-control">{{ $expense->notes }}</textarea>
+                <label for="category">Categoria</label>
+                <input type="text" name="category" id="category" class="form-control"
+                       value="{{ $expense->category }}" required>
             </div>
 
-        </div>
+            <div class="form-group">
+                <label for="description">Descrizione</label>
+                <input type="text" name="description" id="description" class="form-control"
+                       value="{{ $expense->description }}">
+            </div>
 
-        <div class="card-footer">
-            <button class="btn btn-success">Aggiorna</button>
+            <div class="form-group">
+                <label for="amount_total">Importo totale</label>
+                <input type="number" step="0.01" name="amount_total" id="amount_total" class="form-control"
+                       value="{{ $expense->amount_total }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="amount_tenant">Quota inquilino</label>
+                <input type="number" step="0.01" name="amount_tenant" id="amount_tenant" class="form-control"
+                       value="{{ $expense->amount_tenant }}">
+            </div>
+
+            <div class="form-group">
+                <label for="expense_date">Data spesa</label>
+                <input type="date" name="expense_date" id="expense_date" class="form-control"
+                       value="{{ $expense->expense_date->format('Y-m-d') }}" required>
+            </div>
+
+            <button class="btn btn-primary">Salva</button>
             <a href="{{ route('landlord.expenses.index') }}" class="btn btn-secondary">Annulla</a>
-        </div>
+
+        </form>
+
     </div>
+</div>
 
-</form>
-
-@stop
+@endsection
